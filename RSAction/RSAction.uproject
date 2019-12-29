@@ -1,0 +1,19 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{638B7B93-4282-0ABF-3025-7BA6E8A852AB}",
+	"Category": "",
+	"Description": "",
+  "Modules": [
+    {
+      "Name": "RSAction",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "ECSystemPlugin",
+      "Enabled": true
+    }
+  ]
+}
