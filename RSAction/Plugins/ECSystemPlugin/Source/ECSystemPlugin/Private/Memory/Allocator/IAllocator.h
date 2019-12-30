@@ -51,7 +51,7 @@ namespace ECS { namespace Memory { namespace Allocator {
 	}
 	
 	
-	class ECS_API IAllocator
+	class ECSYSTEMPLUGIN_API IAllocator
 	{
 	protected:
 	

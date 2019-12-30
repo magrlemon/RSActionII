@@ -76,8 +76,8 @@ namespace ECS
 		///
 		/// Date:	9/09/2019
 		///-------------------------------------------------------------------------------------------------
-
-		class ECS_API GlobalMemoryUser
+		
+		class ECSYSTEMPLUGIN_API GlobalMemoryUser
 		{
 		private:
 
@@ -98,10 +98,10 @@ namespace ECS
 
 	class ECSEngine;
 
-	ECS_API extern ECSEngine*		ECS_Engine;
+	ECSYSTEMPLUGIN_API extern ECSEngine*		ECS_Engine;
 
-	ECS_API void					Initialize();
-	ECS_API void					Terminate();
+	ECSYSTEMPLUGIN_API void					Initialize();
+	ECSYSTEMPLUGIN_API void					Terminate();
 
 } // namespace ECS
 

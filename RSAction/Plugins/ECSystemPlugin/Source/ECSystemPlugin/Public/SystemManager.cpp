@@ -160,10 +160,10 @@ namespace ECS
 
 			std::vector<SystemTypeId> order;
 
-			for (int i = 0; i < g.size(); ++i)
+			for (int j = 0; j < g.size(); ++j)
 			{
-				if (vertex_states[g[i]] == 0)
-					DFS(g[i], vertex_states, this->m_SystemDependencyMatrix, order);
+				if (vertex_states[g[j]] == 0)
+					DFS(g[j], vertex_states, this->m_SystemDependencyMatrix, order);
 			}
 
 			std::reverse(order.begin(), order.end());

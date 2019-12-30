@@ -8,10 +8,10 @@
 #define __TIMER_H___
 
 #include "API.h"
-#include "Timer.generated.h"
+
 namespace ECS { namespace util {
 
-	class ECS_API Timer
+	class ECSYSTEMPLUGIN_API Timer
 	{
 		using Elapsed = std::chrono::duration<f32, std::milli>;
 

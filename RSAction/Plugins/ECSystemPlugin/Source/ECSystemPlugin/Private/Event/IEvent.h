@@ -22,7 +22,7 @@ namespace ECS { namespace Event {
 		static const EventTypeId INVALID_EVENTTYPE = INVALID_TYPE_ID;
 		
 
-		class ECS_API IEvent
+		class ECSYSTEMPLUGIN_API IEvent
 		{
 		private:
 

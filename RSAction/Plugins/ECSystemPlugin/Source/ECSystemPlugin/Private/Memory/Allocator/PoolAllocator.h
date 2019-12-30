@@ -17,7 +17,7 @@
 
 namespace ECS { namespace Memory { namespace Allocator {
 
-	class ECS_API PoolAllocator : public IAllocator
+	class ECSYSTEMPLUGIN_API PoolAllocator : public IAllocator
 	{
 	private:
 
@@ -28,7 +28,7 @@ namespace ECS { namespace Memory { namespace Allocator {
 
 	public:
 
-		PoolAllocator::PoolAllocator(size_t memSize, const void* mem, size_t objectSize, u8 objectAlignment);
+		PoolAllocator(size_t memSize, const void* mem, size_t objectSize, u8 objectAlignment);
 
 		virtual ~PoolAllocator();
 

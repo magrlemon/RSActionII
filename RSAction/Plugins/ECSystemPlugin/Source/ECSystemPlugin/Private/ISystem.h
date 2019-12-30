@@ -43,7 +43,7 @@ namespace ECS
 	static const SystemPriority HIGHEST_SYSTEM_PRIORITY		= std::numeric_limits<SystemPriority>::max();
 
 
-	class ECS_API ISystem
+	class ECSYSTEMPLUGIN_API ISystem
 	{
 		friend class SystemManager;
 

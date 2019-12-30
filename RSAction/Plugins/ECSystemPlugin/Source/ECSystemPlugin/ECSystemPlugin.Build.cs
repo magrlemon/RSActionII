@@ -11,10 +11,6 @@ public class ECSystemPlugin : ModuleRules
 		PublicIncludePaths.AddRange(
 			new string[] {
 				// ... add public include paths required here ...
-                //"ECSystemPlugin\\Private\\Event",
-                //"ECSystemPlugin\\Private\\Memory",
-                //"ECSystemPlugin\\Private\\util",
-                //"ECSystemPlugin\\Private\\Memory\\Allocator"
             }
 			);
 				
@@ -22,10 +18,7 @@ public class ECSystemPlugin : ModuleRules
 		PrivateIncludePaths.AddRange(
 			new string[] {
 				// ... add other private include paths required here ...
-                 "ECSystemPlugin\\Public\\Event",
-                "ECSystemPlugin\\Public\\Memory",
-                "ECSystemPlugin\\Public\\util",
-                "ECSystemPlugin\\Public\\Memory\\Allocator"
+               
             }
 			);
 			

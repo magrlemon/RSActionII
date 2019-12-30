@@ -26,7 +26,7 @@ namespace ECS
 	using SystemWorkStateMask	= std::vector<bool>;
 
 
-	class ECS_API SystemManager : Memory::GlobalMemoryUser
+	class ECSYSTEMPLUGIN_API SystemManager : Memory::GlobalMemoryUser
 	{
 		friend ECSEngine;
 

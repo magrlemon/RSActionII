@@ -20,7 +20,7 @@ namespace ECS
 
 	static const EntityId INVALID_ENTITY_ID = util::Handle64::INVALID_HANDLE;
 
-	class ECS_API IEntity
+	class ECSYSTEMPLUGIN_API IEntity
 	{
 		friend class EntityManager;
 

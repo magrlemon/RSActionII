@@ -32,7 +32,7 @@ namespace ECS
 
 
 
-	class ECS_API ECSEngine
+	class ECSYSTEMPLUGIN_API ECSEngine
 	{
 		friend class IEntity;
 		friend class IComponent;

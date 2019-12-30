@@ -20,7 +20,7 @@ namespace ECS
 	namespace Event
 	{
 		///-------------------------------------------------------------------------------------------------
-		/// Class:	ECS_API
+		/// Class:	ECSYSTEMPLUGIN_API
 		///
 		/// Summary:	Allows a deriving class to participate in eventing.
 		///
@@ -29,7 +29,7 @@ namespace ECS
 		/// Date:	24/09/2019
 		///-------------------------------------------------------------------------------------------------
 
-		class ECS_API IEventListener
+		class ECSYSTEMPLUGIN_API IEventListener
 		{	
 			using RegisteredCallbacks = std::list<Internal::IEventDelegate*>;
 			RegisteredCallbacks m_RegisteredCallbacks;

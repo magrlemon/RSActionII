@@ -32,7 +32,7 @@ namespace ECS
 	using EntityHandleTable = util::HandleTable<IEntity, EntityId>;
 
 
-	class ECS_API EntityManager
+	class ECSYSTEMPLUGIN_API EntityManager
 	{
 		//DECLARE_LOGGER
 

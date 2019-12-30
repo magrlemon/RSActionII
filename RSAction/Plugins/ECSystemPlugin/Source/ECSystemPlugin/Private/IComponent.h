@@ -23,7 +23,7 @@ namespace ECS
 	template<class T>
 	class Component;
 
-	class ECS_API IComponent
+	class ECSYSTEMPLUGIN_API IComponent
 	{
 		friend class ComponentManager;
 

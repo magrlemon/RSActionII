@@ -25,7 +25,7 @@
 
 namespace ECS
 {
-	class ECS_API ComponentManager : Memory::GlobalMemoryUser
+	class ECSYSTEMPLUGIN_API ComponentManager : Memory::GlobalMemoryUser
 	{
 		friend class IComponent;
 

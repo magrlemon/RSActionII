@@ -18,7 +18,7 @@ namespace ECS { namespace Memory { namespace Allocator {
 
 	/*
 	*/
-	class ECS_API StackAllocator : public IAllocator
+	class ECSYSTEMPLUGIN_API StackAllocator : public IAllocator
 	{
 	private:
 

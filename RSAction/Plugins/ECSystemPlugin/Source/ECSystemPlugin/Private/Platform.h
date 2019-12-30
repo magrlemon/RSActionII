@@ -9,11 +9,11 @@
 #define __PLATFORM_H__
 
 
-#ifdef ECS_EXPORT  
-	#define ECS_API __declspec(dllexport)   
-#else  
-	#define ECS_API __declspec(dllimport)   
-#endif  
+//#ifdef ECS_EXPORT  
+//	#define ECSYSTEMPLUGIN_API __declspec(dllexport)   
+//#else  
+//	#define ECSYSTEMPLUGIN_API __declspec(dllimport)   
+//#endif  
 
 
 // Check if using 64-Bit architecture

@@ -17,7 +17,7 @@
 namespace ECS { namespace util { namespace Internal {
 
 	template<class T>
-	class ECS_API FamilyTypeID
+	class ECSYSTEMPLUGIN_API FamilyTypeID
 	{
 		static TypeID s_count;
 	

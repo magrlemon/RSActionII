@@ -21,7 +21,7 @@
 //#include "IEventDispatcher.generated.h"
 namespace ECS { namespace Event {
 
-	class ECS_API EventHandler : Memory::GlobalMemoryUser
+	class ECSYSTEMPLUGIN_API EventHandler : Memory::GlobalMemoryUser
 	{
 		// allow IEventListener access private methods for Add/Remove callbacks
 		friend class ECSEngine;

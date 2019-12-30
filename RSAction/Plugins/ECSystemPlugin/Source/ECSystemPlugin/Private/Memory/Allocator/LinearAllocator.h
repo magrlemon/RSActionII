@@ -33,7 +33,7 @@ namespace ECS { namespace Memory { namespace Allocator {
 
 		memory only can be freed by clearing all allocations
 	*/
-	class ECS_API LinearAllocator : public IAllocator
+	class ECSYSTEMPLUGIN_API LinearAllocator : public IAllocator
 	{
 	public:
 
