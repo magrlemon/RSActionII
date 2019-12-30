@@ -1,19 +1,13 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{638B7B93-4282-0ABF-3025-7BA6E8A852AB}",
+	"EngineAssociation": "{FFCB6ADB-4888-4047-32CE-72B23B8BC04E}",
 	"Category": "",
 	"Description": "",
-  "Modules": [
-    {
-      "Name": "RSAction",
-      "Type": "Runtime",
-      "LoadingPhase": "Default"
-    }
-  ],
-  "Plugins": [
-    {
-      "Name": "ECSystemPlugin",
-      "Enabled": true
-    }
-  ]
+	"Modules": [
+		{
+			"Name": "RSAction",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
 }
