@@ -8,6 +8,56 @@
 			"Name": "RSAction",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "SoldierGameLoadingScreen",
+			"Type": "Runtime",
+			"LoadingPhase": "PreLoadingScreen"
 		}
-	]
+	],
+	"Plugins": [
+		{
+			"Name": "PlatformCrypto",
+			"Enabled": true
+		},
+		{
+			"Name": "AESHandlerComponent",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystem",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystemUtils",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystemSteam",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystemNull",
+			"Enabled": true
+		},
+		{
+			"Name": "SteamController",
+			"Enabled": true
+		},
+		{
+			"Name": "ReplicationGraph",
+			"Enabled": true
+		},
+		{
+			"Name": "Gauntlet",
+			"Enabled": true
+		}
+	],
+	"TargetPlatforms": [
+		"MacNoEditor",
+		"WindowsNoEditor",
+		"Switch",
+		"Quail"
+	],
+	"EpicSampleNameHash": "3868556100"
 }
