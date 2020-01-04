@@ -14,7 +14,7 @@ const int32 DefaultSoldierResCount = UE_ARRAY_COUNT(DefaultSoldierResolutions);
 /** delegate called when changes are applied */
 DECLARE_DELEGATE(FOnApplyChanges);
 
-class URSActionGameUserSettings;
+class USoldierGameUserSettings;
 
 class FSoldierOptions : public TSharedFromThis<FSoldierOptions>
 {
@@ -48,7 +48,7 @@ public:
 
 protected:
 	/** User settings pointer */
-	URSActionGameUserSettings* UserSettings;
+	USoldierGameUserSettings* UserSettings;
 
 	/** video resolution option changed handler */
 	void VideoResolutionOptionChanged(TSharedPtr<FSoldierMenuItem> MenuItem, int32 MultiOptionIndex);

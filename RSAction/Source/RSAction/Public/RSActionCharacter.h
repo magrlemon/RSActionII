@@ -32,7 +32,7 @@ public:
 protected:
 
 	/** Resets HMD orientation in VR. */
-	void OnResetVR();
+	//void OnResetVR();
 
 	/** Called for forwards/backward input */
 	void MoveForward(float Value);

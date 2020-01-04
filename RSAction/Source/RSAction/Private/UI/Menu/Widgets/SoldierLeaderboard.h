@@ -5,7 +5,7 @@
 #include "SlateBasics.h"
 #include "SlateExtras.h"
 #include "SoldierGame.h"
-#include "SoldierLeaderboards.h"
+#include "Leaderboards.h"
 
 /** leaderboard row display information */
 struct FLeaderboardRow

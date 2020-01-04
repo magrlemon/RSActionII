@@ -1,11 +1,11 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "SoldierOptions.h"
 #include "SoldierTypes.h"
 #include "SoldierStyle.h"
 #include "SoldierOptionsWidgetStyle.h"
-#include "RSActionGameUserSettings.h"
+#include "SoldierGameUserSettings.h"
 #include "Player/SoldierPersistentUser.h"
 #include "Player/SoldierLocalPlayer.h"
 
@@ -96,7 +96,7 @@ void FSoldierOptions::Construct(ULocalPlayer* InPlayerOwner)
     //Default vibration to On.
 	VibrationOption->SelectedMultiChoice = 1;
 
-	UserSettings = CastChecked<URSActionGameUserSettings>(GEngine->GetGameUserSettings());
+	UserSettings = CastChecked<USoldierGameUserSettings>(GEngine->GetGameUserSettings());
 	ResolutionOpt = UserSettings->GetScreenResolution();
 	bFullScreenOpt = UserSettings->GetFullscreenMode();
 	GraphicsQualityOpt = UserSettings->GetGraphicsQuality();

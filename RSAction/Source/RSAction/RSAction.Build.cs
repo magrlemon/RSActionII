@@ -4,22 +4,22 @@ using UnrealBuildTool;
 
 public class RSAction : ModuleRules {
     public RSAction( ReadOnlyTargetRules Target ) : base( Target ) {
-        PrivatePCHHeaderFile = "Public/RSAction.h";
+        PrivatePCHHeaderFile = "Public/SoldierGame.h";
 
 
-        PublicIncludePaths.AddRange(
-                  new string[] {
-                "RSAction/Public",
-                "RSAction/Public/Bots",
-                "RSAction/Public/Effects",
-                "RSAction/Public/Online",
-                "RSAction/Public/Pickups",
-                "RSAction/Public/Sound",
-                "RSAction/Public/Player",
-                "RSAction/Public/Weapons",
-                "RSAction/Public/UI"
-                  }
-              );
+        //PublicIncludePaths.AddRange(
+        //          new string[] {
+        //        "RSAction/Public",
+        //        "RSAction/Public/Bots",
+        //        "RSAction/Public/Effects",
+        //        "RSAction/Public/Online",
+        //        "RSAction/Public/Pickups",
+        //        "RSAction/Public/Sound",
+        //        "RSAction/Public/Player",
+        //        "RSAction/Public/Weapons",
+        //        "RSAction/Public/UI"
+        //          }
+        //      );
 
         PrivateIncludePaths.AddRange(
             new string[] {
@@ -42,7 +42,7 @@ public class RSAction : ModuleRules {
                 "AIModule",
                 "GameplayTasks",
                 "Gauntlet",
-                "HeadMountedDisplay",
+                //"HeadMountedDisplay",
                 "ECSystemPlugin"
              }
         );

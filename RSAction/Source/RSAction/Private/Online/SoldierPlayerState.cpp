@@ -1,7 +1,7 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "RSAction.h"
-#include "SoldierPlayerState.h"
+#include "SoldierGame.h"
+#include "Online/SoldierPlayerState.h"
 #include "Net/OnlineEngineInterface.h"
 
 ASoldierPlayerState::ASoldierPlayerState(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)

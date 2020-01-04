@@ -1,6 +1,6 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 #include "Bots/SoldierAIController.h"
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "Bots/SoldierBot.h"
 #include "Online/SoldierPlayerState.h"
 #include "BehaviorTree/BehaviorTree.h"

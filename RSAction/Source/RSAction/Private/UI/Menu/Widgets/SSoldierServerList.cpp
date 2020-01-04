@@ -1,11 +1,11 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "SSoldierServerList.h"
-#include "SHeaderRow.h"
+#include "Widgets/Views/SHeaderRow.h"
 #include "SoldierStyle.h"
 #include "SoldierGameLoadingScreen.h"
-#include "RSActionGameInstance.h"
+#include "SoldierGameInstance.h"
 #include "Online/SoldierGameSession.h"
 
 #define LOCTEXT_NAMESPACE "SoldierGame.HUD.Menu"
@@ -79,7 +79,7 @@ void SSoldierServerList::Construct(const FArguments& InArgs)
  */
 ASoldierGameSession* SSoldierServerList::GetGameSession() const
 {
-	URSActionGameInstance* const GI = Cast<URSActionGameInstance>(PlayerOwner->GetGameInstance());
+	USoldierGameInstance* const GI = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
 	return GI ? GI->GetGameSession() : nullptr;
 }
 
@@ -214,7 +214,7 @@ void SSoldierServerList::BeginServerSearch(bool bLANMatch, bool bIsDedicatedServ
 		ServerList.Empty();
 		LastSearchTime = CurrentTime;
 
-		URSActionGameInstance* const GI = Cast<URSActionGameInstance>(PlayerOwner->GetGameInstance());
+		USoldierGameInstance* const GI = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
 		if (GI)
 		{
 			GI->FindSessions(PlayerOwner.Get(), bIsDedicatedServer, bLANMatchSearch);
@@ -279,7 +279,7 @@ void SSoldierServerList::ConnectToServer()
 			GEngine->GameViewport->RemoveAllViewportWidgets();
 		}
 		
-		URSActionGameInstance* const GI = Cast<URSActionGameInstance>(PlayerOwner->GetGameInstance());
+		USoldierGameInstance* const GI = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
 		if (GI)
 		{
 			GI->JoinSession(PlayerOwner.Get(), ServerToJoin);

@@ -1,14 +1,14 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "SSoldierDemoList.h"
-#include "SHeaderRow.h"
+#include "Widgets/Views/SHeaderRow.h"
 #include "SoldierStyle.h"
-#include "CoreStyle.h"
+#include "Styling/CoreStyle.h"
 #include "SoldierGameLoadingScreen.h"
-#include "RSActionGameInstance.h"
+#include "SoldierGameInstance.h"
 #include "NetworkReplayStreaming.h"
-#include "RSActionGameViewportClient.h"
+#include "SoldierGameViewportClient.h"
 
 #define LOCTEXT_NAMESPACE "SoldierGame.HUD.Menu"
 
@@ -214,7 +214,7 @@ void SSoldierDemoList::PlayDemo()
 
 	if (SelectedItem.IsValid())
 	{
-		URSActionGameInstance* const GI = Cast<URSActionGameInstance>(PlayerOwner->GetGameInstance());
+		USoldierGameInstance* const GI = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
 
 		if ( GI != NULL )
 		{
@@ -236,7 +236,7 @@ void SSoldierDemoList::DeleteDemo()
 
 	if (SelectedItem.IsValid())
 	{
-		URSActionGameInstance* const GI = Cast<URSActionGameInstance>(PlayerOwner->GetGameInstance());
+		USoldierGameInstance* const GI = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
 
 		if ( GI != NULL )
 		{
@@ -268,7 +268,7 @@ FReply SSoldierDemoList::OnDemoDeleteConfirm()
 		ReplayStreamer->DeleteFinishedStream(SelectedItem->StreamInfo.Name, FDeleteFinishedStreamCallback::CreateSP(this, &SSoldierDemoList::OnDeleteFinishedStreamComplete));
 	}
 
-	URSActionGameInstance* const GI = Cast<URSActionGameInstance>(PlayerOwner->GetGameInstance());
+	USoldierGameInstance* const GI = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
 
 	if ( GI != NULL )
 	{
@@ -285,7 +285,7 @@ FReply SSoldierDemoList::OnDemoDeleteConfirm()
 
 FReply SSoldierDemoList::OnDemoDeleteCancel()
 {
-	URSActionGameInstance* const GI = Cast<URSActionGameInstance>(PlayerOwner->GetGameInstance());
+	USoldierGameInstance* const GI = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
 
 	if ( GI != NULL )
 	{

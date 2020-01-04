@@ -5,7 +5,7 @@
 #include "SoldierEngine.generated.h"
 
 UCLASS()
-class SHOOTERGAME_API USoldierEngine : public UGameEngine
+class RSACTION_API USoldierEngine : public UGameEngine
 {
 	GENERATED_UCLASS_BODY()
 

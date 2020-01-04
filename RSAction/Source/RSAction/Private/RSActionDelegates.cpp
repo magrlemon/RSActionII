@@ -50,7 +50,7 @@ FAutoConsoleCommand CmdPlayGoNext(
 #endif
 
 #endif
-#include "SoldierGameState.h"
+#include "Online/SoldierGameState.h"
 
 
 // respond to requests from a companion app

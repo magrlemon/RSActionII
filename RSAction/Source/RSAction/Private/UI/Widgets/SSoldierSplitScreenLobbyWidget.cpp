@@ -1,12 +1,12 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "SoldierStyle.h"
 #include "SSoldierSplitScreenLobbyWidget.h"
 #include "SoldierMenuItemWidgetStyle.h"
 #include "SoldierMenuWidgetStyle.h"
 #include "SSoldierConfirmationDialog.h"
-#include "RSActionGameViewportClient.h"
+#include "SoldierGameViewportClient.h"
 #include "OnlineSubsystemUtils.h"
 
 #define LOCTEXT_NAMESPACE "SoldierGame.SplitScreenLobby"
@@ -293,7 +293,7 @@ void SSoldierSplitScreenLobby::UpdateSlots()
 
 void SSoldierSplitScreenLobby::ConditionallyReadyPlayer( const int ControllerId, const bool bCanShowUI )
 {
-	URSActionGameInstance* const GameInstance = GetGameInstance();
+	USoldierGameInstance* const GameInstance = GetGameInstance();
 	if (GameInstance == nullptr)
 	{
 		return;
@@ -499,7 +499,7 @@ bool SSoldierSplitScreenLobby::IsUniqueIdOnline( const FUniqueNetId& UniqueId ) 
 
 FReply SSoldierSplitScreenLobby::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
 {
-	const URSActionGameInstance* GameInstance = GetGameInstance();
+	const USoldierGameInstance* GameInstance = GetGameInstance();
 	if (GameInstance == nullptr)
 	{
 		return FReply::Unhandled();
@@ -594,7 +594,7 @@ void SSoldierSplitScreenLobby::OnFocusLost( const FFocusEvent& InFocusEvent )
 
 void SSoldierSplitScreenLobby::HandleLoginUIClosedAndReady( TSharedPtr<const FUniqueNetId> UniqueId, const int UserIndex, const FOnlineError& Error )
 {
-	const URSActionGameInstance* GameInstance = GetGameInstance();
+	const USoldierGameInstance* GameInstance = GetGameInstance();
 	if (GameInstance == nullptr)
 	{
 		return;
@@ -636,16 +636,16 @@ void SSoldierSplitScreenLobby::OnLoginComplete(int32 LocalUserNum, bool bWasSucc
 	}
 }
 
-URSActionGameInstance * SSoldierSplitScreenLobby::GetGameInstance() const
+USoldierGameInstance * SSoldierSplitScreenLobby::GetGameInstance() const
 {
 	if ( !PlayerOwner.IsValid() )
 	{
 		return NULL;
 	}
 
-	check( PlayerOwner->GetGameInstance() == nullptr || CastChecked< URSActionGameInstance >( PlayerOwner->GetGameInstance() ) != nullptr );
+	check( PlayerOwner->GetGameInstance() == nullptr || CastChecked< USoldierGameInstance >( PlayerOwner->GetGameInstance() ) != nullptr );
 
-	return Cast< URSActionGameInstance >( PlayerOwner->GetGameInstance() );
+	return Cast< USoldierGameInstance >( PlayerOwner->GetGameInstance() );
 }
 
 FText SSoldierSplitScreenLobby::GetPlayFindText() const
@@ -656,7 +656,7 @@ FText SSoldierSplitScreenLobby::GetPlayFindText() const
 #if PLATFORM_SWITCH
 FText SSoldierSplitScreenLobby::GetPlayAsGuestText() const
 {
-	const URSActionGameInstance* GameInstance = GetGameInstance();
+	const USoldierGameInstance* GameInstance = GetGameInstance();
 	if (GameInstance == nullptr)
 	{
 		return FText();

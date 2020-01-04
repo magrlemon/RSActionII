@@ -1,6 +1,6 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "Weapons/SoldierWeapon.h"
 #include "Weapons/SoldierDamageType.h"
 #include "UI/SoldierHUD.h"

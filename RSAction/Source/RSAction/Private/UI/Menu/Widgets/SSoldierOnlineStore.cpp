@@ -1,11 +1,11 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "SSoldierOnlineStore.h"
-#include "SHeaderRow.h"
+#include "Widgets/Views/SHeaderRow.h"
 #include "SoldierStyle.h"
 #include "SoldierGameLoadingScreen.h"
-#include "RSActionGameInstance.h"
+#include "SoldierGameInstance.h"
 #include "Online/SoldierGameSession.h"
 #include "Interfaces/OnlineStoreInterfaceV2.h"
 #include "Interfaces/OnlinePurchaseInterface.h"

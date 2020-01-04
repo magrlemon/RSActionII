@@ -1,15 +1,15 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "SoldierStyle.h"
 #include "SSoldierConfirmationDialog.h"
 #include "SoldierMessageMenu.h"
-#include "RSActionGameViewportClient.h"
-#include "RSActionGameInstance.h"
+#include "SoldierGameViewportClient.h"
+#include "SoldierGameInstance.h"
 
 #define LOCTEXT_NAMESPACE "SoldierGame.HUD.Menu"
 
-void FSoldierMessageMenu::Construct(TWeakObjectPtr<URSActionGameInstance> InGameInstance, TWeakObjectPtr<ULocalPlayer> InPlayerOwner, const FText& Message, const FText& OKButtonText, const FText& CancelButtonText, const FName& InPendingNextState)
+void FSoldierMessageMenu::Construct(TWeakObjectPtr<USoldierGameInstance> InGameInstance, TWeakObjectPtr<ULocalPlayer> InPlayerOwner, const FText& Message, const FText& OKButtonText, const FText& CancelButtonText, const FName& InPendingNextState)
 {
 	GameInstance			= InGameInstance;
 	PlayerOwner				= InPlayerOwner;

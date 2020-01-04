@@ -1,8 +1,8 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "RSAction.h"
-#include "SoldierOnlineSessionClient.h"
-#include "RSActionGameInstance.h"
+#include "SoldierGame.h"
+#include "Online/SoldierOnlineSessionClient.h"
+#include "SoldierGameInstance.h"
 
 USoldierOnlineSessionClient::USoldierOnlineSessionClient()
 {
@@ -34,7 +34,7 @@ void USoldierOnlineSessionClient::OnSessionUserInviteAccepted(
 		return;
 	}
 
-	URSActionGameInstance* RSActionGameInstance = Cast<URSActionGameInstance>(GetGameInstance());
+	USoldierGameInstance* RSActionGameInstance = Cast<USoldierGameInstance>(GetGameInstance());
 
 	if (RSActionGameInstance)
 	{
@@ -47,13 +47,13 @@ void USoldierOnlineSessionClient::OnSessionUserInviteAccepted(
 		PendingInvite.bPrivilegesCheckedAndAllowed = false;
 
 		RSActionGameInstance->SetPendingInvite(PendingInvite);
-		RSActionGameInstance->GotoState(RSActionGameInstanceState::PendingInvite);
+		RSActionGameInstance->GotoState(SoldierGameInstanceState::PendingInvite);
 	}
 }
 
 void USoldierOnlineSessionClient::OnPlayTogetherEventReceived(int32 UserIndex, TArray<TSharedPtr<const FUniqueNetId>> UserIdList)
 {	
-	if (URSActionGameInstance* const RSActionGameInstance = Cast<URSActionGameInstance>(GetGameInstance()))
+	if (USoldierGameInstance* const RSActionGameInstance = Cast<USoldierGameInstance>(GetGameInstance()))
 	{
 		RSActionGameInstance->OnPlayTogetherEventReceived(UserIndex, UserIdList);
 	}

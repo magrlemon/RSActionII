@@ -4,7 +4,7 @@
 
 #include "SlateBasics.h"
 #include "SlateExtras.h"
-#include "RSAction.h"
+#include "SoldierGame.h"
 
 /** Singleton that contains commonly used UI actions */
 class SoldierUIHelpers

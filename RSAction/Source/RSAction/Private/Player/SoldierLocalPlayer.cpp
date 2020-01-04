@@ -1,9 +1,9 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "Player/SoldierLocalPlayer.h"
 #include "OnlineSubsystemUtilsClasses.h"
-#include "RSActionGameInstance.h"
+#include "SoldierGameInstance.h"
 #include "OnlineSubsystemUtils.h"
 
 USoldierLocalPlayer::USoldierLocalPlayer(const FObjectInitializer& ObjectInitializer)
@@ -94,7 +94,7 @@ FString USoldierLocalPlayer::GetNickname() const
 	if(!bReentry)
 	{
 		bReentry = true;
-		URSActionGameInstance* GameInstance = GetWorld() != NULL ? Cast<URSActionGameInstance>(GetWorld()->GetGameInstance()) : NULL;
+		USoldierGameInstance* GameInstance = GetWorld() != NULL ? Cast<USoldierGameInstance>(GetWorld()->GetGameInstance()) : NULL;
 		if(GameInstance)
 		{
 			// Check all the names that occur before ours that are the same

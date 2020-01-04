@@ -76,7 +76,7 @@
 *	
 */
 
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "SoldierReplicationGraph.h"
 
 #include "Net/UnrealNetwork.h"
@@ -93,7 +93,6 @@
 #include "GameFramework/PlayerState.h"
 #include "GameFramework/Pawn.h"
 #include "Engine/LevelScriptActor.h"
-#include "Player/SoldierCharacter.h"
 #include "Online/SoldierPlayerState.h"
 #include "Weapons/SoldierWeapon.h"
 #include "Pickups/SoldierPickup.h"

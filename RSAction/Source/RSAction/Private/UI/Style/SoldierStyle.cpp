@@ -1,8 +1,8 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "SoldierStyle.h"
-#include "SlateGameResources.h"
+#include "Slate/SlateGameResources.h"
 
 TSharedPtr< FSlateStyleSet > FSoldierStyle::SoldierStyleInstance = NULL;
 

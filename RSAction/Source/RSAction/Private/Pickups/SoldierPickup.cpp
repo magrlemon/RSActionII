@@ -1,6 +1,6 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "Pickups/SoldierPickup.h"
 #include "Particles/ParticleSystemComponent.h"
 

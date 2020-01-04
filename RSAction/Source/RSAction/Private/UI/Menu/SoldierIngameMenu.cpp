@@ -1,12 +1,12 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "SoldierIngameMenu.h"
 #include "SoldierStyle.h"
 #include "SoldierMenuSoundsWidgetStyle.h"
 #include "Online.h"
-#include "OnlineExternalUIInterface.h"
-#include "RSActionGameInstance.h"
+#include "..\..\Engine\Plugins\Online\OnlineSubsystem\Source\Public\Interfaces\OnlineExternalUIInterface.h"
+#include "SoldierGameInstance.h"
 #include "UI/SoldierHUD.h"
 #include "OnlineSubsystemUtils.h"
 
@@ -30,10 +30,10 @@ void FSoldierIngameMenu::Construct(ULocalPlayer* _PlayerOwner)
 	}
 	
 	//todo:  don't create ingame menus for remote players.
-	const URSActionGameInstance* GameInstance = nullptr;
+	const USoldierGameInstance* GameInstance = nullptr;
 	if (PlayerOwner)
 	{
-		GameInstance = Cast<URSActionGameInstance>(PlayerOwner->GetGameInstance());
+		GameInstance = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
 	}
 
 	if (!GameMenuWidget.IsValid())
@@ -257,19 +257,19 @@ void FSoldierIngameMenu::OnCancelExitToMain()
 
 void FSoldierIngameMenu::OnConfirmExitToMain()
 {
-	URSActionGameInstance* const GameInstance = Cast<URSActionGameInstance>(PlayerOwner->GetGameInstance());
+	USoldierGameInstance* const GameInstance = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
 	if (GameInstance)
 	{
 		GameInstance->LabelPlayerAsQuitter(PlayerOwner);
 
 		// tell game instance to go back to main menu state
-		GameInstance->GotoState(RSActionGameInstanceState::MainMenu);
+		GameInstance->GotoState(SoldierGameInstanceState::MainMenu);
 	}
 }
 
 void FSoldierIngameMenu::OnUIQuit()
 {
-	URSActionGameInstance* const GI = Cast<URSActionGameInstance>(PlayerOwner->GetGameInstance());
+	USoldierGameInstance* const GI = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
 	if (GI)
 	{
 		GI->LabelPlayerAsQuitter(PlayerOwner);

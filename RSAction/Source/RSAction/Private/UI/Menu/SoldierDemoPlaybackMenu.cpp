@@ -1,10 +1,10 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "SoldierDemoPlaybackMenu.h"
 #include "SoldierStyle.h"
 #include "SoldierMenuSoundsWidgetStyle.h"
-#include "RSActionGameInstance.h"
+#include "SoldierGameInstance.h"
 
 #define LOCTEXT_NAMESPACE "SoldierGame.HUD.Menu"
 
@@ -106,18 +106,18 @@ void FSoldierDemoPlaybackMenu::OnCancelExitToMain()
 
 void FSoldierDemoPlaybackMenu::OnConfirmExitToMain()
 {
-	URSActionGameInstance* const GameInstance = Cast<URSActionGameInstance>( PlayerOwner->GetGameInstance() );
+	USoldierGameInstance* const GameInstance = Cast<USoldierGameInstance>( PlayerOwner->GetGameInstance() );
 
 	if ( GameInstance )
 	{
 		// tell game instance to go back to main menu state
-		GameInstance->GotoState( RSActionGameInstanceState::MainMenu );
+		GameInstance->GotoState( SoldierGameInstanceState::MainMenu );
 	}
 }
 
 void FSoldierDemoPlaybackMenu::OnUIQuit()
 {
-	URSActionGameInstance* const GameInstance = Cast<URSActionGameInstance>( PlayerOwner->GetGameInstance() );
+	USoldierGameInstance* const GameInstance = Cast<USoldierGameInstance>( PlayerOwner->GetGameInstance() );
 
 	GameMenuWidget->LockControls( true );
 	GameMenuWidget->HideMenu();

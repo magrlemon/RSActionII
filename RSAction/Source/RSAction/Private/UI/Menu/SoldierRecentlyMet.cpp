@@ -1,12 +1,12 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "SoldierRecentlyMet.h"
 #include "SoldierTypes.h"
 #include "SoldierStyle.h"
 #include "SoldierOptionsWidgetStyle.h"
-#include "RSActionGameUserSettings.h"
-#include "SoldierPersistentUser.h"
+#include "SoldierGameUserSettings.h"
+#include "Player/SoldierPersistentUser.h"
 #include "Player/SoldierLocalPlayer.h"
 #include "OnlineSubsystemUtils.h"
 
@@ -32,7 +32,7 @@ void FSoldierRecentlyMet::Construct(ULocalPlayer* _PlayerOwner, int32 LocalUserN
 		OnlineSub = Online::GetSubsystem(PlayerOwner->GetWorld());
 	}
 
-	UserSettings = CastChecked<URSActionGameUserSettings>(GEngine->GetGameUserSettings());	
+	UserSettings = CastChecked<USoldierGameUserSettings>(GEngine->GetGameUserSettings());	
 }
 
 void FSoldierRecentlyMet::OnApplySettings()

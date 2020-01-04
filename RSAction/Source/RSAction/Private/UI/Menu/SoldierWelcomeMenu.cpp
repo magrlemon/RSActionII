@@ -1,11 +1,11 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "SoldierWelcomeMenu.h"
 #include "SoldierStyle.h"
 #include "SSoldierConfirmationDialog.h"
-#include "RSActionGameViewportClient.h"
-#include "RSActionGameInstance.h"
+#include "SoldierGameViewportClient.h"
+#include "SoldierGameInstance.h"
 #include "OnlineSubsystemUtils.h"
 
 #define LOCTEXT_NAMESPACE "SoldierGame.HUD.Menu"
@@ -171,7 +171,7 @@ class SSoldierWelcomeMenuWidget : public SCompoundWidget
 	}
 };
 
-void FSoldierWelcomeMenu::Construct( TWeakObjectPtr< URSActionGameInstance > InGameInstance )
+void FSoldierWelcomeMenu::Construct( TWeakObjectPtr< USoldierGameInstance > InGameInstance )
 {
 	bControlsLocked = false;
 	GameInstance = InGameInstance;
@@ -276,7 +276,7 @@ void FSoldierWelcomeMenu::SetControllerAndAdvanceToMainMenu(const int Controller
 		NewPlayerOwner->SetCachedUniqueNetId(NewPlayerOwner->GetUniqueNetIdFromCachedControllerId().GetUniqueNetId());
 
 		// tell gameinstance to transition to main menu
-		GameInstance->GotoState(RSActionGameInstanceState::MainMenu);
+		GameInstance->GotoState(SoldierGameInstanceState::MainMenu);
 	}	
 }
 

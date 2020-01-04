@@ -1,6 +1,6 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
-#include "BTDecorator_HasLoSTo.h"
-#include "RSAction.h"
+#include "SoldierGame.h"
+#include "Bots/BTDecorator_HasLoSTo.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Vector.h"

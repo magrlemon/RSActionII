@@ -1,21 +1,21 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "SoldierMainMenu.h"
 #include "SoldierGameLoadingScreen.h"
 #include "SoldierStyle.h"
 #include "SoldierMenuSoundsWidgetStyle.h"
-#include "RSActionGameInstance.h"
+#include "SoldierGameInstance.h"
 #include "SlateBasics.h"
 #include "SlateExtras.h"
-#include "GenericPlatformChunkInstall.h"
+#include "GenericPlatform/GenericPlatformChunkInstall.h"
 #include "Online/SoldierOnlineGameSettings.h"
 #include "OnlineSubsystemSessionSettings.h"
 #include "SSoldierConfirmationDialog.h"
 #include "SoldierMenuItemWidgetStyle.h"
-#include "RSActionGameUserSettings.h"
-#include "RSActionGameViewportClient.h"
-#include "SoldierPersistentUser.h"
+#include "SoldierGameUserSettings.h"
+#include "SoldierGameViewportClient.h"
+#include "Player/SoldierPersistentUser.h"
 #include "Player/SoldierLocalPlayer.h"
 #include "OnlineSubsystemUtils.h"
 
@@ -51,7 +51,7 @@ FSoldierMainMenu::~FSoldierMainMenu()
 	CleanupOnlinePrivilegeTask();
 }
 
-void FSoldierMainMenu::Construct(TWeakObjectPtr<URSActionGameInstance> _GameInstance, TWeakObjectPtr<ULocalPlayer> _PlayerOwner)
+void FSoldierMainMenu::Construct(TWeakObjectPtr<USoldierGameInstance> _GameInstance, TWeakObjectPtr<ULocalPlayer> _PlayerOwner)
 {
 	bShowingDownloadPct = false;
 	bAnimateQuickmatchSearchingUI = false;
@@ -73,7 +73,7 @@ void FSoldierMainMenu::Construct(TWeakObjectPtr<URSActionGameInstance> _GameInst
 #if SOLDIER_CONSOLE_UI
 	bIsLanMatch = FParse::Param(FCommandLine::Get(), TEXT("forcelan"));
 #else
-	URSActionGameUserSettings* const UserSettings = CastChecked<URSActionGameUserSettings>(GEngine->GetGameUserSettings());
+	USoldierGameUserSettings* const UserSettings = CastChecked<USoldierGameUserSettings>(GEngine->GetGameUserSettings());
 	bIsLanMatch = UserSettings->IsLanMatch();
 	bIsDedicatedServer = UserSettings->IsDedicatedServer();
 #endif
@@ -462,7 +462,7 @@ void FSoldierMainMenu::OnMenuHidden()
 	// Menu was hidden from the top-level main menu, on consoles show the welcome screen again.
 	if ( ensure(GameInstance.IsValid()))
 	{
-		GameInstance->GotoState(RSActionGameInstanceState::WelcomeScreen);
+		GameInstance->GotoState(SoldierGameInstanceState::WelcomeScreen);
 	}
 #else
 	RemoveMenuFromGameViewport();
@@ -1038,7 +1038,7 @@ void FSoldierMainMenu::LanMatchChanged(TSharedPtr<FSoldierMenuItem> MenuItem, in
 	check(JoinLANItem.IsValid());
 	JoinLANItem->SelectedMultiChoice = MultiOptionIndex;
 	bIsLanMatch = MultiOptionIndex > 0;
-	URSActionGameUserSettings* UserSettings = CastChecked<URSActionGameUserSettings>(GEngine->GetGameUserSettings());
+	USoldierGameUserSettings* UserSettings = CastChecked<USoldierGameUserSettings>(GEngine->GetGameUserSettings());
 	UserSettings->SetLanMatch(bIsLanMatch);
 
 	EOnlineMode NewOnlineMode = bIsLanMatch ? EOnlineMode::LAN : EOnlineMode::Online;
@@ -1053,7 +1053,7 @@ void FSoldierMainMenu::DedicatedServerChanged(TSharedPtr<FSoldierMenuItem> MenuI
 	check(DedicatedItem.IsValid());
 	DedicatedItem->SelectedMultiChoice = MultiOptionIndex;
 	bIsDedicatedServer = MultiOptionIndex > 0;
-	URSActionGameUserSettings* UserSettings = CastChecked<URSActionGameUserSettings>(GEngine->GetGameUserSettings());
+	USoldierGameUserSettings* UserSettings = CastChecked<USoldierGameUserSettings>(GEngine->GetGameUserSettings());
 	UserSettings->SetDedicatedServer(bIsDedicatedServer);
 }
 

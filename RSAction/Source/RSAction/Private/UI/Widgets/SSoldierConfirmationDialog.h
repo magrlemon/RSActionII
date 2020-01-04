@@ -3,7 +3,7 @@
 
 #include "SlateBasics.h"
 #include "SlateExtras.h"
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "SoldierTypes.h"
 
 class SSoldierConfirmationDialog : public SCompoundWidget

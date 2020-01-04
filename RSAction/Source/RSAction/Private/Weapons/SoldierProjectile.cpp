@@ -1,6 +1,6 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "Weapons/SoldierProjectile.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Effects/SoldierExplosionEffect.h"

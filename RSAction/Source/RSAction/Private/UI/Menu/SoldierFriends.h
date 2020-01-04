@@ -5,7 +5,7 @@
 #include "Widgets/SoldierMenuItem.h"
 #include "Widgets/SSoldierMenuWidget.h"
 
-class URSActionGameUserSettings;
+class USoldierGameUserSettings;
 class USoldierPersistentUser;
 
 /** delegate called when changes are applied */
@@ -91,7 +91,7 @@ protected:
 	void OnFriendsUpdated(int32 UpdatedPlayerIndex, bool bWasSuccessful, const FString& FriendListName, const FString& ErrorString);
 
 	/** User settings pointer */
-	URSActionGameUserSettings* UserSettings;
+	USoldierGameUserSettings* UserSettings;
 
 	/** Get the persistence user associated with PCOwner*/
 	USoldierPersistentUser* GetPersistentUser() const;

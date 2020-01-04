@@ -1,7 +1,7 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
 
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "Player/SoldierSpectatorPawn.h"
 
 ASoldierSpectatorPawn::ASoldierSpectatorPawn(const FObjectInitializer& ObjectInitializer)

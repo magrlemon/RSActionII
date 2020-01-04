@@ -1,10 +1,10 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "SSoldierDemoHUD.h"
 #include "Engine/DemoNetDriver.h"
 #include "SoldierStyle.h"
-#include "CoreStyle.h"
+#include "Styling/CoreStyle.h"
 
 /** Widget to represent the main replay timeline bar */
 class SSoldierReplayTimeline : public SCompoundWidget

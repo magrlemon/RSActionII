@@ -19,7 +19,7 @@ public:
 	virtual ~FSoldierMainMenu();
 
 	/** build menu */
-	void Construct(TWeakObjectPtr<URSActionGameInstance> _GameInstance, TWeakObjectPtr<ULocalPlayer> _PlayerOwner);
+	void Construct(TWeakObjectPtr<USoldierGameInstance> _GameInstance, TWeakObjectPtr<ULocalPlayer> _PlayerOwner);
 
 	/** Add the menu to the gameviewport so it becomes visible */
 	void AddMenuToGameViewport();
@@ -62,7 +62,7 @@ protected:
 	};
 	
 	/** Owning game instance */
-	TWeakObjectPtr<URSActionGameInstance> GameInstance;
+	TWeakObjectPtr<USoldierGameInstance> GameInstance;
 
 	/** Owning player */
 	TWeakObjectPtr<ULocalPlayer> PlayerOwner;

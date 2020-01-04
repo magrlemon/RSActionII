@@ -1,6 +1,6 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "RSAction.h"
+#include "SoldierGame.h"
 #include "Engine/Console.h"
 #include "SSoldierMenuWidget.h"
 #include "SoldierMenuItem.h"
@@ -8,9 +8,9 @@
 #include "SoldierStyle.h"
 #include "SoldierMenuWidgetStyle.h"
 #include "SoldierUIHelpers.h"
-#include "RSActionGameInstance.h"
+#include "SoldierGameInstance.h"
 #include "Player/SoldierLocalPlayer.h"
-#include "RSActionGameUserSettings.h"
+#include "SoldierGameUserSettings.h"
 #include "Slate/SceneViewport.h"
 
 #define LOCTEXT_NAMESPACE "SSoldierMenuWidget"
@@ -249,7 +249,7 @@ bool SSoldierMenuWidget::ProfileUISwap(const int ControllerIndex) const
 		const FOnLoginUIClosedDelegate Delegate = FOnLoginUIClosedDelegate::CreateSP( const_cast<SSoldierMenuWidget*>(this), &SSoldierMenuWidget::HandleProfileUISwapClosed );
 		if ( SoldierUIHelpers::Get().ProfileSwapUI(GetWorld(), ControllerIndex, false, &Delegate) )
 		{
-			URSActionGameInstance* GameInstance = PlayerOwner.IsValid() ? Cast< URSActionGameInstance >( PlayerOwner->GetGameInstance() ) : nullptr;
+			USoldierGameInstance* GameInstance = PlayerOwner.IsValid() ? Cast< USoldierGameInstance >( PlayerOwner->GetGameInstance() ) : nullptr;
 
 			if ( GameInstance != nullptr )
 			{
@@ -263,7 +263,7 @@ bool SSoldierMenuWidget::ProfileUISwap(const int ControllerIndex) const
 
 void SSoldierMenuWidget::HandleProfileUISwapClosed(TSharedPtr<const FUniqueNetId> UniqueId, const int ControllerIndex, const FOnlineError& Error)
 {
-	URSActionGameInstance * GameInstance = PlayerOwner.IsValid() ? Cast< URSActionGameInstance >( PlayerOwner->GetGameInstance() ) : nullptr;
+	USoldierGameInstance * GameInstance = PlayerOwner.IsValid() ? Cast< USoldierGameInstance >( PlayerOwner->GetGameInstance() ) : nullptr;
 
 	if ( GameInstance != nullptr )
 	{
@@ -307,7 +307,7 @@ int32 SSoldierMenuWidget::GetMenuLevel()
 void SSoldierMenuWidget::BuildAndShowMenu()
 {
 	//grab the user settings
-	URSActionGameUserSettings* UserSettings = CastChecked<URSActionGameUserSettings>(GEngine->GetGameUserSettings());
+	USoldierGameUserSettings* UserSettings = CastChecked<USoldierGameUserSettings>(GEngine->GetGameUserSettings());
 	ScreenRes = UserSettings->GetScreenResolution();
 
 	//Build left menu panel
