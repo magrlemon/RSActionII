@@ -8,7 +8,7 @@ public class RSActionEditorTarget : TargetRules
 	public RSActionEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
-		DefaultBuildSettings = BuildSettingsVersion.V2;
+
 		ExtraModuleNames.Add("RSAction");
 	}
 }

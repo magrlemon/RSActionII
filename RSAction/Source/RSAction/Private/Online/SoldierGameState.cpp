@@ -1,8 +1,7 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
-
 #include "Online/SoldierPlayerState.h"
-#include "SoldierGame.h"
-#include "SoldierGameInstance.h"
+#include "RSAction.h"
+#include "ShooterGameInstance.h"
 
 ASoldierGameState::ASoldierGameState(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -66,7 +65,7 @@ void ASoldierGameState::RequestFinishAndExitToMainMenu()
 	else
 	{
 		// we are client, handle our own business
-		USoldierGameInstance* GameInstance = Cast<USoldierGameInstance>(GetGameInstance());
+		UShooterGameInstance* GameInstance = Cast<UShooterGameInstance>(GetGameInstance());
 		if (GameInstance)
 		{
 			GameInstance->RemoveSplitScreenPlayers();

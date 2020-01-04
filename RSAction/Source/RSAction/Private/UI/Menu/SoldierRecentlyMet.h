@@ -5,7 +5,7 @@
 #include "Widgets/SoldierMenuItem.h"
 #include "Widgets/SSoldierMenuWidget.h"
 
-class USoldierGameUserSettings;
+class UShooterGameUserSettings;
 class USoldierPersistentUser;
 
 /** delegate called when changes are applied */
@@ -84,7 +84,7 @@ public:
 
 protected:
 	/** User settings pointer */
-	USoldierGameUserSettings* UserSettings;
+	UShooterGameUserSettings* UserSettings;
 
 	/** Get the persistence user associated with PCOwner*/
 	USoldierPersistentUser* GetPersistentUser() const;

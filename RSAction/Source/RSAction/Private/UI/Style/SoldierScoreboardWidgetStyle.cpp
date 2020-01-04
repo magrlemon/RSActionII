@@ -1,6 +1,6 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "SoldierGame.h"
+#include "RSAction.h"
 #include "SoldierScoreboardWidgetStyle.h"
 
 FSoldierScoreboardStyle::FSoldierScoreboardStyle()

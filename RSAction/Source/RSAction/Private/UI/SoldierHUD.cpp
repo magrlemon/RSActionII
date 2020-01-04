@@ -1,6 +1,6 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "SoldierGame.h"
+#include "RSAction.h"
 #include "UI/SoldierHUD.h"
 #include "SSoldierScoreboardWidget.h"
 #include "SChatWidget.h"
@@ -12,7 +12,7 @@
 #include "Misc/NetworkVersion.h"
 #include "OnlineSubsystemUtils.h"
 
-#define LOCTEXT_NAMESPACE "SoldierGame.HUD.Menu"
+#define LOCTEXT_NAMESPACE "RSAction.HUD.Menu"
 
 const float ASoldierHUD::MinHudScale = 0.5f;
 
@@ -1102,7 +1102,7 @@ bool ASoldierHUD::TryCreateChatWidget()
 	ASoldierPlayerController* SoldierPC = Cast<ASoldierPlayerController>(PlayerOwner);
 	if(SoldierPC == NULL )
 	{
-		UE_LOG(LogSoldier, Warning, TEXT("Unable to create chat widget - Invalid player controller") );
+		UE_LOG(LogShooter, Warning, TEXT("Unable to create chat widget - Invalid player controller") );
 	}
 	else
 	{

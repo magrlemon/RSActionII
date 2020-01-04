@@ -1,25 +1,25 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "SoldierGame.h"
+#include "RSAction.h"
 #include "SoldierMainMenu.h"
-#include "SoldierGameLoadingScreen.h"
+#include "ShooterGameLoadingScreen.h"
 #include "SoldierStyle.h"
 #include "SoldierMenuSoundsWidgetStyle.h"
-#include "SoldierGameInstance.h"
+#include "ShooterGameInstance.h"
 #include "SlateBasics.h"
 #include "SlateExtras.h"
-#include "GenericPlatform/GenericPlatformChunkInstall.h"
+#include "GenericPlatformChunkInstall.h"
 #include "Online/SoldierOnlineGameSettings.h"
 #include "OnlineSubsystemSessionSettings.h"
 #include "SSoldierConfirmationDialog.h"
 #include "SoldierMenuItemWidgetStyle.h"
-#include "SoldierGameUserSettings.h"
-#include "SoldierGameViewportClient.h"
-#include "Player/SoldierPersistentUser.h"
+#include "ShooterGameUserSettings.h"
+#include "ShooterGameViewportClient.h"
+#include "SoldierPersistentUser.h"
 #include "Player/SoldierLocalPlayer.h"
 #include "OnlineSubsystemUtils.h"
 
-#define LOCTEXT_NAMESPACE "SoldierGame.HUD.Menu"
+#define LOCTEXT_NAMESPACE "RSAction.HUD.Menu"
 
 #define MAX_BOT_COUNT 8
 
@@ -51,7 +51,7 @@ FSoldierMainMenu::~FSoldierMainMenu()
 	CleanupOnlinePrivilegeTask();
 }
 
-void FSoldierMainMenu::Construct(TWeakObjectPtr<USoldierGameInstance> _GameInstance, TWeakObjectPtr<ULocalPlayer> _PlayerOwner)
+void FSoldierMainMenu::Construct(TWeakObjectPtr<UShooterGameInstance> _GameInstance, TWeakObjectPtr<ULocalPlayer> _PlayerOwner)
 {
 	bShowingDownloadPct = false;
 	bAnimateQuickmatchSearchingUI = false;
@@ -70,10 +70,10 @@ void FSoldierMainMenu::Construct(TWeakObjectPtr<USoldierGameInstance> _GameInsta
 	OnMatchmakingCompleteDelegate = FOnMatchmakingCompleteDelegate::CreateSP(this, &FSoldierMainMenu::OnMatchmakingComplete);
 	
 	// read user settings
-#if SOLDIER_CONSOLE_UI
+#if SHOOTER_CONSOLE_UI
 	bIsLanMatch = FParse::Param(FCommandLine::Get(), TEXT("forcelan"));
 #else
-	USoldierGameUserSettings* const UserSettings = CastChecked<USoldierGameUserSettings>(GEngine->GetGameUserSettings());
+	UShooterGameUserSettings* const UserSettings = CastChecked<UShooterGameUserSettings>(GEngine->GetGameUserSettings());
 	bIsLanMatch = UserSettings->IsLanMatch();
 	bIsDedicatedServer = UserSettings->IsDedicatedServer();
 #endif
@@ -220,7 +220,7 @@ void FSoldierMainMenu::Construct(TWeakObjectPtr<USoldierGameInstance> _GameInsta
 
 			HostOfflineMapOption = MenuHelper::AddMenuOption(MenuItem, LOCTEXT("SELECTED_LEVEL", "Map"), MapList);
 		}
-#elif SOLDIER_CONSOLE_UI
+#elif SHOOTER_CONSOLE_UI
 		TSharedPtr<FSoldierMenuItem> MenuItem;
 
 		// HOST ONLINE menu option
@@ -331,7 +331,7 @@ void FSoldierMainMenu::Construct(TWeakObjectPtr<USoldierGameInstance> _GameInsta
 		MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("Store", "ONLINE STORE"), this, &FSoldierMainMenu::OnShowOnlineStore);
 		MenuHelper::AddCustomMenuItem(OnlineStoreItem, SAssignNew(OnlineStoreWidget, SSoldierOnlineStore).OwnerWidget(MenuWidget).PlayerOwner(GetPlayerOwner()));
 
-#if !SOLDIER_CONSOLE_UI
+#if !SHOOTER_CONSOLE_UI
 
 		// Demos
 		{
@@ -350,7 +350,7 @@ void FSoldierMainMenu::Construct(TWeakObjectPtr<USoldierGameInstance> _GameInsta
 		}
 
 		// QUIT option (for PC)
-#if !SOLDIER_CONSOLE_UI
+#if !SHOOTER_CONSOLE_UI
 		MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("Quit", "QUIT"), this, &FSoldierMainMenu::OnUIQuit);
 #endif
 
@@ -458,11 +458,11 @@ TStatId FSoldierMainMenu::GetStatId() const
 
 void FSoldierMainMenu::OnMenuHidden()
 {	
-#if SOLDIER_CONSOLE_UI
+#if SHOOTER_CONSOLE_UI
 	// Menu was hidden from the top-level main menu, on consoles show the welcome screen again.
 	if ( ensure(GameInstance.IsValid()))
 	{
-		GameInstance->GotoState(SoldierGameInstanceState::WelcomeScreen);
+		GameInstance->GotoState(ShooterGameInstanceState::WelcomeScreen);
 	}
 #else
 	RemoveMenuFromGameViewport();
@@ -495,7 +495,7 @@ void FSoldierMainMenu::OnLoginCompleteQuickmatch(int32 LocalUserNum, bool bWasSu
 void FSoldierMainMenu::OnQuickMatchSelected()
 {
 	bQuickmatchSearchRequestCanceled = false;
-#if SOLDIER_CONSOLE_UI
+#if SHOOTER_CONSOLE_UI
 	if ( !ValidatePlayerForOnlinePlay(GetPlayerOwner()) )
 	{
 		return;
@@ -542,7 +542,7 @@ void FSoldierMainMenu::OnUserCanPlayOnlineQuickMatch(const FUniqueNetId& UserId,
 
 FReply FSoldierMainMenu::OnConfirmGeneric()
 {
-	USoldierGameViewportClient* SoldierViewport = Cast<USoldierGameViewportClient>(GameInstance->GetGameViewportClient());
+	UShooterGameViewportClient* SoldierViewport = Cast<UShooterGameViewportClient>(GameInstance->GetGameViewportClient());
 	if (SoldierViewport)
 	{
 		SoldierViewport->HideDialog();
@@ -649,7 +649,7 @@ void FSoldierMainMenu::OnSplitScreenSelected()
 
 void FSoldierMainMenu::OnHostOnlineSelected()
 {
-#if SOLDIER_CONSOLE_UI
+#if SHOOTER_CONSOLE_UI
 	if (!ValidatePlayerIsSignedIn(GetPlayerOwner()))
 	{
 		return;
@@ -690,7 +690,7 @@ void FSoldierMainMenu::OnLoginCompleteHostOnline(int32 LocalUserNum, bool bWasSu
 
 void FSoldierMainMenu::OnSplitScreenSelectedHostOnline()
 {
-#if SOLDIER_CONSOLE_UI
+#if SHOOTER_CONSOLE_UI
 	if (!ValidatePlayerForOnlinePlay(GetPlayerOwner()))
 	{
 		return;
@@ -752,7 +752,7 @@ FReply FSoldierMainMenu::OnSplitScreenPlay()
 	{
 		case EMatchType::Custom:
 		{
-#if SOLDIER_CONSOLE_UI
+#if SHOOTER_CONSOLE_UI
 			if ( SplitScreenLobbyWidget->GetIsJoining() )
 			{
 #if 1
@@ -1038,7 +1038,7 @@ void FSoldierMainMenu::LanMatchChanged(TSharedPtr<FSoldierMenuItem> MenuItem, in
 	check(JoinLANItem.IsValid());
 	JoinLANItem->SelectedMultiChoice = MultiOptionIndex;
 	bIsLanMatch = MultiOptionIndex > 0;
-	USoldierGameUserSettings* UserSettings = CastChecked<USoldierGameUserSettings>(GEngine->GetGameUserSettings());
+	UShooterGameUserSettings* UserSettings = CastChecked<UShooterGameUserSettings>(GEngine->GetGameUserSettings());
 	UserSettings->SetLanMatch(bIsLanMatch);
 
 	EOnlineMode NewOnlineMode = bIsLanMatch ? EOnlineMode::LAN : EOnlineMode::Online;
@@ -1053,7 +1053,7 @@ void FSoldierMainMenu::DedicatedServerChanged(TSharedPtr<FSoldierMenuItem> MenuI
 	check(DedicatedItem.IsValid());
 	DedicatedItem->SelectedMultiChoice = MultiOptionIndex;
 	bIsDedicatedServer = MultiOptionIndex > 0;
-	USoldierGameUserSettings* UserSettings = CastChecked<USoldierGameUserSettings>(GEngine->GetGameUserSettings());
+	UShooterGameUserSettings* UserSettings = CastChecked<UShooterGameUserSettings>(GEngine->GetGameUserSettings());
 	UserSettings->SetDedicatedServer(bIsDedicatedServer);
 }
 
@@ -1086,7 +1086,7 @@ void FSoldierMainMenu::OnUIHostFreeForAll()
 		return;
 	}
 
-#if !SOLDIER_CONSOLE_UI
+#if !SHOOTER_CONSOLE_UI
 	if (GameInstance.IsValid())
 	{
 		GameInstance->SetOnlineMode(bIsLanMatch ? EOnlineMode::LAN : EOnlineMode::Online);
@@ -1119,7 +1119,7 @@ void FSoldierMainMenu::OnUIHostTeamDeathMatch()
 		return;
 	}
 
-#if !SOLDIER_CONSOLE_UI
+#if !SHOOTER_CONSOLE_UI
 	if (GameInstance.IsValid())
 	{
 		GameInstance->SetOnlineMode(bIsLanMatch ? EOnlineMode::LAN : EOnlineMode::Online);
@@ -1161,7 +1161,7 @@ FReply FSoldierMainMenu::OnConfirm()
 {
 	if (GEngine && GEngine->GameViewport)
 	{
-		USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>(GEngine->GameViewport);
+		UShooterGameViewportClient * SoldierViewport = Cast<UShooterGameViewportClient>(GEngine->GameViewport);
 
 		if (SoldierViewport)
 		{
@@ -1226,7 +1226,7 @@ void FSoldierMainMenu::OnLoginCompleteJoin(int32 LocalUserNum, bool bWasSuccessf
 
 void FSoldierMainMenu::OnJoinSelected()
 {
-#if SOLDIER_CONSOLE_UI
+#if SHOOTER_CONSOLE_UI
 	if (!ValidatePlayerIsSignedIn(GetPlayerOwner()))
 	{
 		return;
@@ -1238,7 +1238,7 @@ void FSoldierMainMenu::OnJoinSelected()
 
 void FSoldierMainMenu::OnJoinServer()
 {
-#if SOLDIER_CONSOLE_UI
+#if SHOOTER_CONSOLE_UI
 	if ( !ValidatePlayerForOnlinePlay(GetPlayerOwner()) )
 	{
 		return;
@@ -1276,7 +1276,7 @@ void FSoldierMainMenu::OnUserCanPlayOnlineJoin(const FUniqueNetId& UserId, EUser
 			}
 		}
 
-#if SOLDIER_CONSOLE_UI
+#if SHOOTER_CONSOLE_UI
 		UGameViewportClient* const GVC = GEngine->GameViewport;
 #if PLATFORM_PS4 || MAX_LOCAL_PLAYERS == 1
 		// Show server menu (skip splitscreen)
@@ -1373,7 +1373,7 @@ void FSoldierMainMenu::LockAndHideMenu()
 
 void FSoldierMainMenu::DisplayLoadingScreen()
 {
-	ISoldierGameLoadingScreenModule* LoadingScreenModule = FModuleManager::LoadModulePtr<ISoldierGameLoadingScreenModule>("SoldierGameLoadingScreen");
+	IShooterGameLoadingScreenModule* LoadingScreenModule = FModuleManager::LoadModulePtr<IShooterGameLoadingScreenModule>("ShooterGameLoadingScreen");
 	if( LoadingScreenModule != NULL )
 	{
 		LoadingScreenModule->StartInGameLoadingScreen();

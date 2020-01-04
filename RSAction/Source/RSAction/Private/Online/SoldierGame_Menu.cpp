@@ -1,11 +1,11 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
-#include "Online/SoldierGame_Menu.h"
-#include "SoldierGame.h"
+#include "SoldierGame_Menu.h"
+#include "RSAction.h"
 
 #include "SoldierMainMenu.h"
 #include "SoldierWelcomeMenu.h"
 #include "SoldierMessageMenu.h"
-#include "Player/SoldierPlayerController_Menu.h"
+#include "SoldierPlayerController_Menu.h"
 #include "Online/SoldierGameSession.h"
 
 ASoldierGame_Menu::ASoldierGame_Menu(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)

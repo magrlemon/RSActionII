@@ -1,6 +1,6 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "SoldierGame.h"
+#include "RSAction.h"
 #include "Player/SoldierPlayerController.h"
 #include "Player/SoldierPlayerCameraManager.h"
 #include "Player/SoldierCheatManager.h"
@@ -11,14 +11,14 @@
 #include "UI/Style/SoldierStyle.h"
 #include "UI/SoldierHUD.h"
 #include "Online.h"
-#include "..\..\Engine\Plugins\Online\OnlineSubsystem\Source\Public\Interfaces\OnlineAchievementsInterface.h"
-#include "..\..\Engine\Plugins\Online\OnlineSubsystem\Source\Public\Interfaces\OnlineEventsInterface.h"
-#include "..\..\Engine\Plugins\Online\OnlineSubsystem\Source\Public\Interfaces\OnlineStatsInterface.h"
-#include "..\..\Engine\Plugins\Online\OnlineSubsystem\Source\Public\Interfaces\OnlineIdentityInterface.h"
-#include "..\..\Engine\Plugins\Online\OnlineSubsystem\Source\Public\Interfaces\OnlineSessionInterface.h"
-#include "SoldierGameInstance.h"
-#include "Leaderboards.h"
-#include "SoldierGameViewportClient.h"
+#include "OnlineAchievementsInterface.h"
+#include "OnlineEventsInterface.h"
+#include "OnlineStatsInterface.h"
+#include "OnlineIdentityInterface.h"
+#include "OnlineSessionInterface.h"
+#include "ShooterGameInstance.h"
+#include "SoldierLeaderboards.h"
+#include "ShooterGameViewportClient.h"
 #include "Sound/SoundNodeLocalPlayer.h"
 #include "AudioThread.h"
 #include "OnlineSubsystemUtils.h"
@@ -688,7 +688,7 @@ void ASoldierPlayerController::ClientGameStarted_Implementation()
 			Events->TriggerEvent(*UniqueId, TEXT("PlayerSessionStart"), Params);
 
 			// Online matches require the MultiplayerRoundStart event as well
-			USoldierGameInstance* SGI = Cast<USoldierGameInstance>(World->GetGameInstance());
+			UShooterGameInstance* SGI = Cast<UShooterGameInstance>(World->GetGameInstance());
 
 			if (SGI && (SGI->GetOnlineMode() == EOnlineMode::Online))
 			{
@@ -766,7 +766,7 @@ void ASoldierPlayerController::HandleReturnToMainMenu()
 void ASoldierPlayerController::ClientReturnToMainMenu_Implementation(const FString& InReturnReason)
 {		
 	const UWorld* World = GetWorld();
-	USoldierGameInstance* SGI = World != NULL ? Cast<USoldierGameInstance>(World->GetGameInstance()) : NULL;
+	UShooterGameInstance* SGI = World != NULL ? Cast<UShooterGameInstance>(World->GetGameInstance()) : NULL;
 
 	if ( !ensure( SGI != NULL ) )
 	{
@@ -778,11 +778,11 @@ void ASoldierPlayerController::ClientReturnToMainMenu_Implementation(const FStri
 		const FText ReturnReason	= NSLOCTEXT( "NetworkErrors", "HostQuit", "The host has quit the match." );
 		const FText OKButton		= NSLOCTEXT( "DialogButtons", "OKAY", "OK" );
 
-		SGI->ShowMessageThenGotoState( ReturnReason, OKButton, FText::GetEmpty(), SoldierGameInstanceState::MainMenu );
+		SGI->ShowMessageThenGotoState( ReturnReason, OKButton, FText::GetEmpty(), ShooterGameInstanceState::MainMenu );
 	}
 	else
 	{
-		SGI->GotoState(SoldierGameInstanceState::MainMenu);
+		SGI->GotoState(ShooterGameInstanceState::MainMenu);
 	}
 
 	// Clear the flag so we don't do normal end of round stuff next
@@ -793,7 +793,7 @@ void ASoldierPlayerController::ClientReturnToMainMenu_Implementation(const FStri
 void ASoldierPlayerController::CleanupSessionOnReturnToMenu()
 {
 	const UWorld* World = GetWorld();
-	USoldierGameInstance * SGI = World != NULL ? Cast<USoldierGameInstance>( World->GetGameInstance() ) : NULL;
+	UShooterGameInstance * SGI = World != NULL ? Cast<UShooterGameInstance>( World->GetGameInstance() ) : NULL;
 
 	if ( ensure( SGI != NULL ) )
 	{
@@ -857,7 +857,7 @@ void ASoldierPlayerController::ClientSendRoundEndEvent_Implementation(bool bIsWi
 			Events->TriggerEvent(*UniqueId, TEXT("PlayerSessionEnd"), Params);
 
 			// Online matches require the MultiplayerRoundEnd event as well
-			USoldierGameInstance* SGI = Cast<USoldierGameInstance>(World->GetGameInstance());
+			UShooterGameInstance* SGI = Cast<UShooterGameInstance>(World->GetGameInstance());
 			if (SGI && (SGI->GetOnlineMode() == EOnlineMode::Online))
 			{
 				FOnlineEventParms MultiplayerParams;
@@ -1380,7 +1380,7 @@ void ASoldierPlayerController::PreClientTravel(const FString& PendingURL, ETrave
 
 	if (const UWorld* World = GetWorld())
 	{
-		USoldierGameViewportClient* SoldierViewport = Cast<USoldierGameViewportClient>( World->GetGameViewport() );
+		UShooterGameViewportClient* SoldierViewport = Cast<UShooterGameViewportClient>( World->GetGameViewport() );
 
 		if ( SoldierViewport != NULL )
 		{

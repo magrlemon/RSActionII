@@ -1,7 +1,7 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
-#include "Online/SoldierGame_FreeForAll.h"
-#include "SoldierGame.h"
-#include "Online/SoldierPlayerState.h"
+#include "SoldierGame_FreeForAll.h"
+#include "RSAction.h"
+#include "SoldierPlayerState.h"
 
 ASoldierGame_FreeForAll::ASoldierGame_FreeForAll(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {

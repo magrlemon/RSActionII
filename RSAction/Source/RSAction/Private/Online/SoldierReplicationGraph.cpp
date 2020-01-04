@@ -76,7 +76,7 @@
 *	
 */
 
-#include "SoldierGame.h"
+#include "RSAction.h"
 #include "SoldierReplicationGraph.h"
 
 #include "Net/UnrealNetwork.h"
@@ -93,11 +93,12 @@
 #include "GameFramework/PlayerState.h"
 #include "GameFramework/Pawn.h"
 #include "Engine/LevelScriptActor.h"
+#include "Player/SoldierCharacter.h"
 #include "Online/SoldierPlayerState.h"
 #include "Weapons/SoldierWeapon.h"
 #include "Pickups/SoldierPickup.h"
 
-DEFINE_LOG_CATEGORY( LogSoldierReplicationGraph );
+DEFINE_LOG_CATEGORY( LogShooterReplicationGraph );
 
 float CVar_SoldierRepGraph_DestructionInfoMaxDist = 30000.f;
 static FAutoConsoleVariableRef CVarSoldierRepGraphDestructMaxDist(TEXT("SoldierRepGraph.DestructInfo.MaxDist"), CVar_SoldierRepGraph_DestructionInfoMaxDist, TEXT("Max distance (not squared) to rep destruct infos at"), ECVF_Default );
@@ -136,7 +137,7 @@ void InitClassReplicationInfo(FClassReplicationInfo& Info, UClass* Class, bool b
 	if (bSpatialize)
 	{
 		Info.SetCullDistanceSquared(CDO->NetCullDistanceSquared);
-		UE_LOG(LogSoldierReplicationGraph, Log, TEXT("Setting cull distance for %s to %f (%f)"), *Class->GetName(), Info.GetCullDistanceSquared(), Info.GetCullDistance());
+		UE_LOG(LogShooterReplicationGraph, Log, TEXT("Setting cull distance for %s to %f (%f)"), *Class->GetName(), Info.GetCullDistanceSquared(), Info.GetCullDistance());
 	}
 
 	Info.ReplicationPeriodFrame = FMath::Max<uint32>( (uint32)FMath::RoundToFloat(ServerMaxTickRate / CDO->NetUpdateFrequency), 1);
@@ -147,7 +148,7 @@ void InitClassReplicationInfo(FClassReplicationInfo& Info, UClass* Class, bool b
 		NativeClass = NativeClass->GetSuperClass();
 	}
 
-	UE_LOG(LogSoldierReplicationGraph, Log, TEXT("Setting replication period for %s (%s) to %d frames (%.2f)"), *Class->GetName(), *NativeClass->GetName(), Info.ReplicationPeriodFrame, CDO->NetUpdateFrequency);
+	UE_LOG(LogShooterReplicationGraph, Log, TEXT("Setting replication period for %s (%s) to %d frames (%.2f)"), *Class->GetName(), *NativeClass->GetName(), Info.ReplicationPeriodFrame, CDO->NetUpdateFrequency);
 }
 
 void USoldierReplicationGraph::ResetGameWorldState()
@@ -254,7 +255,7 @@ void USoldierReplicationGraph::InitGlobalActorClassSettings()
 
 			if (ShouldSpatialize(ActorCDO) == false && ShouldSpatialize(SuperCDO) == true)
 			{
-				UE_LOG(LogSoldierReplicationGraph, Log, TEXT("Adding %s to NonSpatializedChildClasses. (Parent: %s)"), *GetLegacyDebugStr(ActorCDO), *GetLegacyDebugStr(SuperCDO));
+				UE_LOG(LogShooterReplicationGraph, Log, TEXT("Adding %s to NonSpatializedChildClasses. (Parent: %s)"), *GetLegacyDebugStr(ActorCDO), *GetLegacyDebugStr(SuperCDO));
 				NonSpatializedChildClasses.Add(Class);
 			}
 		}
@@ -307,8 +308,8 @@ void USoldierReplicationGraph::InitGlobalActorClassSettings()
 
 
 	// Print out what we came up with
-	UE_LOG(LogSoldierReplicationGraph, Log, TEXT(""));
-	UE_LOG(LogSoldierReplicationGraph, Log, TEXT("Class Routing Map: "));
+	UE_LOG(LogShooterReplicationGraph, Log, TEXT(""));
+	UE_LOG(LogShooterReplicationGraph, Log, TEXT("Class Routing Map: "));
 	UEnum* Enum = StaticEnum<EClassRepNodeMapping>();
 	for (auto ClassMapIt = ClassRepNodePolicies.CreateIterator(); ClassMapIt; ++ClassMapIt)
 	{		
@@ -323,17 +324,17 @@ void USoldierReplicationGraph::InitGlobalActorClassSettings()
 			continue;
 		}
 
-		UE_LOG(LogSoldierReplicationGraph, Log, TEXT("  %s (%s) -> %s"), *Class->GetName(), *GetNameSafe(ParentNativeClass), *Enum->GetNameStringByValue(static_cast<uint32>(Mapping)));
+		UE_LOG(LogShooterReplicationGraph, Log, TEXT("  %s (%s) -> %s"), *Class->GetName(), *GetNameSafe(ParentNativeClass), *Enum->GetNameStringByValue(static_cast<uint32>(Mapping)));
 	}
 
-	UE_LOG(LogSoldierReplicationGraph, Log, TEXT(""));
-	UE_LOG(LogSoldierReplicationGraph, Log, TEXT("Class Settings Map: "));
+	UE_LOG(LogShooterReplicationGraph, Log, TEXT(""));
+	UE_LOG(LogShooterReplicationGraph, Log, TEXT("Class Settings Map: "));
 	FClassReplicationInfo DefaultValues;
 	for (auto ClassRepInfoIt = GlobalActorReplicationInfoMap.CreateClassMapIterator(); ClassRepInfoIt; ++ClassRepInfoIt)
 	{
 		UClass* Class = CastChecked<UClass>(ClassRepInfoIt.Key().ResolveObjectPtr());
 		const FClassReplicationInfo& ClassInfo = ClassRepInfoIt.Value();
-		UE_LOG(LogSoldierReplicationGraph, Log, TEXT("  %s (%s) -> %s"), *Class->GetName(), *GetNameSafe(GetParentNativeClass(Class)), *ClassInfo.BuildDebugStringDelta());
+		UE_LOG(LogShooterReplicationGraph, Log, TEXT("  %s (%s) -> %s"), *Class->GetName(), *GetNameSafe(GetParentNativeClass(Class)), *ClassInfo.BuildDebugStringDelta());
 	}
 
 
@@ -477,7 +478,7 @@ void USoldierReplicationGraph::RouteRemoveNetworkActorToNodes(const FNewReplicat
 				FActorRepListRefView& RepList = AlwaysRelevantStreamingLevelActors.FindChecked(ActorInfo.StreamingLevelName);
 				if (RepList.Remove(ActorInfo.Actor) == false)
 				{
-					UE_LOG(LogSoldierReplicationGraph, Warning, TEXT("Actor %s was not found in AlwaysRelevantStreamingLevelActors list. LevelName: %s"), *GetActorRepListTypeDebugString(ActorInfo.Actor), *ActorInfo.StreamingLevelName.ToString());
+					UE_LOG(LogShooterReplicationGraph, Warning, TEXT("Actor %s was not found in AlwaysRelevantStreamingLevelActors list. LevelName: %s"), *GetActorRepListTypeDebugString(ActorInfo.Actor), *ActorInfo.StreamingLevelName.ToString());
 				}				
 			}
 			break;
@@ -589,7 +590,7 @@ void USoldierReplicationGraphNode_AlwaysRelevant_ForConnection::GatherActorLists
 		{
 			LastActor = ActorToSet;
 
-			UE_LOG(LogSoldierReplicationGraph, Verbose, TEXT("Setting pawn cull distance to 0. %s"), *ActorToSet->GetName());
+			UE_LOG(LogShooterReplicationGraph, Verbose, TEXT("Setting pawn cull distance to 0. %s"), *ActorToSet->GetName());
 			FConnectionReplicationActorInfo& ConnectionActorInfo = Params.ConnectionManager.ActorInfoMap.FindOrAdd(ActorToSet);
 			ConnectionActorInfo.SetCullDistanceSquared(0.f);
 		}
@@ -678,7 +679,7 @@ void USoldierReplicationGraphNode_AlwaysRelevant_ForConnection::GatherActorLists
 		if (Ptr == nullptr)
 		{
 			// No always relevant lists for that level
-			UE_CLOG(CVar_SoldierRepGraph_DisplayClientLevelStreaming > 0, LogSoldierReplicationGraph, Display, TEXT("CLIENTSTREAMING Removing %s from AlwaysRelevantStreamingLevelActors because FActorRepListRefView is null. %s "), *StreamingLevel.ToString(),  *Params.ConnectionManager.GetName());
+			UE_CLOG(CVar_SoldierRepGraph_DisplayClientLevelStreaming > 0, LogShooterReplicationGraph, Display, TEXT("CLIENTSTREAMING Removing %s from AlwaysRelevantStreamingLevelActors because FActorRepListRefView is null. %s "), *StreamingLevel.ToString(),  *Params.ConnectionManager.GetName());
 			AlwaysRelevantStreamingLevelsNeedingReplication.RemoveAtSwap(Idx, 1, false);
 			continue;
 		}
@@ -700,18 +701,18 @@ void USoldierReplicationGraphNode_AlwaysRelevant_ForConnection::GatherActorLists
 
 			if (bAllDormant)
 			{
-				UE_CLOG(CVar_SoldierRepGraph_DisplayClientLevelStreaming > 0, LogSoldierReplicationGraph, Display, TEXT("CLIENTSTREAMING All AlwaysRelevant Actors Dormant on StreamingLevel %s for %s. Removing list."), *StreamingLevel.ToString(), *Params.ConnectionManager.GetName());
+				UE_CLOG(CVar_SoldierRepGraph_DisplayClientLevelStreaming > 0, LogShooterReplicationGraph, Display, TEXT("CLIENTSTREAMING All AlwaysRelevant Actors Dormant on StreamingLevel %s for %s. Removing list."), *StreamingLevel.ToString(), *Params.ConnectionManager.GetName());
 				AlwaysRelevantStreamingLevelsNeedingReplication.RemoveAtSwap(Idx, 1, false);
 			}
 			else
 			{
-				UE_CLOG(CVar_SoldierRepGraph_DisplayClientLevelStreaming > 0, LogSoldierReplicationGraph, Display, TEXT("CLIENTSTREAMING Adding always Actors on StreamingLevel %s for %s because it has at least one non dormant actor"), *StreamingLevel.ToString(), *Params.ConnectionManager.GetName());
+				UE_CLOG(CVar_SoldierRepGraph_DisplayClientLevelStreaming > 0, LogShooterReplicationGraph, Display, TEXT("CLIENTSTREAMING Adding always Actors on StreamingLevel %s for %s because it has at least one non dormant actor"), *StreamingLevel.ToString(), *Params.ConnectionManager.GetName());
 				Params.OutGatheredReplicationLists.AddReplicationActorList(RepList);
 			}
 		}
 		else
 		{
-			UE_LOG(LogSoldierReplicationGraph, Warning, TEXT("USoldierReplicationGraphNode_AlwaysRelevant_ForConnection::GatherActorListsForConnection - empty RepList %s"), *Params.ConnectionManager.GetName());
+			UE_LOG(LogShooterReplicationGraph, Warning, TEXT("USoldierReplicationGraphNode_AlwaysRelevant_ForConnection::GatherActorListsForConnection - empty RepList %s"), *Params.ConnectionManager.GetName());
 		}
 
 	}
@@ -726,13 +727,13 @@ void USoldierReplicationGraphNode_AlwaysRelevant_ForConnection::GatherActorLists
 
 void USoldierReplicationGraphNode_AlwaysRelevant_ForConnection::OnClientLevelVisibilityAdd(FName LevelName, UWorld* StreamingWorld)
 {
-	UE_CLOG(CVar_SoldierRepGraph_DisplayClientLevelStreaming > 0, LogSoldierReplicationGraph, Display, TEXT("CLIENTSTREAMING ::OnClientLevelVisibilityAdd - %s"), *LevelName.ToString());
+	UE_CLOG(CVar_SoldierRepGraph_DisplayClientLevelStreaming > 0, LogShooterReplicationGraph, Display, TEXT("CLIENTSTREAMING ::OnClientLevelVisibilityAdd - %s"), *LevelName.ToString());
 	AlwaysRelevantStreamingLevelsNeedingReplication.Add(LevelName);
 }
 
 void USoldierReplicationGraphNode_AlwaysRelevant_ForConnection::OnClientLevelVisibilityRemove(FName LevelName)
 {
-	UE_CLOG(CVar_SoldierRepGraph_DisplayClientLevelStreaming > 0, LogSoldierReplicationGraph, Display, TEXT("CLIENTSTREAMING ::OnClientLevelVisibilityRemove - %s"), *LevelName.ToString());
+	UE_CLOG(CVar_SoldierRepGraph_DisplayClientLevelStreaming > 0, LogShooterReplicationGraph, Display, TEXT("CLIENTSTREAMING ::OnClientLevelVisibilityRemove - %s"), *LevelName.ToString());
 	AlwaysRelevantStreamingLevelsNeedingReplication.Remove(LevelName);
 }
 
@@ -863,7 +864,7 @@ FAutoConsoleCommandWithWorldAndArgs ChangeFrequencyBucketsCmd(TEXT("SoldierRepGr
 		LexTryParseString<int32>(Buckets, *Args[0]);
 	}
 
-	UE_LOG(LogSoldierReplicationGraph, Display, TEXT("Setting Frequency Buckets to %d"), Buckets);
+	UE_LOG(LogShooterReplicationGraph, Display, TEXT("Setting Frequency Buckets to %d"), Buckets);
 	for (TObjectIterator<UReplicationGraphNode_ActorListFrequencyBuckets> It; It; ++It)
 	{
 		UReplicationGraphNode_ActorListFrequencyBuckets* Node = *It;

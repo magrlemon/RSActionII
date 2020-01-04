@@ -1,8 +1,8 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "SoldierGame.h"
-#include "Online/SoldierOnlineSessionClient.h"
-#include "SoldierGameInstance.h"
+#include "RSAction.h"
+#include "SoldierOnlineSessionClient.h"
+#include "ShooterGameInstance.h"
 
 USoldierOnlineSessionClient::USoldierOnlineSessionClient()
 {
@@ -34,11 +34,11 @@ void USoldierOnlineSessionClient::OnSessionUserInviteAccepted(
 		return;
 	}
 
-	USoldierGameInstance* RSActionGameInstance = Cast<USoldierGameInstance>(GetGameInstance());
+	UShooterGameInstance* ShooterGameInstance = Cast<UShooterGameInstance>(GetGameInstance());
 
-	if (RSActionGameInstance)
+	if (ShooterGameInstance)
 	{
-		FSoldierPendingInvite PendingInvite;
+		FShooterPendingInvite PendingInvite;
 
 		// Set the pending invite, and then go to the initial screen, which is where we will process it
 		PendingInvite.ControllerId = ControllerId;
@@ -46,15 +46,15 @@ void USoldierOnlineSessionClient::OnSessionUserInviteAccepted(
 		PendingInvite.InviteResult = InviteResult;
 		PendingInvite.bPrivilegesCheckedAndAllowed = false;
 
-		RSActionGameInstance->SetPendingInvite(PendingInvite);
-		RSActionGameInstance->GotoState(SoldierGameInstanceState::PendingInvite);
+		ShooterGameInstance->SetPendingInvite(PendingInvite);
+		ShooterGameInstance->GotoState(ShooterGameInstanceState::PendingInvite);
 	}
 }
 
 void USoldierOnlineSessionClient::OnPlayTogetherEventReceived(int32 UserIndex, TArray<TSharedPtr<const FUniqueNetId>> UserIdList)
 {	
-	if (USoldierGameInstance* const RSActionGameInstance = Cast<USoldierGameInstance>(GetGameInstance()))
+	if (UShooterGameInstance* const ShooterGameInstance = Cast<UShooterGameInstance>(GetGameInstance()))
 	{
-		RSActionGameInstance->OnPlayTogetherEventReceived(UserIndex, UserIdList);
+		ShooterGameInstance->OnPlayTogetherEventReceived(UserIndex, UserIdList);
 	}
 }

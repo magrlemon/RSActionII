@@ -1,12 +1,12 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "SoldierGame.h"
+#include "RSAction.h"
 #include "SoldierDemoPlaybackMenu.h"
 #include "SoldierStyle.h"
 #include "SoldierMenuSoundsWidgetStyle.h"
-#include "SoldierGameInstance.h"
+#include "ShooterGameInstance.h"
 
-#define LOCTEXT_NAMESPACE "SoldierGame.HUD.Menu"
+#define LOCTEXT_NAMESPACE "RSAction.HUD.Menu"
 
 void FSoldierDemoPlaybackMenu::Construct( ULocalPlayer* _PlayerOwner )
 {
@@ -33,7 +33,7 @@ void FSoldierDemoPlaybackMenu::Construct( ULocalPlayer* _PlayerOwner )
 
 		MenuHelper::AddExistingMenuItem( RootMenuItem, MainMenuItem.ToSharedRef() );
 				
-#if !SOLDIER_CONSOLE_UI
+#if !SHOOTER_CONSOLE_UI
 		MenuHelper::AddMenuItemSP( RootMenuItem, LOCTEXT("Quit", "QUIT"), this, &FSoldierDemoPlaybackMenu::OnUIQuit );
 #endif
 
@@ -106,18 +106,18 @@ void FSoldierDemoPlaybackMenu::OnCancelExitToMain()
 
 void FSoldierDemoPlaybackMenu::OnConfirmExitToMain()
 {
-	USoldierGameInstance* const GameInstance = Cast<USoldierGameInstance>( PlayerOwner->GetGameInstance() );
+	UShooterGameInstance* const GameInstance = Cast<UShooterGameInstance>( PlayerOwner->GetGameInstance() );
 
 	if ( GameInstance )
 	{
 		// tell game instance to go back to main menu state
-		GameInstance->GotoState( SoldierGameInstanceState::MainMenu );
+		GameInstance->GotoState( ShooterGameInstanceState::MainMenu );
 	}
 }
 
 void FSoldierDemoPlaybackMenu::OnUIQuit()
 {
-	USoldierGameInstance* const GameInstance = Cast<USoldierGameInstance>( PlayerOwner->GetGameInstance() );
+	UShooterGameInstance* const GameInstance = Cast<UShooterGameInstance>( PlayerOwner->GetGameInstance() );
 
 	GameMenuWidget->LockControls( true );
 	GameMenuWidget->HideMenu();

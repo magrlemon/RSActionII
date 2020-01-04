@@ -1,6 +1,6 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "SoldierGame.h"
+#include "RSAction.h"
 #include "SoldierTeamStart.h"
 #include "Online/SoldierGame_TeamDeathMatch.h"
 #include "Online/SoldierPlayerState.h"

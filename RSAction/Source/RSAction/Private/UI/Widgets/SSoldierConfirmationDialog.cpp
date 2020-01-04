@@ -1,10 +1,10 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "SoldierGame.h"
+#include "RSAction.h"
 #include "SoldierStyle.h"
 #include "SSoldierConfirmationDialog.h"
 #include "SoldierMenuItemWidgetStyle.h"
-#include "SoldierGameInstance.h"
+#include "ShooterGameInstance.h"
 #include "OnlineSubsystemUtils.h"
 
 void SSoldierConfirmationDialog::Construct( const FArguments& InArgs )

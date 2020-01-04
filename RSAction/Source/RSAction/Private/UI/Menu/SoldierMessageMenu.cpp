@@ -1,15 +1,15 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "SoldierGame.h"
+#include "RSAction.h"
 #include "SoldierStyle.h"
 #include "SSoldierConfirmationDialog.h"
 #include "SoldierMessageMenu.h"
-#include "SoldierGameViewportClient.h"
-#include "SoldierGameInstance.h"
+#include "ShooterGameViewportClient.h"
+#include "ShooterGameInstance.h"
 
-#define LOCTEXT_NAMESPACE "SoldierGame.HUD.Menu"
+#define LOCTEXT_NAMESPACE "RSAction.HUD.Menu"
 
-void FSoldierMessageMenu::Construct(TWeakObjectPtr<USoldierGameInstance> InGameInstance, TWeakObjectPtr<ULocalPlayer> InPlayerOwner, const FText& Message, const FText& OKButtonText, const FText& CancelButtonText, const FName& InPendingNextState)
+void FSoldierMessageMenu::Construct(TWeakObjectPtr<UShooterGameInstance> InGameInstance, TWeakObjectPtr<ULocalPlayer> InPlayerOwner, const FText& Message, const FText& OKButtonText, const FText& CancelButtonText, const FName& InPendingNextState)
 {
 	GameInstance			= InGameInstance;
 	PlayerOwner				= InPlayerOwner;
@@ -17,7 +17,7 @@ void FSoldierMessageMenu::Construct(TWeakObjectPtr<USoldierGameInstance> InGameI
 
 	if ( ensure( GameInstance.IsValid() ) )
 	{
-		USoldierGameViewportClient* SoldierViewport = Cast<USoldierGameViewportClient>( GameInstance->GetGameViewportClient() );
+		UShooterGameViewportClient* SoldierViewport = Cast<UShooterGameViewportClient>( GameInstance->GetGameViewportClient() );
 
 		if ( SoldierViewport )
 		{
@@ -42,7 +42,7 @@ void FSoldierMessageMenu::RemoveFromGameViewport()
 {
 	if ( ensure( GameInstance.IsValid() ) )
 	{
-		USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>( GameInstance->GetGameViewportClient() );
+		UShooterGameViewportClient * SoldierViewport = Cast<UShooterGameViewportClient>( GameInstance->GetGameViewportClient() );
 
 		if ( SoldierViewport )
 		{

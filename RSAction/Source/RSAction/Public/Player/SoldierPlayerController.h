@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Online.h"
-#include "Leaderboards.h"
+#include "SoldierLeaderboards.h"
 #include "SoldierPlayerController.generated.h"
 
 class ASoldierHUD;

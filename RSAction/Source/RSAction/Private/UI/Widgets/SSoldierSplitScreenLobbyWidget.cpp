@@ -1,12 +1,12 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "SoldierGame.h"
+#include "RSAction.h"
 #include "SoldierStyle.h"
 #include "SSoldierSplitScreenLobbyWidget.h"
 #include "SoldierMenuItemWidgetStyle.h"
 #include "SoldierMenuWidgetStyle.h"
 #include "SSoldierConfirmationDialog.h"
-#include "SoldierGameViewportClient.h"
+#include "ShooterGameViewportClient.h"
 #include "OnlineSubsystemUtils.h"
 
 #define LOCTEXT_NAMESPACE "SoldierGame.SplitScreenLobby"
@@ -293,7 +293,7 @@ void SSoldierSplitScreenLobby::UpdateSlots()
 
 void SSoldierSplitScreenLobby::ConditionallyReadyPlayer( const int ControllerId, const bool bCanShowUI )
 {
-	USoldierGameInstance* const GameInstance = GetGameInstance();
+	UShooterGameInstance* const GameInstance = GetGameInstance();
 	if (GameInstance == nullptr)
 	{
 		return;
@@ -392,7 +392,7 @@ void SSoldierSplitScreenLobby::UnreadyPlayer( const int ControllerId )
 
 FReply SSoldierSplitScreenLobby::OnOkOrCancel()
 {
-	USoldierGameViewportClient* SoldierViewport = Cast<USoldierGameViewportClient>(GetGameInstance()->GetGameViewportClient());
+	UShooterGameViewportClient* SoldierViewport = Cast<UShooterGameViewportClient>(GetGameInstance()->GetGameViewportClient());
 
 	if (SoldierViewport != NULL)
 	{
@@ -451,7 +451,7 @@ void SSoldierSplitScreenLobby::OnUserCanPlay(const FUniqueNetId& UserId, EUserPr
 				FString Nickname = Identity->GetPlayerNickname(UserId);
 
 				// Show warning that the user cannot play due to age restrictions
-				USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>(GetGameInstance()->GetGameViewportClient());
+				UShooterGameViewportClient * SoldierViewport = Cast<UShooterGameViewportClient>(GetGameInstance()->GetGameViewportClient());
 
 				if (SoldierViewport != NULL)
 				{
@@ -499,7 +499,7 @@ bool SSoldierSplitScreenLobby::IsUniqueIdOnline( const FUniqueNetId& UniqueId ) 
 
 FReply SSoldierSplitScreenLobby::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
 {
-	const USoldierGameInstance* GameInstance = GetGameInstance();
+	const UShooterGameInstance* GameInstance = GetGameInstance();
 	if (GameInstance == nullptr)
 	{
 		return FReply::Unhandled();
@@ -526,7 +526,7 @@ FReply SSoldierSplitScreenLobby::OnKeyDown(const FGeometry& MyGeometry, const FK
 				else
 				{
 					// Show warning that the guest needs the sponsor
-					USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>(GameInstance->GetGameViewportClient());
+					UShooterGameViewportClient * SoldierViewport = Cast<UShooterGameViewportClient>(GameInstance->GetGameViewportClient());
 
 					if ( SoldierViewport != NULL )
 					{
@@ -594,7 +594,7 @@ void SSoldierSplitScreenLobby::OnFocusLost( const FFocusEvent& InFocusEvent )
 
 void SSoldierSplitScreenLobby::HandleLoginUIClosedAndReady( TSharedPtr<const FUniqueNetId> UniqueId, const int UserIndex, const FOnlineError& Error )
 {
-	const USoldierGameInstance* GameInstance = GetGameInstance();
+	const UShooterGameInstance* GameInstance = GetGameInstance();
 	if (GameInstance == nullptr)
 	{
 		return;
@@ -636,16 +636,16 @@ void SSoldierSplitScreenLobby::OnLoginComplete(int32 LocalUserNum, bool bWasSucc
 	}
 }
 
-USoldierGameInstance * SSoldierSplitScreenLobby::GetGameInstance() const
+UShooterGameInstance * SSoldierSplitScreenLobby::GetGameInstance() const
 {
 	if ( !PlayerOwner.IsValid() )
 	{
 		return NULL;
 	}
 
-	check( PlayerOwner->GetGameInstance() == nullptr || CastChecked< USoldierGameInstance >( PlayerOwner->GetGameInstance() ) != nullptr );
+	check( PlayerOwner->GetGameInstance() == nullptr || CastChecked< UShooterGameInstance >( PlayerOwner->GetGameInstance() ) != nullptr );
 
-	return Cast< USoldierGameInstance >( PlayerOwner->GetGameInstance() );
+	return Cast< UShooterGameInstance >( PlayerOwner->GetGameInstance() );
 }
 
 FText SSoldierSplitScreenLobby::GetPlayFindText() const
@@ -656,7 +656,7 @@ FText SSoldierSplitScreenLobby::GetPlayFindText() const
 #if PLATFORM_SWITCH
 FText SSoldierSplitScreenLobby::GetPlayAsGuestText() const
 {
-	const USoldierGameInstance* GameInstance = GetGameInstance();
+	const UShooterGameInstance* GameInstance = GetGameInstance();
 	if (GameInstance == nullptr)
 	{
 		return FText();

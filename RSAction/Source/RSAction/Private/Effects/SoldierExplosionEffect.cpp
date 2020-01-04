@@ -1,6 +1,6 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
-#include "Effects/SoldierExplosionEffect.h"
-#include "SoldierGame.h"
+#include "SoldierExplosionEffect.h"
+#include "RSAction.h"
 
 
 ASoldierExplosionEffect::ASoldierExplosionEffect(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)

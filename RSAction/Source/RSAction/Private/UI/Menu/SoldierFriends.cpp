@@ -1,15 +1,16 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "SoldierGame.h"
+#include "RSAction.h"
 #include "SoldierFriends.h"
 #include "SoldierTypes.h"
 #include "SoldierStyle.h"
 #include "SoldierOptionsWidgetStyle.h"
 #include "Player/SoldierPersistentUser.h"
-#include "SoldierGameUserSettings.h"
+#include "ShooterGameUserSettings.h"
+#include "SoldierLocalPlayer.h"
 #include "OnlineSubsystemUtils.h"
 
-#define LOCTEXT_NAMESPACE "SoldierGame.HUD.Menu"
+#define LOCTEXT_NAMESPACE "RSAction.HUD.Menu"
 
 void FSoldierFriends::Construct(ULocalPlayer* _PlayerOwner, int32 LocalUserNum_)
 {
@@ -35,7 +36,7 @@ void FSoldierFriends::Construct(ULocalPlayer* _PlayerOwner, int32 LocalUserNum_)
 
 	UpdateFriends(LocalUserNum);
 
-	UserSettings = CastChecked<USoldierGameUserSettings>(GEngine->GetGameUserSettings());
+	UserSettings = CastChecked<UShooterGameUserSettings>(GEngine->GetGameUserSettings());
 }
 
 void FSoldierFriends::OnApplySettings()

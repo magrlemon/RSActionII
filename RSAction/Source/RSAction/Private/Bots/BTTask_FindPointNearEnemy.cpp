@@ -1,11 +1,12 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 #include "Bots/BTTask_FindPointNearEnemy.h"
-#include "SoldierGame.h"
+#include "RSAction.h"
 #include "Bots/SoldierAIController.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyAllTypes.h"
 #include "NavigationSystem.h"
+
 
 UBTTask_FindPointNearEnemy::UBTTask_FindPointNearEnemy(const FObjectInitializer& ObjectInitializer) 
 	: Super(ObjectInitializer)

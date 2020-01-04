@@ -1,6 +1,6 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "SoldierGame.h"
+#include "RSAction.h"
 #include "Weapons/SoldierWeapon_Instant.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Effects/SoldierImpactEffect.h"
@@ -91,18 +91,18 @@ void ASoldierWeapon_Instant::ServerNotifyHit_Implementation(const FHitResult& Im
 					}
 					else
 					{
-						UE_LOG(LogSoldierWeapon, Log, TEXT("%s Rejected client side hit of %s (outside bounding box tolerance)"), *GetNameSafe(this), *GetNameSafe(Impact.GetActor()));
+						UE_LOG(LogShooterWeapon, Log, TEXT("%s Rejected client side hit of %s (outside bounding box tolerance)"), *GetNameSafe(this), *GetNameSafe(Impact.GetActor()));
 					}
 				}
 			}
 		}
 		else if (ViewDotHitDir <= InstantConfig.AllowedViewDotHitDir)
 		{
-			UE_LOG(LogSoldierWeapon, Log, TEXT("%s Rejected client side hit of %s (facing too far from the hit direction)"), *GetNameSafe(this), *GetNameSafe(Impact.GetActor()));
+			UE_LOG(LogShooterWeapon, Log, TEXT("%s Rejected client side hit of %s (facing too far from the hit direction)"), *GetNameSafe(this), *GetNameSafe(Impact.GetActor()));
 		}
 		else
 		{
-			UE_LOG(LogSoldierWeapon, Log, TEXT("%s Rejected client side hit of %s"), *GetNameSafe(this), *GetNameSafe(Impact.GetActor()));
+			UE_LOG(LogShooterWeapon, Log, TEXT("%s Rejected client side hit of %s"), *GetNameSafe(this), *GetNameSafe(Impact.GetActor()));
 		}
 	}
 }

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Styling/SlateWidgetStyleContainerBase.h"
+#include "SlateWidgetStyleContainerBase.h"
 #include "SoldierMenuWidgetStyle.generated.h"
 
 /**

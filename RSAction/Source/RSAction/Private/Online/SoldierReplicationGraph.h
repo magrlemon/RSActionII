@@ -11,7 +11,7 @@ class ASoldierWeapon;
 class UReplicationGraphNode_GridSpatialization2D;
 class AGameplayDebuggerCategoryReplicator;
 
-DECLARE_LOG_CATEGORY_EXTERN( LogSoldierReplicationGraph, Display, All );
+DECLARE_LOG_CATEGORY_EXTERN( LogShooterReplicationGraph, Display, All );
 
 // This is the main enum we use to route actors to the right replication node. Each class maps to one enum.
 UENUM()

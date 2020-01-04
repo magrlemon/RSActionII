@@ -1,16 +1,16 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "SoldierGame.h"
+#include "RSAction.h"
 #include "SoldierIngameMenu.h"
 #include "SoldierStyle.h"
 #include "SoldierMenuSoundsWidgetStyle.h"
 #include "Online.h"
-#include "..\..\Engine\Plugins\Online\OnlineSubsystem\Source\Public\Interfaces\OnlineExternalUIInterface.h"
-#include "SoldierGameInstance.h"
+#include "OnlineExternalUIInterface.h"
+#include "ShooterGameInstance.h"
 #include "UI/SoldierHUD.h"
 #include "OnlineSubsystemUtils.h"
 
-#define LOCTEXT_NAMESPACE "SoldierGame.HUD.Menu"
+#define LOCTEXT_NAMESPACE "RSAction.HUD.Menu"
 
 #if PLATFORM_SWITCH
 #	define FRIENDS_SUPPORTED 0
@@ -30,10 +30,10 @@ void FSoldierIngameMenu::Construct(ULocalPlayer* _PlayerOwner)
 	}
 	
 	//todo:  don't create ingame menus for remote players.
-	const USoldierGameInstance* GameInstance = nullptr;
+	const UShooterGameInstance* GameInstance = nullptr;
 	if (PlayerOwner)
 	{
-		GameInstance = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
+		GameInstance = Cast<UShooterGameInstance>(PlayerOwner->GetGameInstance());
 	}
 
 	if (!GameMenuWidget.IsValid())
@@ -80,7 +80,7 @@ void FSoldierIngameMenu::Construct(ULocalPlayer* _PlayerOwner)
 			MenuHelper::AddExistingMenuItem(RootMenuItem, SoldierRecentlyMet->RecentlyMetItem.ToSharedRef());
 #endif		
 
-#if SOLDIER_CONSOLE_UI			
+#if SHOOTER_CONSOLE_UI			
 			TSharedPtr<FSoldierMenuItem> ShowInvitesItem = MenuHelper::AddMenuItem(RootMenuItem, LOCTEXT("Invite Players", "INVITE PLAYERS (via System UI)"));
 			ShowInvitesItem->OnConfirmMenuItem.BindRaw(this, &FSoldierIngameMenu::OnShowInviteUI);		
 #endif
@@ -95,7 +95,7 @@ void FSoldierIngameMenu::Construct(ULocalPlayer* _PlayerOwner)
 
 		MenuHelper::AddExistingMenuItem(RootMenuItem, MainMenuItem.ToSharedRef());
 				
-#if !SOLDIER_CONSOLE_UI
+#if !SHOOTER_CONSOLE_UI
 		MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("Quit", "QUIT"), this, &FSoldierIngameMenu::OnUIQuit);
 #endif
 
@@ -177,7 +177,7 @@ void FSoldierIngameMenu::ToggleGameMenu()
 	// in-game menu needs a valid userindex for many OSS calls.
 	if (GetOwnerUserIndex() == -1)
 	{
-		UE_LOG(LogSoldier, Log, TEXT("Trying to toggle in-game menu for invalid userid"));
+		UE_LOG(LogShooter, Log, TEXT("Trying to toggle in-game menu for invalid userid"));
 		return;
 	}
 
@@ -257,19 +257,19 @@ void FSoldierIngameMenu::OnCancelExitToMain()
 
 void FSoldierIngameMenu::OnConfirmExitToMain()
 {
-	USoldierGameInstance* const GameInstance = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
+	UShooterGameInstance* const GameInstance = Cast<UShooterGameInstance>(PlayerOwner->GetGameInstance());
 	if (GameInstance)
 	{
 		GameInstance->LabelPlayerAsQuitter(PlayerOwner);
 
 		// tell game instance to go back to main menu state
-		GameInstance->GotoState(SoldierGameInstanceState::MainMenu);
+		GameInstance->GotoState(ShooterGameInstanceState::MainMenu);
 	}
 }
 
 void FSoldierIngameMenu::OnUIQuit()
 {
-	USoldierGameInstance* const GI = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
+	UShooterGameInstance* const GI = Cast<UShooterGameInstance>(PlayerOwner->GetGameInstance());
 	if (GI)
 	{
 		GI->LabelPlayerAsQuitter(PlayerOwner);
@@ -303,7 +303,7 @@ void FSoldierIngameMenu::OnShowInviteUI()
 
 		if (!ExternalUI.IsValid())
 		{
-			UE_LOG(LogSoldier, Warning, TEXT("OnShowInviteUI: External UI interface is not supported on this platform."));
+			UE_LOG(LogShooter, Warning, TEXT("OnShowInviteUI: External UI interface is not supported on this platform."));
 			return;
 		}
 

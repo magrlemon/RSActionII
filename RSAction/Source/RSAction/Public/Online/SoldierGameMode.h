@@ -3,7 +3,7 @@
 #pragma once
 
 #include "..\..\Engine\Plugins\Online\OnlineSubsystem\Source\Public\Interfaces\OnlineIdentityInterface.h"
-#include "Player\SoldierPlayerController.h"
+#include "SoldierPlayerController.h"
 #include "SoldierGameMode.generated.h"
 
 class ASoldierAIController;

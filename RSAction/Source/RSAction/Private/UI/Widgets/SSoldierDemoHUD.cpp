@@ -1,10 +1,10 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "SoldierGame.h"
+#include "RSAction.h"
 #include "SSoldierDemoHUD.h"
 #include "Engine/DemoNetDriver.h"
 #include "SoldierStyle.h"
-#include "Styling/CoreStyle.h"
+#include "CoreStyle.h"
 
 /** Widget to represent the main replay timeline bar */
 class SSoldierReplayTimeline : public SCompoundWidget
@@ -254,10 +254,10 @@ FText SSoldierDemoHUD::GetPlaybackSpeed() const
 			.SetMinimumFractionalDigits(2)
 			.SetMaximumFractionalDigits(2);
 
-		return FText::Format(NSLOCTEXT("SoldierGame.HUD.Menu", "PlaybackSpeed", "{0} X"), FText::AsNumber(PlayerOwner->GetWorldSettings()->DemoPlayTimeDilation, &FormatOptions));
+		return FText::Format(NSLOCTEXT("RSAction.HUD.Menu", "PlaybackSpeed", "{0} X"), FText::AsNumber(PlayerOwner->GetWorldSettings()->DemoPlayTimeDilation, &FormatOptions));
 	}
 
-	return NSLOCTEXT("SoldierGame.HUD.Menu", "Paused", "PAUSED");
+	return NSLOCTEXT("RSAction.HUD.Menu", "Paused", "PAUSED");
 }
 
 ECheckBoxState SSoldierDemoHUD::IsPauseChecked() const

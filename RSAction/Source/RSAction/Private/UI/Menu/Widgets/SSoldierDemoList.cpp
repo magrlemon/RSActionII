@@ -1,16 +1,16 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "SoldierGame.h"
+#include "RSAction.h"
 #include "SSoldierDemoList.h"
-#include "Widgets/Views/SHeaderRow.h"
+#include "SHeaderRow.h"
 #include "SoldierStyle.h"
-#include "Styling/CoreStyle.h"
-#include "SoldierGameLoadingScreen.h"
-#include "SoldierGameInstance.h"
+#include "CoreStyle.h"
+#include "ShooterGameLoadingScreen.h"
+#include "ShooterGameInstance.h"
 #include "NetworkReplayStreaming.h"
-#include "SoldierGameViewportClient.h"
+#include "ShooterGameViewportClient.h"
 
-#define LOCTEXT_NAMESPACE "SoldierGame.HUD.Menu"
+#define LOCTEXT_NAMESPACE "RSAction.HUD.Menu"
 
 struct FDemoEntry
 {
@@ -214,7 +214,7 @@ void SSoldierDemoList::PlayDemo()
 
 	if (SelectedItem.IsValid())
 	{
-		USoldierGameInstance* const GI = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
+		UShooterGameInstance* const GI = Cast<UShooterGameInstance>(PlayerOwner->GetGameInstance());
 
 		if ( GI != NULL )
 		{
@@ -236,11 +236,11 @@ void SSoldierDemoList::DeleteDemo()
 
 	if (SelectedItem.IsValid())
 	{
-		USoldierGameInstance* const GI = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
+		UShooterGameInstance* const GI = Cast<UShooterGameInstance>(PlayerOwner->GetGameInstance());
 
 		if ( GI != NULL )
 		{
-			USoldierGameViewportClient* SoldierViewport = Cast<USoldierGameViewportClient>( GI->GetGameViewportClient() );
+			UShooterGameViewportClient* SoldierViewport = Cast<UShooterGameViewportClient>( GI->GetGameViewportClient() );
 
 			if ( SoldierViewport )
 			{
@@ -268,11 +268,11 @@ FReply SSoldierDemoList::OnDemoDeleteConfirm()
 		ReplayStreamer->DeleteFinishedStream(SelectedItem->StreamInfo.Name, FDeleteFinishedStreamCallback::CreateSP(this, &SSoldierDemoList::OnDeleteFinishedStreamComplete));
 	}
 
-	USoldierGameInstance* const GI = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
+	UShooterGameInstance* const GI = Cast<UShooterGameInstance>(PlayerOwner->GetGameInstance());
 
 	if ( GI != NULL )
 	{
-		USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>( GI->GetGameViewportClient() );
+		UShooterGameViewportClient * SoldierViewport = Cast<UShooterGameViewportClient>( GI->GetGameViewportClient() );
 
 		if ( SoldierViewport )
 		{
@@ -285,11 +285,11 @@ FReply SSoldierDemoList::OnDemoDeleteConfirm()
 
 FReply SSoldierDemoList::OnDemoDeleteCancel()
 {
-	USoldierGameInstance* const GI = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
+	UShooterGameInstance* const GI = Cast<UShooterGameInstance>(PlayerOwner->GetGameInstance());
 
 	if ( GI != NULL )
 	{
-		USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>( GI->GetGameViewportClient() );
+		UShooterGameViewportClient * SoldierViewport = Cast<UShooterGameViewportClient>( GI->GetGameViewportClient() );
 
 		if ( SoldierViewport )
 		{

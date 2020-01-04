@@ -1,8 +1,8 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "SoldierGame.h"
+#include "RSAction.h"
 #include "Player/SoldierPersistentUser.h"
-#include "Player/SoldierLocalPlayer.h"
+#include "SoldierLocalPlayer.h"
 
 USoldierPersistentUser::USoldierPersistentUser(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

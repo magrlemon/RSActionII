@@ -1,6 +1,6 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
-#include "Online/SoldierGameSession.h"
-#include "SoldierGame.h"
+#include "SoldierGameSession.h"
+#include "RSAction.h"
 #include "SoldierOnlineGameSettings.h"
 #include "OnlineSubsystemSessionSettings.h"
 #include "OnlineSubsystemUtils.h"

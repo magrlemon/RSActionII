@@ -4,9 +4,9 @@
 	SoldierEngine.cpp: SoldierEngine c++ code.
 =============================================================================*/
 
-#include "SoldierGame.h"
+#include "RSAction.h"
 #include "SoldierEngine.h"
-#include "SoldierGameInstance.h"
+#include "ShooterGameInstance.h"
 
 USoldierEngine::USoldierEngine(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -39,7 +39,7 @@ void USoldierEngine::HandleNetworkFailure(UWorld *World, UNetDriver *NetDriver, 
 				{
 					case ENetworkFailure::FailureReceived:
 					{
-						USoldierGameInstance* const SoldierInstance = Cast<USoldierGameInstance>(GameInstance);
+						UShooterGameInstance* const SoldierInstance = Cast<UShooterGameInstance>(GameInstance);
 						if (SoldierInstance && NetDriver->GetNetMode() == NM_Client)
 						{
 							const FText OKButton = NSLOCTEXT( "DialogButtons", "OKAY", "OK" );
@@ -47,13 +47,13 @@ void USoldierEngine::HandleNetworkFailure(UWorld *World, UNetDriver *NetDriver, 
 							// NOTE - We pass in false here to not override the message if we are already going to the main menu
 							// We're going to make the assumption that someone else has a better message than "Lost connection to host" if
 							// this is the case
-							SoldierInstance->ShowMessageThenGotoState( FText::FromString(ErrorString), OKButton, FText::GetEmpty(), SoldierGameInstanceState::MainMenu, false );
+							SoldierInstance->ShowMessageThenGotoState( FText::FromString(ErrorString), OKButton, FText::GetEmpty(), ShooterGameInstanceState::MainMenu, false );
 						}
 						break;
 					}
 					case ENetworkFailure::PendingConnectionFailure:						
 					{
-						USoldierGameInstance* const GI = Cast<USoldierGameInstance>(GameInstance);
+						UShooterGameInstance* const GI = Cast<UShooterGameInstance>(GameInstance);
 						if (GI && NetDriver->GetNetMode() == NM_Client)
 						{
 							const FText OKButton = NSLOCTEXT( "DialogButtons", "OKAY", "OK" );
@@ -61,14 +61,14 @@ void USoldierEngine::HandleNetworkFailure(UWorld *World, UNetDriver *NetDriver, 
 							// NOTE - We pass in false here to not override the message if we are already going to the main menu
 							// We're going to make the assumption that someone else has a better message than "Lost connection to host" if
 							// this is the case
-							GI->ShowMessageThenGotoState( FText::FromString(ErrorString), OKButton, FText::GetEmpty(), SoldierGameInstanceState::MainMenu, false );
+							GI->ShowMessageThenGotoState( FText::FromString(ErrorString), OKButton, FText::GetEmpty(), ShooterGameInstanceState::MainMenu, false );
 						}
 						break;
 					}
 					case ENetworkFailure::ConnectionLost:						
 					case ENetworkFailure::ConnectionTimeout:
 					{
-						USoldierGameInstance* const GI = Cast<USoldierGameInstance>(GameInstance);
+						UShooterGameInstance* const GI = Cast<UShooterGameInstance>(GameInstance);
 						if (GI && NetDriver->GetNetMode() == NM_Client)
 						{
 							const FText ReturnReason	= NSLOCTEXT( "NetworkErrors", "HostDisconnect", "Lost connection to host." );
@@ -77,7 +77,7 @@ void USoldierEngine::HandleNetworkFailure(UWorld *World, UNetDriver *NetDriver, 
 							// NOTE - We pass in false here to not override the message if we are already going to the main menu
 							// We're going to make the assumption that someone else has a better message than "Lost connection to host" if
 							// this is the case
-							GI->ShowMessageThenGotoState( ReturnReason, OKButton, FText::GetEmpty(), SoldierGameInstanceState::MainMenu, false );
+							GI->ShowMessageThenGotoState( ReturnReason, OKButton, FText::GetEmpty(), ShooterGameInstanceState::MainMenu, false );
 						}
 						break;
 					}

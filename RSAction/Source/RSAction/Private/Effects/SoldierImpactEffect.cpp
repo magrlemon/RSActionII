@@ -1,6 +1,6 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
-#include "Effects/SoldierImpactEffect.h"
-#include "SoldierGame.h"
+#include "SoldierImpactEffect.h"
+#include "RSAction.h"
 
 
 ASoldierImpactEffect::ASoldierImpactEffect(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)

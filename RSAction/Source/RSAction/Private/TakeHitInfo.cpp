@@ -1,7 +1,8 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "SoldierGame.h"
+#include "RSAction.h"
 #include "SoldierTypes.h"
+#include "SoldierCharacter.h"
 
 FTakeHitInfo::FTakeHitInfo()
 	: ActualDamage(0)

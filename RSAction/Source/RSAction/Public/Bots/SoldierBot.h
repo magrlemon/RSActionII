@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "SoldierCharacter.h"
 #include "SoldierBot.generated.h"
 
 UCLASS()
