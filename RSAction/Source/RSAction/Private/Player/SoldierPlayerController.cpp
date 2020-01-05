@@ -16,9 +16,9 @@
 #include "OnlineStatsInterface.h"
 #include "OnlineIdentityInterface.h"
 #include "OnlineSessionInterface.h"
-#include "ShooterGameInstance.h"
+#include "SoldierGameInstance.h"
 #include "SoldierLeaderboards.h"
-#include "ShooterGameViewportClient.h"
+#include "SoldierGameViewportClient.h"
 #include "Sound/SoundNodeLocalPlayer.h"
 #include "AudioThread.h"
 #include "OnlineSubsystemUtils.h"
@@ -688,7 +688,7 @@ void ASoldierPlayerController::ClientGameStarted_Implementation()
 			Events->TriggerEvent(*UniqueId, TEXT("PlayerSessionStart"), Params);
 
 			// Online matches require the MultiplayerRoundStart event as well
-			UShooterGameInstance* SGI = Cast<UShooterGameInstance>(World->GetGameInstance());
+			USoldierGameInstance* SGI = Cast<USoldierGameInstance>(World->GetGameInstance());
 
 			if (SGI && (SGI->GetOnlineMode() == EOnlineMode::Online))
 			{
@@ -766,7 +766,7 @@ void ASoldierPlayerController::HandleReturnToMainMenu()
 void ASoldierPlayerController::ClientReturnToMainMenu_Implementation(const FString& InReturnReason)
 {		
 	const UWorld* World = GetWorld();
-	UShooterGameInstance* SGI = World != NULL ? Cast<UShooterGameInstance>(World->GetGameInstance()) : NULL;
+	USoldierGameInstance* SGI = World != NULL ? Cast<USoldierGameInstance>(World->GetGameInstance()) : NULL;
 
 	if ( !ensure( SGI != NULL ) )
 	{
@@ -778,11 +778,11 @@ void ASoldierPlayerController::ClientReturnToMainMenu_Implementation(const FStri
 		const FText ReturnReason	= NSLOCTEXT( "NetworkErrors", "HostQuit", "The host has quit the match." );
 		const FText OKButton		= NSLOCTEXT( "DialogButtons", "OKAY", "OK" );
 
-		SGI->ShowMessageThenGotoState( ReturnReason, OKButton, FText::GetEmpty(), ShooterGameInstanceState::MainMenu );
+		SGI->ShowMessageThenGotoState( ReturnReason, OKButton, FText::GetEmpty(), SoldierGameInstanceState::MainMenu );
 	}
 	else
 	{
-		SGI->GotoState(ShooterGameInstanceState::MainMenu);
+		SGI->GotoState(SoldierGameInstanceState::MainMenu);
 	}
 
 	// Clear the flag so we don't do normal end of round stuff next
@@ -793,7 +793,7 @@ void ASoldierPlayerController::ClientReturnToMainMenu_Implementation(const FStri
 void ASoldierPlayerController::CleanupSessionOnReturnToMenu()
 {
 	const UWorld* World = GetWorld();
-	UShooterGameInstance * SGI = World != NULL ? Cast<UShooterGameInstance>( World->GetGameInstance() ) : NULL;
+	USoldierGameInstance * SGI = World != NULL ? Cast<USoldierGameInstance>( World->GetGameInstance() ) : NULL;
 
 	if ( ensure( SGI != NULL ) )
 	{
@@ -857,7 +857,7 @@ void ASoldierPlayerController::ClientSendRoundEndEvent_Implementation(bool bIsWi
 			Events->TriggerEvent(*UniqueId, TEXT("PlayerSessionEnd"), Params);
 
 			// Online matches require the MultiplayerRoundEnd event as well
-			UShooterGameInstance* SGI = Cast<UShooterGameInstance>(World->GetGameInstance());
+			USoldierGameInstance* SGI = Cast<USoldierGameInstance>(World->GetGameInstance());
 			if (SGI && (SGI->GetOnlineMode() == EOnlineMode::Online))
 			{
 				FOnlineEventParms MultiplayerParams;
@@ -1380,7 +1380,7 @@ void ASoldierPlayerController::PreClientTravel(const FString& PendingURL, ETrave
 
 	if (const UWorld* World = GetWorld())
 	{
-		UShooterGameViewportClient* SoldierViewport = Cast<UShooterGameViewportClient>( World->GetGameViewport() );
+		USoldierGameViewportClient* SoldierViewport = Cast<USoldierGameViewportClient>( World->GetGameViewport() );
 
 		if ( SoldierViewport != NULL )
 		{

@@ -1,7 +1,7 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 #include "Online/SoldierGameMode.h"
 #include "RSAction.h"
-#include "ShooterGameInstance.h"
+#include "SoldierGameInstance.h"
 #include "UI/SoldierHUD.h"
 #include "Player/SoldierSpectatorPawn.h"
 #include "Player/SoldierDemoSpectator.h"
@@ -54,7 +54,7 @@ void ASoldierGameMode::InitGame(const FString& MapName, const FString& Options, 
 	Super::InitGame(MapName, Options, ErrorMessage);
 
 	const UGameInstance* GameInstance = GetGameInstance();
-	if (GameInstance && Cast<UShooterGameInstance>(GameInstance)->GetOnlineMode() != EOnlineMode::Offline)
+	if (GameInstance && Cast<USoldierGameInstance>(GameInstance)->GetOnlineMode() != EOnlineMode::Offline)
 	{
 		bPauseable = false;
 	}
@@ -217,7 +217,7 @@ void ASoldierGameMode::RequestFinishAndExitToMainMenu()
 {
 	FinishMatch();
 
-	UShooterGameInstance* const GameInstance = Cast<UShooterGameInstance>(GetGameInstance());
+	USoldierGameInstance* const GameInstance = Cast<USoldierGameInstance>(GetGameInstance());
 	if (GameInstance)
 	{
 		GameInstance->RemoveSplitScreenPlayers();

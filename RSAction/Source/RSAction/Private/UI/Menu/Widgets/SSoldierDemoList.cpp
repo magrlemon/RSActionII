@@ -5,10 +5,10 @@
 #include "SHeaderRow.h"
 #include "SoldierStyle.h"
 #include "CoreStyle.h"
-#include "ShooterGameLoadingScreen.h"
-#include "ShooterGameInstance.h"
+#include "SoldierGameLoadingScreen.h"
+#include "SoldierGameInstance.h"
 #include "NetworkReplayStreaming.h"
-#include "ShooterGameViewportClient.h"
+#include "SoldierGameViewportClient.h"
 
 #define LOCTEXT_NAMESPACE "RSAction.HUD.Menu"
 
@@ -214,7 +214,7 @@ void SSoldierDemoList::PlayDemo()
 
 	if (SelectedItem.IsValid())
 	{
-		UShooterGameInstance* const GI = Cast<UShooterGameInstance>(PlayerOwner->GetGameInstance());
+		USoldierGameInstance* const GI = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
 
 		if ( GI != NULL )
 		{
@@ -236,11 +236,11 @@ void SSoldierDemoList::DeleteDemo()
 
 	if (SelectedItem.IsValid())
 	{
-		UShooterGameInstance* const GI = Cast<UShooterGameInstance>(PlayerOwner->GetGameInstance());
+		USoldierGameInstance* const GI = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
 
 		if ( GI != NULL )
 		{
-			UShooterGameViewportClient* SoldierViewport = Cast<UShooterGameViewportClient>( GI->GetGameViewportClient() );
+			USoldierGameViewportClient* SoldierViewport = Cast<USoldierGameViewportClient>( GI->GetGameViewportClient() );
 
 			if ( SoldierViewport )
 			{
@@ -268,11 +268,11 @@ FReply SSoldierDemoList::OnDemoDeleteConfirm()
 		ReplayStreamer->DeleteFinishedStream(SelectedItem->StreamInfo.Name, FDeleteFinishedStreamCallback::CreateSP(this, &SSoldierDemoList::OnDeleteFinishedStreamComplete));
 	}
 
-	UShooterGameInstance* const GI = Cast<UShooterGameInstance>(PlayerOwner->GetGameInstance());
+	USoldierGameInstance* const GI = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
 
 	if ( GI != NULL )
 	{
-		UShooterGameViewportClient * SoldierViewport = Cast<UShooterGameViewportClient>( GI->GetGameViewportClient() );
+		USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>( GI->GetGameViewportClient() );
 
 		if ( SoldierViewport )
 		{
@@ -285,11 +285,11 @@ FReply SSoldierDemoList::OnDemoDeleteConfirm()
 
 FReply SSoldierDemoList::OnDemoDeleteCancel()
 {
-	UShooterGameInstance* const GI = Cast<UShooterGameInstance>(PlayerOwner->GetGameInstance());
+	USoldierGameInstance* const GI = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
 
 	if ( GI != NULL )
 	{
-		UShooterGameViewportClient * SoldierViewport = Cast<UShooterGameViewportClient>( GI->GetGameViewportClient() );
+		USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>( GI->GetGameViewportClient() );
 
 		if ( SoldierViewport )
 		{

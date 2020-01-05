@@ -4,7 +4,7 @@
 #include "SoldierDemoPlaybackMenu.h"
 #include "SoldierStyle.h"
 #include "SoldierMenuSoundsWidgetStyle.h"
-#include "ShooterGameInstance.h"
+#include "SoldierGameInstance.h"
 
 #define LOCTEXT_NAMESPACE "RSAction.HUD.Menu"
 
@@ -106,18 +106,18 @@ void FSoldierDemoPlaybackMenu::OnCancelExitToMain()
 
 void FSoldierDemoPlaybackMenu::OnConfirmExitToMain()
 {
-	UShooterGameInstance* const GameInstance = Cast<UShooterGameInstance>( PlayerOwner->GetGameInstance() );
+	USoldierGameInstance* const GameInstance = Cast<USoldierGameInstance>( PlayerOwner->GetGameInstance() );
 
 	if ( GameInstance )
 	{
 		// tell game instance to go back to main menu state
-		GameInstance->GotoState( ShooterGameInstanceState::MainMenu );
+		GameInstance->GotoState( SoldierGameInstanceState::MainMenu );
 	}
 }
 
 void FSoldierDemoPlaybackMenu::OnUIQuit()
 {
-	UShooterGameInstance* const GameInstance = Cast<UShooterGameInstance>( PlayerOwner->GetGameInstance() );
+	USoldierGameInstance* const GameInstance = Cast<USoldierGameInstance>( PlayerOwner->GetGameInstance() );
 
 	GameMenuWidget->LockControls( true );
 	GameMenuWidget->HideMenu();

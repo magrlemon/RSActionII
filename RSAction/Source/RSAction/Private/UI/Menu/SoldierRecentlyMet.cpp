@@ -5,7 +5,7 @@
 #include "SoldierTypes.h"
 #include "SoldierStyle.h"
 #include "SoldierOptionsWidgetStyle.h"
-#include "ShooterGameUserSettings.h"
+#include "SoldierGameUserSettings.h"
 #include "SoldierPersistentUser.h"
 #include "Player/SoldierLocalPlayer.h"
 #include "OnlineSubsystemUtils.h"
@@ -32,7 +32,7 @@ void FSoldierRecentlyMet::Construct(ULocalPlayer* _PlayerOwner, int32 LocalUserN
 		OnlineSub = Online::GetSubsystem(PlayerOwner->GetWorld());
 	}
 
-	UserSettings = CastChecked<UShooterGameUserSettings>(GEngine->GetGameUserSettings());	
+	UserSettings = CastChecked<USoldierGameUserSettings>(GEngine->GetGameUserSettings());	
 }
 
 void FSoldierRecentlyMet::OnApplySettings()

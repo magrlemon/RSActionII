@@ -2,10 +2,10 @@
 
 #include "RSAction.h"
 #include "SoldierMainMenu.h"
-#include "ShooterGameLoadingScreen.h"
+#include "SoldierGameLoadingScreen.h"
 #include "SoldierStyle.h"
 #include "SoldierMenuSoundsWidgetStyle.h"
-#include "ShooterGameInstance.h"
+#include "SoldierGameInstance.h"
 #include "SlateBasics.h"
 #include "SlateExtras.h"
 #include "GenericPlatformChunkInstall.h"
@@ -13,8 +13,8 @@
 #include "OnlineSubsystemSessionSettings.h"
 #include "SSoldierConfirmationDialog.h"
 #include "SoldierMenuItemWidgetStyle.h"
-#include "ShooterGameUserSettings.h"
-#include "ShooterGameViewportClient.h"
+#include "SoldierGameUserSettings.h"
+#include "SoldierGameViewportClient.h"
 #include "SoldierPersistentUser.h"
 #include "Player/SoldierLocalPlayer.h"
 #include "OnlineSubsystemUtils.h"
@@ -51,7 +51,7 @@ FSoldierMainMenu::~FSoldierMainMenu()
 	CleanupOnlinePrivilegeTask();
 }
 
-void FSoldierMainMenu::Construct(TWeakObjectPtr<UShooterGameInstance> _GameInstance, TWeakObjectPtr<ULocalPlayer> _PlayerOwner)
+void FSoldierMainMenu::Construct(TWeakObjectPtr<USoldierGameInstance> _GameInstance, TWeakObjectPtr<ULocalPlayer> _PlayerOwner)
 {
 	bShowingDownloadPct = false;
 	bAnimateQuickmatchSearchingUI = false;
@@ -73,7 +73,7 @@ void FSoldierMainMenu::Construct(TWeakObjectPtr<UShooterGameInstance> _GameInsta
 #if SHOOTER_CONSOLE_UI
 	bIsLanMatch = FParse::Param(FCommandLine::Get(), TEXT("forcelan"));
 #else
-	UShooterGameUserSettings* const UserSettings = CastChecked<UShooterGameUserSettings>(GEngine->GetGameUserSettings());
+	USoldierGameUserSettings* const UserSettings = CastChecked<USoldierGameUserSettings>(GEngine->GetGameUserSettings());
 	bIsLanMatch = UserSettings->IsLanMatch();
 	bIsDedicatedServer = UserSettings->IsDedicatedServer();
 #endif
@@ -462,7 +462,7 @@ void FSoldierMainMenu::OnMenuHidden()
 	// Menu was hidden from the top-level main menu, on consoles show the welcome screen again.
 	if ( ensure(GameInstance.IsValid()))
 	{
-		GameInstance->GotoState(ShooterGameInstanceState::WelcomeScreen);
+		GameInstance->GotoState(SoldierGameInstanceState::WelcomeScreen);
 	}
 #else
 	RemoveMenuFromGameViewport();
@@ -542,7 +542,7 @@ void FSoldierMainMenu::OnUserCanPlayOnlineQuickMatch(const FUniqueNetId& UserId,
 
 FReply FSoldierMainMenu::OnConfirmGeneric()
 {
-	UShooterGameViewportClient* SoldierViewport = Cast<UShooterGameViewportClient>(GameInstance->GetGameViewportClient());
+	USoldierGameViewportClient* SoldierViewport = Cast<USoldierGameViewportClient>(GameInstance->GetGameViewportClient());
 	if (SoldierViewport)
 	{
 		SoldierViewport->HideDialog();
@@ -1038,7 +1038,7 @@ void FSoldierMainMenu::LanMatchChanged(TSharedPtr<FSoldierMenuItem> MenuItem, in
 	check(JoinLANItem.IsValid());
 	JoinLANItem->SelectedMultiChoice = MultiOptionIndex;
 	bIsLanMatch = MultiOptionIndex > 0;
-	UShooterGameUserSettings* UserSettings = CastChecked<UShooterGameUserSettings>(GEngine->GetGameUserSettings());
+	USoldierGameUserSettings* UserSettings = CastChecked<USoldierGameUserSettings>(GEngine->GetGameUserSettings());
 	UserSettings->SetLanMatch(bIsLanMatch);
 
 	EOnlineMode NewOnlineMode = bIsLanMatch ? EOnlineMode::LAN : EOnlineMode::Online;
@@ -1053,7 +1053,7 @@ void FSoldierMainMenu::DedicatedServerChanged(TSharedPtr<FSoldierMenuItem> MenuI
 	check(DedicatedItem.IsValid());
 	DedicatedItem->SelectedMultiChoice = MultiOptionIndex;
 	bIsDedicatedServer = MultiOptionIndex > 0;
-	UShooterGameUserSettings* UserSettings = CastChecked<UShooterGameUserSettings>(GEngine->GetGameUserSettings());
+	USoldierGameUserSettings* UserSettings = CastChecked<USoldierGameUserSettings>(GEngine->GetGameUserSettings());
 	UserSettings->SetDedicatedServer(bIsDedicatedServer);
 }
 
@@ -1161,7 +1161,7 @@ FReply FSoldierMainMenu::OnConfirm()
 {
 	if (GEngine && GEngine->GameViewport)
 	{
-		UShooterGameViewportClient * SoldierViewport = Cast<UShooterGameViewportClient>(GEngine->GameViewport);
+		USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>(GEngine->GameViewport);
 
 		if (SoldierViewport)
 		{
@@ -1373,7 +1373,7 @@ void FSoldierMainMenu::LockAndHideMenu()
 
 void FSoldierMainMenu::DisplayLoadingScreen()
 {
-	IShooterGameLoadingScreenModule* LoadingScreenModule = FModuleManager::LoadModulePtr<IShooterGameLoadingScreenModule>("ShooterGameLoadingScreen");
+	ISoldierGameLoadingScreenModule* LoadingScreenModule = FModuleManager::LoadModulePtr<ISoldierGameLoadingScreenModule>("SoldierGameLoadingScreen");
 	if( LoadingScreenModule != NULL )
 	{
 		LoadingScreenModule->StartInGameLoadingScreen();

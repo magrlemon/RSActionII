@@ -1,19 +1,19 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
 #include "RSAction.h"
-#include "ShooterGameViewportClient.h"
+#include "SoldierGameViewportClient.h"
 #include "SSoldierConfirmationDialog.h"
 #include "SSafeZone.h"
 #include "SThrobber.h"
 #include "Player/SoldierLocalPlayer.h"
 
-UShooterGameViewportClient::UShooterGameViewportClient(const FObjectInitializer& ObjectInitializer)
+USoldierGameViewportClient::USoldierGameViewportClient(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	SetSuppressTransitionMessage(true);
 }
 
-void UShooterGameViewportClient::NotifyPlayerAdded(int32 PlayerIndex, ULocalPlayer* AddedPlayer)
+void USoldierGameViewportClient::NotifyPlayerAdded(int32 PlayerIndex, ULocalPlayer* AddedPlayer)
 {
 	Super::NotifyPlayerAdded(PlayerIndex, AddedPlayer);
 
@@ -24,9 +24,9 @@ void UShooterGameViewportClient::NotifyPlayerAdded(int32 PlayerIndex, ULocalPlay
  	}
 }
 
-void UShooterGameViewportClient::AddViewportWidgetContent( TSharedRef<class SWidget> ViewportContent, const int32 ZOrder )
+void USoldierGameViewportClient::AddViewportWidgetContent( TSharedRef<class SWidget> ViewportContent, const int32 ZOrder )
 {
-	UE_LOG( LogPlayerManagement, Log, TEXT( "UShooterGameViewportClient::AddViewportWidgetContent: %p" ), &ViewportContent.Get() );
+	UE_LOG( LogPlayerManagement, Log, TEXT( "USoldierGameViewportClient::AddViewportWidgetContent: %p" ), &ViewportContent.Get() );
 
 	if ( ( DialogWidget.IsValid() || LoadingScreenWidget.IsValid() ) && ViewportContent != DialogWidget && ViewportContent != LoadingScreenWidget )
 	{
@@ -45,9 +45,9 @@ void UShooterGameViewportClient::AddViewportWidgetContent( TSharedRef<class SWid
 	Super::AddViewportWidgetContent( ViewportContent, 0 );
 }
 
-void UShooterGameViewportClient::RemoveViewportWidgetContent( TSharedRef<class SWidget> ViewportContent )
+void USoldierGameViewportClient::RemoveViewportWidgetContent( TSharedRef<class SWidget> ViewportContent )
 {
-	UE_LOG( LogPlayerManagement, Log, TEXT( "UShooterGameViewportClient::RemoveViewportWidgetContent: %p" ), &ViewportContent.Get()  );
+	UE_LOG( LogPlayerManagement, Log, TEXT( "USoldierGameViewportClient::RemoveViewportWidgetContent: %p" ), &ViewportContent.Get()  );
 
 	ViewportContentStack.Remove( ViewportContent );
 	HiddenViewportContentStack.Remove( ViewportContent );
@@ -55,7 +55,7 @@ void UShooterGameViewportClient::RemoveViewportWidgetContent( TSharedRef<class S
 	Super::RemoveViewportWidgetContent( ViewportContent );
 }
 
-void UShooterGameViewportClient::HideExistingWidgets()
+void USoldierGameViewportClient::HideExistingWidgets()
 {
 	check( HiddenViewportContentStack.Num() == 0 );
 
@@ -69,7 +69,7 @@ void UShooterGameViewportClient::HideExistingWidgets()
 	HiddenViewportContentStack = CopyOfViewportContentStack;
 }
 
-void UShooterGameViewportClient::ShowExistingWidgets()
+void USoldierGameViewportClient::ShowExistingWidgets()
 {
 	// We shouldn't have any visible widgets at this point
 	check( ViewportContentStack.Num() == 0 );
@@ -86,9 +86,9 @@ void UShooterGameViewportClient::ShowExistingWidgets()
 	HiddenViewportContentStack.Empty();
 }
 
-void UShooterGameViewportClient::ShowDialog(TWeakObjectPtr<ULocalPlayer> PlayerOwner, ESoldierDialogType::Type DialogType, const FText& Message, const FText& Confirm, const FText& Cancel, const FOnClicked& OnConfirm, const FOnClicked& OnCancel)
+void USoldierGameViewportClient::ShowDialog(TWeakObjectPtr<ULocalPlayer> PlayerOwner, ESoldierDialogType::Type DialogType, const FText& Message, const FText& Confirm, const FText& Cancel, const FOnClicked& OnConfirm, const FOnClicked& OnCancel)
 {
-	UE_LOG( LogPlayerManagement, Log, TEXT( "UShooterGameViewportClient::ShowDialog..." ) );
+	UE_LOG( LogPlayerManagement, Log, TEXT( "USoldierGameViewportClient::ShowDialog..." ) );
 
 	if ( DialogWidget.IsValid() )
 	{
@@ -127,9 +127,9 @@ void UShooterGameViewportClient::ShowDialog(TWeakObjectPtr<ULocalPlayer> PlayerO
 	}
 }
 
-void UShooterGameViewportClient::HideDialog()
+void USoldierGameViewportClient::HideDialog()
 {
-	UE_LOG( LogPlayerManagement, Log, TEXT( "UShooterGameViewportClient::HideDialog. DialogWidget: %p, OldFocusWidget: %p" ), DialogWidget.Get(), OldFocusWidget.Get() );
+	UE_LOG( LogPlayerManagement, Log, TEXT( "USoldierGameViewportClient::HideDialog. DialogWidget: %p, OldFocusWidget: %p" ), DialogWidget.Get(), OldFocusWidget.Get() );
 
 	if ( DialogWidget.IsValid() )
 	{
@@ -156,7 +156,7 @@ void UShooterGameViewportClient::HideDialog()
 	}
 }
 
-void UShooterGameViewportClient::ShowLoadingScreen()
+void USoldierGameViewportClient::ShowLoadingScreen()
 {
 	if ( LoadingScreenWidget.IsValid() )
 	{
@@ -177,12 +177,12 @@ void UShooterGameViewportClient::ShowLoadingScreen()
 		HideExistingWidgets();
 	}
 
-	LoadingScreenWidget = SNew( SShooterLoadingScreen );
+	LoadingScreenWidget = SNew( SSoldierLoadingScreen );
 
 	AddViewportWidgetContent( LoadingScreenWidget.ToSharedRef() );
 }
 
-void UShooterGameViewportClient::HideLoadingScreen()
+void USoldierGameViewportClient::HideLoadingScreen()
 {
 	if ( !LoadingScreenWidget.IsValid() )
 	{
@@ -207,17 +207,17 @@ void UShooterGameViewportClient::HideLoadingScreen()
 	}
 }
 
-ESoldierDialogType::Type UShooterGameViewportClient::GetDialogType() const
+ESoldierDialogType::Type USoldierGameViewportClient::GetDialogType() const
 {
 	return (DialogWidget.IsValid() ? DialogWidget->DialogType : ESoldierDialogType::None);
 }
 
-TWeakObjectPtr<ULocalPlayer> UShooterGameViewportClient::GetDialogOwner() const
+TWeakObjectPtr<ULocalPlayer> USoldierGameViewportClient::GetDialogOwner() const
 {
 	return (DialogWidget.IsValid() ? DialogWidget->PlayerOwner : nullptr);
 }
 
-void UShooterGameViewportClient::Tick(float DeltaSeconds)
+void USoldierGameViewportClient::Tick(float DeltaSeconds)
 {
 	if ( DialogWidget.IsValid() && !LoadingScreenWidget.IsValid() )
 	{
@@ -234,7 +234,7 @@ void UShooterGameViewportClient::Tick(float DeltaSeconds)
 }
 
 #if WITH_EDITOR
-void UShooterGameViewportClient::DrawTransition(UCanvas* Canvas)
+void USoldierGameViewportClient::DrawTransition(UCanvas* Canvas)
 {
 	if (GetOuterUEngine() != NULL)
 	{
@@ -252,21 +252,21 @@ void UShooterGameViewportClient::DrawTransition(UCanvas* Canvas)
 }
 #endif //WITH_EDITOR
 
-void UShooterGameViewportClient::BeginDestroy()
+void USoldierGameViewportClient::BeginDestroy()
 {
 	ReleaseSlateResources();
 
 	Super::BeginDestroy();
 }
 
-void UShooterGameViewportClient::DetachViewportClient()
+void USoldierGameViewportClient::DetachViewportClient()
 {
 	Super::DetachViewportClient();
 
 	ReleaseSlateResources();
 }
 
-void UShooterGameViewportClient::ReleaseSlateResources()
+void USoldierGameViewportClient::ReleaseSlateResources()
 {
 	OldFocusWidget.Reset();
 	LoadingScreenWidget.Reset();
@@ -274,12 +274,12 @@ void UShooterGameViewportClient::ReleaseSlateResources()
 	HiddenViewportContentStack.Empty();
 }
 
-void SShooterLoadingScreen::Construct(const FArguments& InArgs)
+void SSoldierLoadingScreen::Construct(const FArguments& InArgs)
 {
 	static const FName LoadingScreenName(TEXT("/Game/UI/Menu/LoadingScreen.LoadingScreen"));
 
 	//since we are not using game styles here, just load one image
-	LoadingScreenBrush = MakeShareable( new FShooterGameLoadingScreenBrush( LoadingScreenName, FVector2D(1920,1080) ) );
+	LoadingScreenBrush = MakeShareable( new FSoldierGameLoadingScreenBrush( LoadingScreenName, FVector2D(1920,1080) ) );
 
 	ChildSlot
 	[
@@ -302,7 +302,7 @@ void SShooterLoadingScreen::Construct(const FArguments& InArgs)
 			.IsTitleSafe(true)
 			[
 				SNew(SThrobber)
-				.Visibility(this, &SShooterLoadingScreen::GetLoadIndicatorVisibility)
+				.Visibility(this, &SSoldierLoadingScreen::GetLoadIndicatorVisibility)
 			]
 		]
 	];

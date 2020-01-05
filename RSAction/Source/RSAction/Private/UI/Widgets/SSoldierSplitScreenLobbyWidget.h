@@ -4,7 +4,7 @@
 
 #include "SlateBasics.h"
 #include "SlateExtras.h"
-#include "ShooterGameInstance.h"
+#include "SoldierGameInstance.h"
 
 class SSoldierSplitScreenLobby : public SCompoundWidget
 {
@@ -49,7 +49,7 @@ private:
 
 	void HandleLoginUIClosedAndReady(TSharedPtr<const FUniqueNetId> UniqueId, const int UserIndex, const FOnlineError& Error = FOnlineError());
 
-	UShooterGameInstance* GetGameInstance() const;
+	USoldierGameInstance* GetGameInstance() const;
 
 	FText GetPlayFindText() const;
 #if PLATFORM_SWITCH

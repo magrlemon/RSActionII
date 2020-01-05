@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "ShooterGameUserSettings.generated.h"
+#include "SoldierGameUserSettings.generated.h"
 
 UCLASS()
-class UShooterGameUserSettings : public UGameUserSettings
+class USoldierGameUserSettings : public UGameUserSettings
 {
 	GENERATED_UCLASS_BODY()
 

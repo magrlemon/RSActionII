@@ -4,7 +4,7 @@
 #include "SoldierStyle.h"
 #include "SSoldierConfirmationDialog.h"
 #include "SoldierMenuItemWidgetStyle.h"
-#include "ShooterGameInstance.h"
+#include "SoldierGameInstance.h"
 #include "OnlineSubsystemUtils.h"
 
 void SSoldierConfirmationDialog::Construct( const FArguments& InArgs )

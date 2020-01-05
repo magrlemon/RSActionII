@@ -1,15 +1,15 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
 #include "RSAction.h"
-#include "ShooterGameUserSettings.h"
+#include "SoldierGameUserSettings.h"
 
-UShooterGameUserSettings::UShooterGameUserSettings(const FObjectInitializer& ObjectInitializer)
+USoldierGameUserSettings::USoldierGameUserSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	SetToDefaults();
 }
 
-void UShooterGameUserSettings::SetToDefaults()
+void USoldierGameUserSettings::SetToDefaults()
 {
 	Super::SetToDefaults();
 
@@ -18,7 +18,7 @@ void UShooterGameUserSettings::SetToDefaults()
 	bIsDedicatedServer = false;
 }
 
-void UShooterGameUserSettings::ApplySettings(bool bCheckForCommandLineOverrides)
+void USoldierGameUserSettings::ApplySettings(bool bCheckForCommandLineOverrides)
 {
 	if (GraphicsQuality == 0)
 	{

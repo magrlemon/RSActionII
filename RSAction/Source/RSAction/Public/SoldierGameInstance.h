@@ -7,7 +7,7 @@
 #include "OnlineSessionInterface.h"
 #include "Engine/GameInstance.h"
 #include "Engine/NetworkDelegates.h"
-#include "ShooterGameInstance.generated.h"
+#include "SoldierGameInstance.generated.h"
 
 class FVariantData;
 class FSoldierMainMenu;
@@ -15,7 +15,7 @@ class FSoldierWelcomeMenu;
 class FSoldierMessageMenu;
 class ASoldierGameSession;
 
-namespace ShooterGameInstanceState
+namespace SoldierGameInstanceState
 {
 	extern const FName None;
 	extern const FName PendingInvite;
@@ -26,7 +26,7 @@ namespace ShooterGameInstanceState
 }
 
 /** This class holds the value of what message to display when we are in the "MessageMenu" state */
-class FShooterPendingMessage
+class FSoldierPendingMessage
 {
 public:
 	FText	DisplayString;				// This is the display message in the main message body
@@ -37,10 +37,10 @@ public:
 	TWeakObjectPtr< ULocalPlayer > PlayerOwner;		// Owner of dialog who will have focus (can be NULL)
 };
 
-class FShooterPendingInvite
+class FSoldierPendingInvite
 {
 public:
-	FShooterPendingInvite() : ControllerId(-1), UserId(nullptr), bPrivilegesCheckedAndAllowed(false) {}
+	FSoldierPendingInvite() : ControllerId(-1), UserId(nullptr), bPrivilegesCheckedAndAllowed(false) {}
 
 	int32							 ControllerId;
 	TSharedPtr< const FUniqueNetId > UserId;
@@ -48,10 +48,10 @@ public:
 	bool							 bPrivilegesCheckedAndAllowed;
 };
 
-struct FShooterPlayTogetherInfo
+struct FSoldierPlayTogetherInfo
 {
-	FShooterPlayTogetherInfo() : UserIndex(-1) {}
-	FShooterPlayTogetherInfo(int32 InUserIndex, const TArray<TSharedPtr<const FUniqueNetId>>& InUserIdList)
+	FSoldierPlayTogetherInfo() : UserIndex(-1) {}
+	FSoldierPlayTogetherInfo(int32 InUserIndex, const TArray<TSharedPtr<const FUniqueNetId>>& InUserIdList)
 		: UserIndex(InUserIndex)
 	{
 		UserIdList.Append(InUserIdList);
@@ -61,10 +61,10 @@ struct FShooterPlayTogetherInfo
 	TArray<TSharedPtr<const FUniqueNetId>> UserIdList;
 };
 
-class SShooterWaitDialog : public SCompoundWidget
+class SSoldierWaitDialog : public SCompoundWidget
 {
 public:
-	SLATE_BEGIN_ARGS(SShooterWaitDialog)
+	SLATE_BEGIN_ARGS(SSoldierWaitDialog)
 	{}
 	SLATE_ARGUMENT(FText, MessageText)
 	SLATE_END_ARGS()
@@ -93,7 +93,7 @@ enum class EOnlineMode : uint8
 
 
 UCLASS(config=Game)
-class UShooterGameInstance : public UGameInstance
+class USoldierGameInstance : public UGameInstance
 {
 public:
 	GENERATED_UCLASS_BODY()
@@ -117,7 +117,7 @@ public:
 	bool HostGame(ULocalPlayer* LocalPlayer, const FString& GameType, const FString& InTravelURL);
 	bool JoinSession(ULocalPlayer* LocalPlayer, int32 SessionIndexInSearchResults);
 	bool JoinSession(ULocalPlayer* LocalPlayer, const FOnlineSessionSearchResult& SearchResult);
-	void SetPendingInvite(const FShooterPendingInvite& InPendingInvite);
+	void SetPendingInvite(const FSoldierPendingInvite& InPendingInvite);
 
 	bool PlayDemo(ULocalPlayer* LocalPlayer, const FString& DemoName);
 	
@@ -214,7 +214,7 @@ public:
 	void OnPlayTogetherEventReceived(const int32 UserIndex, const TArray<TSharedPtr<const FUniqueNetId>>& UserIdList);
 
 	/** Resets Play Together PS4 system event info after it's been handled */
-	void ResetPlayTogetherInfo() { PlayTogetherInfo = FShooterPlayTogetherInfo(); }
+	void ResetPlayTogetherInfo() { PlayTogetherInfo = FSoldierPlayTogetherInfo(); }
 
 private:
 
@@ -228,9 +228,9 @@ private:
 	FName CurrentState;
 	FName PendingState;
 
-	FShooterPendingMessage PendingMessage;
+	FSoldierPendingMessage PendingMessage;
 
-	FShooterPendingInvite PendingInvite;
+	FSoldierPendingInvite PendingInvite;
 
 	/** URL to travel to after pending network operations */
 	FString TravelURL;
@@ -254,7 +254,7 @@ private:
 	TSharedPtr<FSoldierWelcomeMenu> WelcomeMenuUI;
 
 	/** Dialog widget to show non-interactive waiting messages for network timeouts and such. */
-	TSharedPtr<SShooterWaitDialog> WaitMessageWidget;
+	TSharedPtr<SSoldierWaitDialog> WaitMessageWidget;
 
 	/** Controller to ignore for pairing changes. -1 to skip ignore. */
 	int32 IgnorePairingChangeForControllerId;
@@ -276,7 +276,7 @@ private:
 	FDelegateHandle OnCreatePresenceSessionCompleteDelegateHandle;
 
 	/** Play Together on PS4 system event info */
-	FShooterPlayTogetherInfo PlayTogetherInfo;
+	FSoldierPlayTogetherInfo PlayTogetherInfo;
 
 	/** Local player login status when the system is suspended */
 	TArray<ELoginStatus::Type> LocalPlayerOnlineStatus;

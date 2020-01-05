@@ -6,7 +6,7 @@
 #include "SoldierStyle.h"
 #include "SoldierOptionsWidgetStyle.h"
 #include "Player/SoldierPersistentUser.h"
-#include "ShooterGameUserSettings.h"
+#include "SoldierGameUserSettings.h"
 #include "SoldierLocalPlayer.h"
 #include "OnlineSubsystemUtils.h"
 
@@ -36,7 +36,7 @@ void FSoldierFriends::Construct(ULocalPlayer* _PlayerOwner, int32 LocalUserNum_)
 
 	UpdateFriends(LocalUserNum);
 
-	UserSettings = CastChecked<UShooterGameUserSettings>(GEngine->GetGameUserSettings());
+	UserSettings = CastChecked<USoldierGameUserSettings>(GEngine->GetGameUserSettings());
 }
 
 void FSoldierFriends::OnApplySettings()

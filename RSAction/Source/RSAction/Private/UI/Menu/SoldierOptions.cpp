@@ -5,7 +5,7 @@
 #include "SoldierTypes.h"
 #include "SoldierStyle.h"
 #include "SoldierOptionsWidgetStyle.h"
-#include "ShooterGameUserSettings.h"
+#include "SoldierGameUserSettings.h"
 #include "Player/SoldierPersistentUser.h"
 #include "Player/SoldierLocalPlayer.h"
 
@@ -96,7 +96,7 @@ void FSoldierOptions::Construct(ULocalPlayer* InPlayerOwner)
     //Default vibration to On.
 	VibrationOption->SelectedMultiChoice = 1;
 
-	UserSettings = CastChecked<UShooterGameUserSettings>(GEngine->GetGameUserSettings());
+	UserSettings = CastChecked<USoldierGameUserSettings>(GEngine->GetGameUserSettings());
 	ResolutionOpt = UserSettings->GetScreenResolution();
 	bFullScreenOpt = UserSettings->GetFullscreenMode();
 	GraphicsQualityOpt = UserSettings->GetGraphicsQuality();

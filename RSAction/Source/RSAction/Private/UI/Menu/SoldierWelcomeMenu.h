@@ -7,7 +7,7 @@ class FSoldierWelcomeMenu : public TSharedFromThis<FSoldierWelcomeMenu>
 {
 public:
 	/** build menu */
-	void Construct( TWeakObjectPtr< class UShooterGameInstance > InGameInstance );
+	void Construct( TWeakObjectPtr< class USoldierGameInstance > InGameInstance );
 
 	/** Add the menu to the gameviewport so it becomes visible */
 	void AddToGameViewport();
@@ -40,11 +40,11 @@ public:
 	{
 		return bControlsLocked;
 	}
-	TWeakObjectPtr< class UShooterGameInstance > GetGameInstance() { return GameInstance; }
+	TWeakObjectPtr< class USoldierGameInstance > GetGameInstance() { return GameInstance; }
 
 private:
 	/** Owning game instance */
-	TWeakObjectPtr< class UShooterGameInstance > GameInstance;
+	TWeakObjectPtr< class USoldierGameInstance > GameInstance;
 
 	/** Cache the user id that tried to advance, so we can use it again after the confirmation dialog */
 	int PendingControllerIndex;

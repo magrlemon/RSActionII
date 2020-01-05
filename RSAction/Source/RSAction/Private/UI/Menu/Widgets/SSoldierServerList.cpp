@@ -4,8 +4,8 @@
 #include "SSoldierServerList.h"
 #include "SHeaderRow.h"
 #include "SoldierStyle.h"
-#include "ShooterGameLoadingScreen.h"
-#include "ShooterGameInstance.h"
+#include "SoldierGameLoadingScreen.h"
+#include "SoldierGameInstance.h"
 #include "Online/SoldierGameSession.h"
 
 #define LOCTEXT_NAMESPACE "RSAction.HUD.Menu"
@@ -79,7 +79,7 @@ void SSoldierServerList::Construct(const FArguments& InArgs)
  */
 ASoldierGameSession* SSoldierServerList::GetGameSession() const
 {
-	UShooterGameInstance* const GI = Cast<UShooterGameInstance>(PlayerOwner->GetGameInstance());
+	USoldierGameInstance* const GI = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
 	return GI ? GI->GetGameSession() : nullptr;
 }
 
@@ -214,7 +214,7 @@ void SSoldierServerList::BeginServerSearch(bool bLANMatch, bool bIsDedicatedServ
 		ServerList.Empty();
 		LastSearchTime = CurrentTime;
 
-		UShooterGameInstance* const GI = Cast<UShooterGameInstance>(PlayerOwner->GetGameInstance());
+		USoldierGameInstance* const GI = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
 		if (GI)
 		{
 			GI->FindSessions(PlayerOwner.Get(), bIsDedicatedServer, bLANMatchSearch);
@@ -279,7 +279,7 @@ void SSoldierServerList::ConnectToServer()
 			GEngine->GameViewport->RemoveAllViewportWidgets();
 		}
 		
-		UShooterGameInstance* const GI = Cast<UShooterGameInstance>(PlayerOwner->GetGameInstance());
+		USoldierGameInstance* const GI = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
 		if (GI)
 		{
 			GI->JoinSession(PlayerOwner.Get(), ServerToJoin);

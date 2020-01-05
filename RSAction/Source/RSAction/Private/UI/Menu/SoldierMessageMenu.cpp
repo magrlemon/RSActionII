@@ -4,12 +4,12 @@
 #include "SoldierStyle.h"
 #include "SSoldierConfirmationDialog.h"
 #include "SoldierMessageMenu.h"
-#include "ShooterGameViewportClient.h"
-#include "ShooterGameInstance.h"
+#include "SoldierGameViewportClient.h"
+#include "SoldierGameInstance.h"
 
 #define LOCTEXT_NAMESPACE "RSAction.HUD.Menu"
 
-void FSoldierMessageMenu::Construct(TWeakObjectPtr<UShooterGameInstance> InGameInstance, TWeakObjectPtr<ULocalPlayer> InPlayerOwner, const FText& Message, const FText& OKButtonText, const FText& CancelButtonText, const FName& InPendingNextState)
+void FSoldierMessageMenu::Construct(TWeakObjectPtr<USoldierGameInstance> InGameInstance, TWeakObjectPtr<ULocalPlayer> InPlayerOwner, const FText& Message, const FText& OKButtonText, const FText& CancelButtonText, const FName& InPendingNextState)
 {
 	GameInstance			= InGameInstance;
 	PlayerOwner				= InPlayerOwner;
@@ -17,7 +17,7 @@ void FSoldierMessageMenu::Construct(TWeakObjectPtr<UShooterGameInstance> InGameI
 
 	if ( ensure( GameInstance.IsValid() ) )
 	{
-		UShooterGameViewportClient* SoldierViewport = Cast<UShooterGameViewportClient>( GameInstance->GetGameViewportClient() );
+		USoldierGameViewportClient* SoldierViewport = Cast<USoldierGameViewportClient>( GameInstance->GetGameViewportClient() );
 
 		if ( SoldierViewport )
 		{
@@ -42,7 +42,7 @@ void FSoldierMessageMenu::RemoveFromGameViewport()
 {
 	if ( ensure( GameInstance.IsValid() ) )
 	{
-		UShooterGameViewportClient * SoldierViewport = Cast<UShooterGameViewportClient>( GameInstance->GetGameViewportClient() );
+		USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>( GameInstance->GetGameViewportClient() );
 
 		if ( SoldierViewport )
 		{

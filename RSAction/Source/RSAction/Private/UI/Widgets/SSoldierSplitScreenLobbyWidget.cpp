@@ -6,7 +6,7 @@
 #include "SoldierMenuItemWidgetStyle.h"
 #include "SoldierMenuWidgetStyle.h"
 #include "SSoldierConfirmationDialog.h"
-#include "ShooterGameViewportClient.h"
+#include "SoldierGameViewportClient.h"
 #include "OnlineSubsystemUtils.h"
 
 #define LOCTEXT_NAMESPACE "SoldierGame.SplitScreenLobby"
@@ -293,7 +293,7 @@ void SSoldierSplitScreenLobby::UpdateSlots()
 
 void SSoldierSplitScreenLobby::ConditionallyReadyPlayer( const int ControllerId, const bool bCanShowUI )
 {
-	UShooterGameInstance* const GameInstance = GetGameInstance();
+	USoldierGameInstance* const GameInstance = GetGameInstance();
 	if (GameInstance == nullptr)
 	{
 		return;
@@ -392,7 +392,7 @@ void SSoldierSplitScreenLobby::UnreadyPlayer( const int ControllerId )
 
 FReply SSoldierSplitScreenLobby::OnOkOrCancel()
 {
-	UShooterGameViewportClient* SoldierViewport = Cast<UShooterGameViewportClient>(GetGameInstance()->GetGameViewportClient());
+	USoldierGameViewportClient* SoldierViewport = Cast<USoldierGameViewportClient>(GetGameInstance()->GetGameViewportClient());
 
 	if (SoldierViewport != NULL)
 	{
@@ -451,7 +451,7 @@ void SSoldierSplitScreenLobby::OnUserCanPlay(const FUniqueNetId& UserId, EUserPr
 				FString Nickname = Identity->GetPlayerNickname(UserId);
 
 				// Show warning that the user cannot play due to age restrictions
-				UShooterGameViewportClient * SoldierViewport = Cast<UShooterGameViewportClient>(GetGameInstance()->GetGameViewportClient());
+				USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>(GetGameInstance()->GetGameViewportClient());
 
 				if (SoldierViewport != NULL)
 				{
@@ -499,7 +499,7 @@ bool SSoldierSplitScreenLobby::IsUniqueIdOnline( const FUniqueNetId& UniqueId ) 
 
 FReply SSoldierSplitScreenLobby::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
 {
-	const UShooterGameInstance* GameInstance = GetGameInstance();
+	const USoldierGameInstance* GameInstance = GetGameInstance();
 	if (GameInstance == nullptr)
 	{
 		return FReply::Unhandled();
@@ -526,7 +526,7 @@ FReply SSoldierSplitScreenLobby::OnKeyDown(const FGeometry& MyGeometry, const FK
 				else
 				{
 					// Show warning that the guest needs the sponsor
-					UShooterGameViewportClient * SoldierViewport = Cast<UShooterGameViewportClient>(GameInstance->GetGameViewportClient());
+					USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>(GameInstance->GetGameViewportClient());
 
 					if ( SoldierViewport != NULL )
 					{
@@ -594,7 +594,7 @@ void SSoldierSplitScreenLobby::OnFocusLost( const FFocusEvent& InFocusEvent )
 
 void SSoldierSplitScreenLobby::HandleLoginUIClosedAndReady( TSharedPtr<const FUniqueNetId> UniqueId, const int UserIndex, const FOnlineError& Error )
 {
-	const UShooterGameInstance* GameInstance = GetGameInstance();
+	const USoldierGameInstance* GameInstance = GetGameInstance();
 	if (GameInstance == nullptr)
 	{
 		return;
@@ -636,16 +636,16 @@ void SSoldierSplitScreenLobby::OnLoginComplete(int32 LocalUserNum, bool bWasSucc
 	}
 }
 
-UShooterGameInstance * SSoldierSplitScreenLobby::GetGameInstance() const
+USoldierGameInstance * SSoldierSplitScreenLobby::GetGameInstance() const
 {
 	if ( !PlayerOwner.IsValid() )
 	{
 		return NULL;
 	}
 
-	check( PlayerOwner->GetGameInstance() == nullptr || CastChecked< UShooterGameInstance >( PlayerOwner->GetGameInstance() ) != nullptr );
+	check( PlayerOwner->GetGameInstance() == nullptr || CastChecked< USoldierGameInstance >( PlayerOwner->GetGameInstance() ) != nullptr );
 
-	return Cast< UShooterGameInstance >( PlayerOwner->GetGameInstance() );
+	return Cast< USoldierGameInstance >( PlayerOwner->GetGameInstance() );
 }
 
 FText SSoldierSplitScreenLobby::GetPlayFindText() const
@@ -656,7 +656,7 @@ FText SSoldierSplitScreenLobby::GetPlayFindText() const
 #if PLATFORM_SWITCH
 FText SSoldierSplitScreenLobby::GetPlayAsGuestText() const
 {
-	const UShooterGameInstance* GameInstance = GetGameInstance();
+	const USoldierGameInstance* GameInstance = GetGameInstance();
 	if (GameInstance == nullptr)
 	{
 		return FText();

@@ -5,13 +5,13 @@
 
 DECLARE_DELEGATE(FMessageMenuButtonClicked);
 
-class UShooterGameInstance;
+class USoldierGameInstance;
 
 class FSoldierMessageMenu : public TSharedFromThis<FSoldierMessageMenu>
 {
 public:
 	/** build menu */
-	void Construct(TWeakObjectPtr<UShooterGameInstance> InGameInstance, TWeakObjectPtr<ULocalPlayer> InPlayerOwner, const FText& Message, const FText& OKButtonText, const FText& CancelButtonText,  const FName& InPendingNextState);
+	void Construct(TWeakObjectPtr<USoldierGameInstance> InGameInstance, TWeakObjectPtr<ULocalPlayer> InPlayerOwner, const FText& Message, const FText& OKButtonText, const FText& CancelButtonText,  const FName& InPendingNextState);
 
 	/** Remove from the gameviewport. */
 	void RemoveFromGameViewport();
@@ -34,7 +34,7 @@ public:
 private:
 
 	/** Owning game instance */
-	TWeakObjectPtr<UShooterGameInstance> GameInstance;
+	TWeakObjectPtr<USoldierGameInstance> GameInstance;
 
 	/** Local player that will have focus of the dialog box (can be NULL) */
 	TWeakObjectPtr<ULocalPlayer> PlayerOwner;

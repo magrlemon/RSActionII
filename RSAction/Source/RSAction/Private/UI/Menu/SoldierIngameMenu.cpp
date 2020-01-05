@@ -6,7 +6,7 @@
 #include "SoldierMenuSoundsWidgetStyle.h"
 #include "Online.h"
 #include "OnlineExternalUIInterface.h"
-#include "ShooterGameInstance.h"
+#include "SoldierGameInstance.h"
 #include "UI/SoldierHUD.h"
 #include "OnlineSubsystemUtils.h"
 
@@ -30,10 +30,10 @@ void FSoldierIngameMenu::Construct(ULocalPlayer* _PlayerOwner)
 	}
 	
 	//todo:  don't create ingame menus for remote players.
-	const UShooterGameInstance* GameInstance = nullptr;
+	const USoldierGameInstance* GameInstance = nullptr;
 	if (PlayerOwner)
 	{
-		GameInstance = Cast<UShooterGameInstance>(PlayerOwner->GetGameInstance());
+		GameInstance = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
 	}
 
 	if (!GameMenuWidget.IsValid())
@@ -257,19 +257,19 @@ void FSoldierIngameMenu::OnCancelExitToMain()
 
 void FSoldierIngameMenu::OnConfirmExitToMain()
 {
-	UShooterGameInstance* const GameInstance = Cast<UShooterGameInstance>(PlayerOwner->GetGameInstance());
+	USoldierGameInstance* const GameInstance = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
 	if (GameInstance)
 	{
 		GameInstance->LabelPlayerAsQuitter(PlayerOwner);
 
 		// tell game instance to go back to main menu state
-		GameInstance->GotoState(ShooterGameInstanceState::MainMenu);
+		GameInstance->GotoState(SoldierGameInstanceState::MainMenu);
 	}
 }
 
 void FSoldierIngameMenu::OnUIQuit()
 {
-	UShooterGameInstance* const GI = Cast<UShooterGameInstance>(PlayerOwner->GetGameInstance());
+	USoldierGameInstance* const GI = Cast<USoldierGameInstance>(PlayerOwner->GetGameInstance());
 	if (GI)
 	{
 		GI->LabelPlayerAsQuitter(PlayerOwner);

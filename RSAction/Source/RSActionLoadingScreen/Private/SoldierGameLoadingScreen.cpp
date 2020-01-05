@@ -1,6 +1,6 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "ShooterGameLoadingScreen.h"
+#include "SoldierGameLoadingScreen.h"
 #include "GenericApplication.h"
 #include "GenericApplicationMessageHandler.h"
 #include "SlateBasics.h"
@@ -9,9 +9,9 @@
 
 // This module must be loaded "PreLoadingScreen" in the .uproject file, otherwise it will not hook in time!
 
-struct FShooterGameLoadingScreenBrush : public FSlateDynamicImageBrush, public FGCObject
+struct FSoldierGameLoadingScreenBrush : public FSlateDynamicImageBrush, public FGCObject
 {
-	FShooterGameLoadingScreenBrush( const FName InTextureName, const FVector2D& InImageSize )
+	FSoldierGameLoadingScreenBrush( const FName InTextureName, const FVector2D& InImageSize )
 		: FSlateDynamicImageBrush( InTextureName, InImageSize )
 	{
 		SetResourceObject(LoadObject<UObject>( NULL, *InTextureName.ToString() ));
@@ -23,10 +23,10 @@ struct FShooterGameLoadingScreenBrush : public FSlateDynamicImageBrush, public F
 	}
 };
 
-class SShooterLoadingScreen2 : public SCompoundWidget
+class SSoldierLoadingScreen2 : public SCompoundWidget
 {
 public:
-	SLATE_BEGIN_ARGS(SShooterLoadingScreen2) {}
+	SLATE_BEGIN_ARGS(SSoldierLoadingScreen2) {}
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs)
@@ -34,7 +34,7 @@ public:
 		static const FName LoadingScreenName(TEXT("/Game/UI/Menu/LoadingScreen.LoadingScreen"));
 
 		//since we are not using game styles here, just load one image
-		LoadingScreenBrush = MakeShareable( new FShooterGameLoadingScreenBrush( LoadingScreenName, FVector2D(1920,1080) ) );
+		LoadingScreenBrush = MakeShareable( new FSoldierGameLoadingScreenBrush( LoadingScreenName, FVector2D(1920,1080) ) );
 
 		ChildSlot
 		[
@@ -57,7 +57,7 @@ public:
 				.IsTitleSafe(true)
 				[
 					SNew(SThrobber)
-					.Visibility(this, &SShooterLoadingScreen2::GetLoadIndicatorVisibility)
+					.Visibility(this, &SSoldierLoadingScreen2::GetLoadIndicatorVisibility)
 				]
 			]
 		];
@@ -73,7 +73,7 @@ private:
 	TSharedPtr<FSlateDynamicImageBrush> LoadingScreenBrush;
 };
 
-class FShooterGameLoadingScreenModule : public IShooterGameLoadingScreenModule
+class FSoldierGameLoadingScreenModule : public ISoldierGameLoadingScreenModule
 {
 public:
 	virtual void StartupModule() override
@@ -105,10 +105,10 @@ public:
 	{
 		FLoadingScreenAttributes LoadingScreen;
 		LoadingScreen.bAutoCompleteWhenLoadingCompletes = true;
-		LoadingScreen.WidgetLoadingScreen = SNew(SShooterLoadingScreen2);
+		LoadingScreen.WidgetLoadingScreen = SNew(SSoldierLoadingScreen2);
 
 		GetMoviePlayer()->SetupLoadingScreen(LoadingScreen);
 	}
 };
 
-IMPLEMENT_GAME_MODULE(FShooterGameLoadingScreenModule, RSActionLoadingScreen);
+IMPLEMENT_GAME_MODULE(FSoldierGameLoadingScreenModule, RSActionLoadingScreen);

@@ -1,13 +1,13 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#ifndef __SHOOTERGAMELOADINGSCREEN_H__
-#define __SHOOTERGAMELOADINGSCREEN_H__
+#ifndef __SOLDIERGAMELOADINGSCREEN_H__
+#define __SOLDIERGAMELOADINGSCREEN_H__
 
 #include "ModuleInterface.h"
 
 
 /** Module interface for this game's loading screens */
-class IShooterGameLoadingScreenModule : public IModuleInterface
+class ISoldierGameLoadingScreenModule : public IModuleInterface
 {
 public:
 	/** Kicks off the loading screen for in game loading (not startup) */

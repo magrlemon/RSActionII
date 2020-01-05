@@ -4,8 +4,8 @@
 #include "SoldierWelcomeMenu.h"
 #include "SoldierStyle.h"
 #include "SSoldierConfirmationDialog.h"
-#include "ShooterGameViewportClient.h"
-#include "ShooterGameInstance.h"
+#include "SoldierGameViewportClient.h"
+#include "SoldierGameInstance.h"
 #include "OnlineSubsystemUtils.h"
 
 #define LOCTEXT_NAMESPACE "RSAction.HUD.Menu"
@@ -171,7 +171,7 @@ class SSoldierWelcomeMenuWidget : public SCompoundWidget
 	}
 };
 
-void FSoldierWelcomeMenu::Construct( TWeakObjectPtr< UShooterGameInstance > InGameInstance )
+void FSoldierWelcomeMenu::Construct( TWeakObjectPtr< USoldierGameInstance > InGameInstance )
 {
 	bControlsLocked = false;
 	GameInstance = InGameInstance;
@@ -205,7 +205,7 @@ void FSoldierWelcomeMenu::HandleLoginUIClosed(TSharedPtr<const FUniqueNetId> Uni
 		return;
 	}
 
-	UShooterGameViewportClient* SoldierViewport = Cast<UShooterGameViewportClient>( GameInstance->GetGameViewportClient() );
+	USoldierGameViewportClient* SoldierViewport = Cast<USoldierGameViewportClient>( GameInstance->GetGameViewportClient() );
 
 	TSharedPtr<GenericApplication> GenericApplication = FSlateApplication::Get().GetPlatformApplication();
 	const bool bIsLicensed = GenericApplication->ApplicationLicenseValid();
@@ -276,7 +276,7 @@ void FSoldierWelcomeMenu::SetControllerAndAdvanceToMainMenu(const int Controller
 		NewPlayerOwner->SetCachedUniqueNetId(NewPlayerOwner->GetUniqueNetIdFromCachedControllerId().GetUniqueNetId());
 
 		// tell gameinstance to transition to main menu
-		GameInstance->GotoState(ShooterGameInstanceState::MainMenu);
+		GameInstance->GotoState(SoldierGameInstanceState::MainMenu);
 	}	
 }
 
@@ -287,7 +287,7 @@ FReply FSoldierWelcomeMenu::OnContinueWithoutSavingConfirm()
 		return FReply::Handled();
 	}
 
-	UShooterGameViewportClient * SoldierViewport = Cast<UShooterGameViewportClient>( GameInstance->GetGameViewportClient() );
+	USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>( GameInstance->GetGameViewportClient() );
 
 	if (SoldierViewport != NULL)
 	{
@@ -305,7 +305,7 @@ FReply FSoldierWelcomeMenu::OnConfirmGeneric()
 		return FReply::Handled();
 	}
 
-	UShooterGameViewportClient * SoldierViewport = Cast<UShooterGameViewportClient>( GameInstance->GetGameViewportClient() );
+	USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>( GameInstance->GetGameViewportClient() );
 
 	if (SoldierViewport != NULL)
 	{
@@ -323,7 +323,7 @@ void FSoldierWelcomeMenu::OnUserCanPlay(const FUniqueNetId& UserId, EUserPrivile
 	}
 	else
 	{
-		UShooterGameViewportClient * SoldierViewport = Cast<UShooterGameViewportClient>( GameInstance->GetGameViewportClient() );
+		USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>( GameInstance->GetGameViewportClient() );
 
 		if ( SoldierViewport != NULL )
 		{

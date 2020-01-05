@@ -8,7 +8,7 @@ public class RSActionLoadingScreen : ModuleRules
 {
     public RSActionLoadingScreen(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PrivatePCHHeaderFile = "Public/ShooterGameLoadingScreen.h";
+		PrivatePCHHeaderFile = "Public/SoldierGameLoadingScreen.h";
 
 		PCHUsage = PCHUsageMode.UseSharedPCHs;
 

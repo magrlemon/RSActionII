@@ -5,15 +5,15 @@
 =============================================================================*/
 
 #include "RSAction.h"
-#include "ShooterGameInstance.h"
+#include "SoldierGameInstance.h"
 #include "SoldierMainMenu.h"
 #include "SoldierWelcomeMenu.h"
 #include "SoldierMessageMenu.h"
-#include "ShooterGameLoadingScreen.h"
+#include "SoldierGameLoadingScreen.h"
 #include "OnlineKeyValuePair.h"
 #include "SoldierStyle.h"
 #include "SoldierMenuItemWidgetStyle.h"
-#include "ShooterGameViewportClient.h"
+#include "SoldierGameViewportClient.h"
 #include "Player/SoldierPlayerController_Menu.h"
 #include "Online/SoldierPlayerState.h"
 #include "Online/SoldierGameSession.h"
@@ -22,7 +22,7 @@
 
 FAutoConsoleVariable CVarShooterGameTestEncryption(TEXT("ShooterGame.TestEncryption"), 0, TEXT("If true, clients will send an encryption token with their request to join the server and attempt to encrypt the connection using a debug key. This is NOT SECURE and for demonstration purposes only."));
 
-void SShooterWaitDialog::Construct(const FArguments& InArgs)
+void SSoldierWaitDialog::Construct(const FArguments& InArgs)
 {
 	const FSoldierMenuItemStyle* ItemStyle = &FSoldierStyle::Get().GetWidgetStyle<FSoldierMenuItemStyle>("DefaultShooterMenuItemStyle");
 	const FButtonStyle* ButtonStyle = &FSoldierStyle::Get().GetWidgetStyle<FButtonStyle>("DefaultShooterButtonStyle");
@@ -46,7 +46,7 @@ void SShooterWaitDialog::Construct(const FArguments& InArgs)
 				[
 					SNew(STextBlock)
 					.TextStyle(FSoldierStyle::Get(), "ShooterGame.MenuHeaderTextStyle")
-					.ColorAndOpacity(this, &SShooterWaitDialog::GetTextColor)
+					.ColorAndOpacity(this, &SSoldierWaitDialog::GetTextColor)
 					.Text(InArgs._MessageText)
 					.WrapTextAt(500.0f)
 				]
@@ -63,7 +63,7 @@ void SShooterWaitDialog::Construct(const FArguments& InArgs)
 	WidgetAnimation.Play(this->AsShared(), true);
 }
 
-FSlateColor SShooterWaitDialog::GetTextColor() const
+FSlateColor SSoldierWaitDialog::GetTextColor() const
 {
 	//instead of going from black -> white, go from white -> grey.
 	float fAlpha = 1.0f - TextColorCurve.GetLerp();
@@ -71,7 +71,7 @@ FSlateColor SShooterWaitDialog::GetTextColor() const
 	return FLinearColor(FColor(155, 164, 182, FMath::Clamp((int32)(fAlpha * 255.0f), 0, 255)));
 }
 
-namespace ShooterGameInstanceState
+namespace SoldierGameInstanceState
 {
 	const FName None = FName(TEXT("None"));
 	const FName PendingInvite = FName(TEXT("PendingInvite"));
@@ -82,15 +82,15 @@ namespace ShooterGameInstanceState
 }
 
 
-UShooterGameInstance::UShooterGameInstance(const FObjectInitializer& ObjectInitializer)
+USoldierGameInstance::USoldierGameInstance(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 	, OnlineMode(EOnlineMode::Online) // Default to online
 	, bIsLicensed(true) // Default to licensed (should have been checked by OS on boot)
 {
-	CurrentState = ShooterGameInstanceState::None;
+	CurrentState = SoldierGameInstanceState::None;
 }
 
-void UShooterGameInstance::Init() 
+void USoldierGameInstance::Init() 
 {
 	Super::Init();
 
@@ -111,38 +111,38 @@ void UShooterGameInstance::Init()
 	// bind any OSS delegates we needs to handle
 	for (int i = 0; i < MAX_LOCAL_PLAYERS; ++i)
 	{
-		IdentityInterface->AddOnLoginStatusChangedDelegate_Handle(i, FOnLoginStatusChangedDelegate::CreateUObject(this, &UShooterGameInstance::HandleUserLoginChanged));
+		IdentityInterface->AddOnLoginStatusChangedDelegate_Handle(i, FOnLoginStatusChangedDelegate::CreateUObject(this, &USoldierGameInstance::HandleUserLoginChanged));
 	}
 
-	IdentityInterface->AddOnControllerPairingChangedDelegate_Handle(FOnControllerPairingChangedDelegate::CreateUObject(this, &UShooterGameInstance::HandleControllerPairingChanged));
+	IdentityInterface->AddOnControllerPairingChangedDelegate_Handle(FOnControllerPairingChangedDelegate::CreateUObject(this, &USoldierGameInstance::HandleControllerPairingChanged));
 
-	FCoreDelegates::ApplicationWillDeactivateDelegate.AddUObject(this, &UShooterGameInstance::HandleAppWillDeactivate);
+	FCoreDelegates::ApplicationWillDeactivateDelegate.AddUObject(this, &USoldierGameInstance::HandleAppWillDeactivate);
 
-	FCoreDelegates::ApplicationWillEnterBackgroundDelegate.AddUObject(this, &UShooterGameInstance::HandleAppSuspend);
-	FCoreDelegates::ApplicationHasEnteredForegroundDelegate.AddUObject(this, &UShooterGameInstance::HandleAppResume);
+	FCoreDelegates::ApplicationWillEnterBackgroundDelegate.AddUObject(this, &USoldierGameInstance::HandleAppSuspend);
+	FCoreDelegates::ApplicationHasEnteredForegroundDelegate.AddUObject(this, &USoldierGameInstance::HandleAppResume);
 
-	FCoreDelegates::OnSafeFrameChangedEvent.AddUObject(this, &UShooterGameInstance::HandleSafeFrameChanged);
-	FCoreDelegates::OnControllerConnectionChange.AddUObject(this, &UShooterGameInstance::HandleControllerConnectionChange);
-	FCoreDelegates::ApplicationLicenseChange.AddUObject(this, &UShooterGameInstance::HandleAppLicenseUpdate);
+	FCoreDelegates::OnSafeFrameChangedEvent.AddUObject(this, &USoldierGameInstance::HandleSafeFrameChanged);
+	FCoreDelegates::OnControllerConnectionChange.AddUObject(this, &USoldierGameInstance::HandleControllerConnectionChange);
+	FCoreDelegates::ApplicationLicenseChange.AddUObject(this, &USoldierGameInstance::HandleAppLicenseUpdate);
 
-	FCoreUObjectDelegates::PreLoadMap.AddUObject(this, &UShooterGameInstance::OnPreLoadMap);
-	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UShooterGameInstance::OnPostLoadMap);
+	FCoreUObjectDelegates::PreLoadMap.AddUObject(this, &USoldierGameInstance::OnPreLoadMap);
+	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &USoldierGameInstance::OnPostLoadMap);
 
-	FCoreUObjectDelegates::PostDemoPlay.AddUObject(this, &UShooterGameInstance::OnPostDemoPlay);
+	FCoreUObjectDelegates::PostDemoPlay.AddUObject(this, &USoldierGameInstance::OnPostDemoPlay);
 
 	bPendingEnableSplitscreen = false;
 
-	OnlineSub->AddOnConnectionStatusChangedDelegate_Handle( FOnConnectionStatusChangedDelegate::CreateUObject( this, &UShooterGameInstance::HandleNetworkConnectionStatusChanged ) );
+	OnlineSub->AddOnConnectionStatusChangedDelegate_Handle( FOnConnectionStatusChangedDelegate::CreateUObject( this, &USoldierGameInstance::HandleNetworkConnectionStatusChanged ) );
 
 	if (SessionInterface.IsValid())
 	{
-		SessionInterface->AddOnSessionFailureDelegate_Handle( FOnSessionFailureDelegate::CreateUObject( this, &UShooterGameInstance::HandleSessionFailure ) );
+		SessionInterface->AddOnSessionFailureDelegate_Handle( FOnSessionFailureDelegate::CreateUObject( this, &USoldierGameInstance::HandleSessionFailure ) );
 	}
 	
-	OnEndSessionCompleteDelegate = FOnEndSessionCompleteDelegate::CreateUObject(this, &UShooterGameInstance::OnEndSessionComplete);
+	OnEndSessionCompleteDelegate = FOnEndSessionCompleteDelegate::CreateUObject(this, &USoldierGameInstance::OnEndSessionComplete);
 
 	// Register delegate for ticker callback
-	TickDelegate = FTickerDelegate::CreateUObject(this, &UShooterGameInstance::Tick);
+	TickDelegate = FTickerDelegate::CreateUObject(this, &USoldierGameInstance::Tick);
 	TickDelegateHandle = FTicker::GetCoreTicker().AddTicker(TickDelegate);
 
 	// Initialize the debug key with a set value for AES256. This is not secure and for example purposes only.
@@ -154,7 +154,7 @@ void UShooterGameInstance::Init()
 	}
 }
 
-void UShooterGameInstance::Shutdown()
+void USoldierGameInstance::Shutdown()
 {
 	Super::Shutdown();
 
@@ -162,20 +162,20 @@ void UShooterGameInstance::Shutdown()
 	FTicker::GetCoreTicker().RemoveTicker(TickDelegateHandle);
 }
 
-void UShooterGameInstance::HandleNetworkConnectionStatusChanged( const FString& ServiceName, EOnlineServerConnectionStatus::Type LastConnectionStatus, EOnlineServerConnectionStatus::Type ConnectionStatus )
+void USoldierGameInstance::HandleNetworkConnectionStatusChanged( const FString& ServiceName, EOnlineServerConnectionStatus::Type LastConnectionStatus, EOnlineServerConnectionStatus::Type ConnectionStatus )
 {
-	UE_LOG( LogOnlineGame, Log, TEXT( "UShooterGameInstance::HandleNetworkConnectionStatusChanged: %s" ), EOnlineServerConnectionStatus::ToString( ConnectionStatus ) );
+	UE_LOG( LogOnlineGame, Log, TEXT( "USoldierGameInstance::HandleNetworkConnectionStatusChanged: %s" ), EOnlineServerConnectionStatus::ToString( ConnectionStatus ) );
 
 #if SHOOTER_CONSOLE_UI
 	// If we are disconnected from server, and not currently at (or heading to) the welcome screen
 	// then display a message on consoles
 	if (	OnlineMode != EOnlineMode::Offline && 
-			PendingState != ShooterGameInstanceState::WelcomeScreen &&
-			CurrentState != ShooterGameInstanceState::WelcomeScreen && 
+			PendingState != SoldierGameInstanceState::WelcomeScreen &&
+			CurrentState != SoldierGameInstanceState::WelcomeScreen && 
 			ConnectionStatus != EOnlineServerConnectionStatus::Connected &&
 			ConnectionStatus != EOnlineServerConnectionStatus::Normal)
 	{
-		UE_LOG( LogOnlineGame, Log, TEXT( "UShooterGameInstance::HandleNetworkConnectionStatusChanged: Going to main menu" ) );
+		UE_LOG( LogOnlineGame, Log, TEXT( "USoldierGameInstance::HandleNetworkConnectionStatusChanged: Going to main menu" ) );
 
 		// Display message on consoles
 #if PLATFORM_XBOXONE
@@ -194,24 +194,24 @@ void UShooterGameInstance::HandleNetworkConnectionStatusChanged( const FString& 
 			GameMode->AbortMatch();
 		}
 		
-		ShowMessageThenGotoState( ReturnReason, OKButton, FText::GetEmpty(), ShooterGameInstanceState::MainMenu );
+		ShowMessageThenGotoState( ReturnReason, OKButton, FText::GetEmpty(), SoldierGameInstanceState::MainMenu );
 	}
 
 	CurrentConnectionStatus = ConnectionStatus;
 #endif
 }
 
-void UShooterGameInstance::HandleSessionFailure( const FUniqueNetId& NetId, ESessionFailure::Type FailureType )
+void USoldierGameInstance::HandleSessionFailure( const FUniqueNetId& NetId, ESessionFailure::Type FailureType )
 {
-	UE_LOG( LogOnlineGame, Warning, TEXT( "UShooterGameInstance::HandleSessionFailure: %u" ), (uint32)FailureType );
+	UE_LOG( LogOnlineGame, Warning, TEXT( "USoldierGameInstance::HandleSessionFailure: %u" ), (uint32)FailureType );
 
 #if SHOOTER_CONSOLE_UI
 	// If we are not currently at (or heading to) the welcome screen then display a message on consoles
 	if (	OnlineMode != EOnlineMode::Offline &&
-			PendingState != ShooterGameInstanceState::WelcomeScreen &&
-			CurrentState != ShooterGameInstanceState::WelcomeScreen )
+			PendingState != SoldierGameInstanceState::WelcomeScreen &&
+			CurrentState != SoldierGameInstanceState::WelcomeScreen )
 	{
-		UE_LOG( LogOnlineGame, Log, TEXT( "UShooterGameInstance::HandleSessionFailure: Going to main menu" ) );
+		UE_LOG( LogOnlineGame, Log, TEXT( "USoldierGameInstance::HandleSessionFailure: Going to main menu" ) );
 
 		// Display message on consoles
 #if PLATFORM_XBOXONE
@@ -223,12 +223,12 @@ void UShooterGameInstance::HandleSessionFailure( const FUniqueNetId& NetId, ESes
 #endif
 		const FText OKButton		= NSLOCTEXT( "DialogButtons", "OKAY", "OK" );
 		
-		ShowMessageThenGotoState( ReturnReason, OKButton,  FText::GetEmpty(), ShooterGameInstanceState::MainMenu );
+		ShowMessageThenGotoState( ReturnReason, OKButton,  FText::GetEmpty(), SoldierGameInstanceState::MainMenu );
 	}
 #endif
 }
 
-void UShooterGameInstance::OnPreLoadMap(const FString& MapName)
+void USoldierGameInstance::OnPreLoadMap(const FString& MapName)
 {
 	if (bPendingEnableSplitscreen)
 	{
@@ -243,17 +243,17 @@ void UShooterGameInstance::OnPreLoadMap(const FString& MapName)
 	}
 }
 
-void UShooterGameInstance::OnPostLoadMap(UWorld*)
+void USoldierGameInstance::OnPostLoadMap(UWorld*)
 {
 	// Make sure we hide the loading screen when the level is done loading
-	UShooterGameViewportClient * ShooterViewport = Cast<UShooterGameViewportClient>(GetGameViewportClient());
+	USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
 	if (ShooterViewport != nullptr)
 	{
 		ShooterViewport->HideLoadingScreen();
 	}
 }
 
-void UShooterGameInstance::OnUserCanPlayInvite(const FUniqueNetId& UserId, EUserPrivileges::Type Privilege, uint32 PrivilegeResults)
+void USoldierGameInstance::OnUserCanPlayInvite(const FUniqueNetId& UserId, EUserPrivileges::Type Privilege, uint32 PrivilegeResults)
 {
 	CleanupOnlinePrivilegeTask();
 	if (WelcomeMenuUI.IsValid())
@@ -271,11 +271,11 @@ void UShooterGameInstance::OnUserCanPlayInvite(const FUniqueNetId& UserId, EUser
 	else
 	{
 		DisplayOnlinePrivilegeFailureDialogs(UserId, Privilege, PrivilegeResults);
-		GotoState(ShooterGameInstanceState::WelcomeScreen);
+		GotoState(SoldierGameInstanceState::WelcomeScreen);
 	}
 }
 
-void UShooterGameInstance::OnUserCanPlayTogether(const FUniqueNetId& UserId, EUserPrivileges::Type Privilege, uint32 PrivilegeResults)
+void USoldierGameInstance::OnUserCanPlayTogether(const FUniqueNetId& UserId, EUserPrivileges::Type Privilege, uint32 PrivilegeResults)
 {
 	CleanupOnlinePrivilegeTask();
 	if (WelcomeMenuUI.IsValid())
@@ -293,16 +293,16 @@ void UShooterGameInstance::OnUserCanPlayTogether(const FUniqueNetId& UserId, EUs
 	else
 	{
 		DisplayOnlinePrivilegeFailureDialogs(UserId, Privilege, PrivilegeResults);
-		GotoState(ShooterGameInstanceState::WelcomeScreen);
+		GotoState(SoldierGameInstanceState::WelcomeScreen);
 	}
 }
 
-void UShooterGameInstance::OnPostDemoPlay()
+void USoldierGameInstance::OnPostDemoPlay()
 {
-	GotoState( ShooterGameInstanceState::Playing );
+	GotoState( SoldierGameInstanceState::Playing );
 }
 
-void UShooterGameInstance::HandleDemoPlaybackFailure( EDemoPlayFailure::Type FailureType, const FString& ErrorString )
+void USoldierGameInstance::HandleDemoPlaybackFailure( EDemoPlayFailure::Type FailureType, const FString& ErrorString )
 {
 	if (GetWorld() != nullptr && GetWorld()->WorldType == EWorldType::PIE)
 	{
@@ -310,10 +310,10 @@ void UShooterGameInstance::HandleDemoPlaybackFailure( EDemoPlayFailure::Type Fai
 		return;
 	}
 
-	ShowMessageThenGotoState(FText::Format(NSLOCTEXT("UShooterGameInstance", "DemoPlaybackFailedFmt", "Demo playback failed: {0}"), FText::FromString(ErrorString)), NSLOCTEXT("DialogButtons", "OKAY", "OK"), FText::GetEmpty(), ShooterGameInstanceState::MainMenu);
+	ShowMessageThenGotoState(FText::Format(NSLOCTEXT("USoldierGameInstance", "DemoPlaybackFailedFmt", "Demo playback failed: {0}"), FText::FromString(ErrorString)), NSLOCTEXT("DialogButtons", "OKAY", "OK"), FText::GetEmpty(), SoldierGameInstanceState::MainMenu);
 }
 
-void UShooterGameInstance::StartGameInstance()
+void USoldierGameInstance::StartGameInstance()
 {
 #if PLATFORM_PS4 == 0
 	TCHAR Parm[4096] = TEXT("");
@@ -348,7 +348,7 @@ void UShooterGameInstance::StartGameInstance()
 				if (BrowseRet == EBrowseReturnVal::Success)
 				{
 					// Success, we loaded the map, go directly to playing state
-					GotoState(ShooterGameInstanceState::Playing);
+					GotoState(SoldierGameInstanceState::Playing);
 					return;
 				}
 				else if (BrowseRet == EBrowseReturnVal::Pending)
@@ -357,7 +357,7 @@ void UShooterGameInstance::StartGameInstance()
 					LoadFrontEndMap(MainMenuMap);
 					AddNetworkFailureHandlers();
 					ShowLoadingScreen();
-					GotoState(ShooterGameInstanceState::Playing);
+					GotoState(SoldierGameInstanceState::Playing);
 					return;
 				}
 			}
@@ -370,7 +370,7 @@ void UShooterGameInstance::StartGameInstance()
 
 #if WITH_EDITOR
 
-FGameInstancePIEResult UShooterGameInstance::StartPlayInEditorGameInstance(ULocalPlayer* LocalPlayer, const FGameInstancePIEParameters& Params)
+FGameInstancePIEResult USoldierGameInstance::StartPlayInEditorGameInstance(ULocalPlayer* LocalPlayer, const FGameInstancePIEParameters& Params)
 {
 	FWorldContext* PlayWorldContext = GetWorldContext();
 	check(PlayWorldContext);
@@ -387,17 +387,17 @@ FGameInstancePIEResult UShooterGameInstance::StartPlayInEditorGameInstance(ULoca
 #if SHOOTER_CONSOLE_UI
 	if (CurrentMapName == WelcomeScreenMap)
 	{
-		GotoState(ShooterGameInstanceState::WelcomeScreen);
+		GotoState(SoldierGameInstanceState::WelcomeScreen);
 	}
 	else 
 #endif	// SHOOTER_CONSOLE_UI
 	if (CurrentMapName == MainMenuMap)
 	{
-		GotoState(ShooterGameInstanceState::MainMenu);
+		GotoState(SoldierGameInstanceState::MainMenu);
 	}
 	else
 	{
-		GotoState(ShooterGameInstanceState::Playing);
+		GotoState(SoldierGameInstanceState::Playing);
 	}
 
 	return Super::StartPlayInEditorGameInstance(LocalPlayer, Params);
@@ -405,32 +405,32 @@ FGameInstancePIEResult UShooterGameInstance::StartPlayInEditorGameInstance(ULoca
 
 #endif	// WITH_EDITOR
 
-FName UShooterGameInstance::GetInitialState()
+FName USoldierGameInstance::GetInitialState()
 {
 #if SHOOTER_CONSOLE_UI	
 	// Start in the welcome screen state on consoles
-	return ShooterGameInstanceState::WelcomeScreen;
+	return SoldierGameInstanceState::WelcomeScreen;
 #else
 	// On PC, go directly to the main menu
-	return ShooterGameInstanceState::MainMenu;
+	return SoldierGameInstanceState::MainMenu;
 #endif
 }
 
-void UShooterGameInstance::GotoInitialState()
+void USoldierGameInstance::GotoInitialState()
 {
 	GotoState(GetInitialState());
 }
 
-const FName UShooterGameInstance::GetCurrentState() const 
+const FName USoldierGameInstance::GetCurrentState() const 
 {
 	return CurrentState;
 }
 
-void UShooterGameInstance::ShowMessageThenGotoState( const FText& Message, const FText& OKButtonString, const FText& CancelButtonString, const FName& NewState, const bool OverrideExisting, TWeakObjectPtr< ULocalPlayer > PlayerOwner )
+void USoldierGameInstance::ShowMessageThenGotoState( const FText& Message, const FText& OKButtonString, const FText& CancelButtonString, const FName& NewState, const bool OverrideExisting, TWeakObjectPtr< ULocalPlayer > PlayerOwner )
 {
 	UE_LOG( LogOnline, Log, TEXT( "ShowMessageThenGotoState: Message: %s, NewState: %s" ), *Message.ToString(), *NewState.ToString() );
 
-	const bool bAtWelcomeScreen = PendingState == ShooterGameInstanceState::WelcomeScreen || CurrentState == ShooterGameInstanceState::WelcomeScreen;
+	const bool bAtWelcomeScreen = PendingState == SoldierGameInstanceState::WelcomeScreen || CurrentState == SoldierGameInstanceState::WelcomeScreen;
 
 	// Never override the welcome screen
 	if ( bAtWelcomeScreen )
@@ -439,7 +439,7 @@ void UShooterGameInstance::ShowMessageThenGotoState( const FText& Message, const
 		return;
 	}
 
-	const bool bAlreadyAtMessageMenu = PendingState == ShooterGameInstanceState::MessageMenu || CurrentState == ShooterGameInstanceState::MessageMenu;
+	const bool bAlreadyAtMessageMenu = PendingState == SoldierGameInstanceState::MessageMenu || CurrentState == SoldierGameInstanceState::MessageMenu;
 	const bool bAlreadyAtDestState = PendingState == NewState || CurrentState == NewState;
 
 	// If we are already going to the message menu, don't override unless asked to
@@ -450,7 +450,7 @@ void UShooterGameInstance::ShowMessageThenGotoState( const FText& Message, const
 	}
 
 	// If we are already going to the message menu, and the next dest is welcome screen, don't override
-	if ( bAlreadyAtMessageMenu && PendingMessage.NextState == ShooterGameInstanceState::WelcomeScreen )
+	if ( bAlreadyAtMessageMenu && PendingMessage.NextState == SoldierGameInstanceState::WelcomeScreen )
 	{
 		UE_LOG( LogOnline, Log, TEXT( "ShowMessageThenGotoState: Ignoring due to higher message priority in queue (check 2)." ) );
 		return;
@@ -469,7 +469,7 @@ void UShooterGameInstance::ShowMessageThenGotoState( const FText& Message, const
 	PendingMessage.NextState			= NewState;
 	PendingMessage.PlayerOwner			= PlayerOwner;
 
-	if ( CurrentState == ShooterGameInstanceState::MessageMenu )
+	if ( CurrentState == SoldierGameInstanceState::MessageMenu )
 	{
 		UE_LOG( LogOnline, Log, TEXT( "ShowMessageThenGotoState: Forcing new message" ) );
 		EndMessageMenuState();
@@ -477,25 +477,25 @@ void UShooterGameInstance::ShowMessageThenGotoState( const FText& Message, const
 	}
 	else
 	{
-		GotoState(ShooterGameInstanceState::MessageMenu);
+		GotoState(SoldierGameInstanceState::MessageMenu);
 	}
 }
 
-void UShooterGameInstance::ShowLoadingScreen()
+void USoldierGameInstance::ShowLoadingScreen()
 {
 	// This can be confusing, so here is what is happening:
-	//	For LoadMap, we use the IShooterGameLoadingScreenModule interface to show the load screen
+	//	For LoadMap, we use the ISoldierGameLoadingScreenModule interface to show the load screen
 	//  This is necessary since this is a blocking call, and our viewport loading screen won't get updated.
-	//  We can't use IShooterGameLoadingScreenModule for seamless travel though
+	//  We can't use ISoldierGameLoadingScreenModule for seamless travel though
 	//  In this case, we just add a widget to the viewport, and have it update on the main thread
 	//  To simplify things, we just do both, and you can't tell, one will cover the other if they both show at the same time
-	IShooterGameLoadingScreenModule* const LoadingScreenModule = FModuleManager::LoadModulePtr<IShooterGameLoadingScreenModule>("ShooterGameLoadingScreen");
+	ISoldierGameLoadingScreenModule* const LoadingScreenModule = FModuleManager::LoadModulePtr<ISoldierGameLoadingScreenModule>("SoldierGameLoadingScreen");
 	if (LoadingScreenModule != nullptr)
 	{
 		LoadingScreenModule->StartInGameLoadingScreen();
 	}
 
-	UShooterGameViewportClient * ShooterViewport = Cast<UShooterGameViewportClient>(GetGameViewportClient());
+	USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
 
 	if ( ShooterViewport != NULL )
 	{
@@ -503,7 +503,7 @@ void UShooterGameInstance::ShowLoadingScreen()
 	}
 }
 
-bool UShooterGameInstance::LoadFrontEndMap(const FString& MapName)
+bool USoldierGameInstance::LoadFrontEndMap(const FString& MapName)
 {
 	bool bSuccess = true;
 
@@ -539,7 +539,7 @@ bool UShooterGameInstance::LoadFrontEndMap(const FString& MapName)
 	return bSuccess;
 }
 
-ASoldierGameSession* UShooterGameInstance::GetGameSession() const
+ASoldierGameSession* USoldierGameInstance::GetGameSession() const
 {
 	UWorld* const World = GetWorld();
 	if (World)
@@ -554,7 +554,7 @@ ASoldierGameSession* UShooterGameInstance::GetGameSession() const
 	return nullptr;
 }
 
-void UShooterGameInstance::TravelLocalSessionFailure(UWorld *World, ETravelFailure::Type FailureType, const FString& ReasonString)
+void USoldierGameInstance::TravelLocalSessionFailure(UWorld *World, ETravelFailure::Type FailureType, const FString& ReasonString)
 {
 	ASoldierPlayerController_Menu* const FirstPC = Cast<ASoldierPlayerController_Menu>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	if (FirstPC != nullptr)
@@ -570,26 +570,26 @@ void UShooterGameInstance::TravelLocalSessionFailure(UWorld *World, ETravelFailu
 	}
 }
 
-void UShooterGameInstance::ShowMessageThenGoMain(const FText& Message, const FText& OKButtonString, const FText& CancelButtonString)
+void USoldierGameInstance::ShowMessageThenGoMain(const FText& Message, const FText& OKButtonString, const FText& CancelButtonString)
 {
-	ShowMessageThenGotoState(Message, OKButtonString, CancelButtonString, ShooterGameInstanceState::MainMenu);
+	ShowMessageThenGotoState(Message, OKButtonString, CancelButtonString, SoldierGameInstanceState::MainMenu);
 }
 
-void UShooterGameInstance::SetPendingInvite(const FShooterPendingInvite& InPendingInvite)
+void USoldierGameInstance::SetPendingInvite(const FSoldierPendingInvite& InPendingInvite)
 {
 	PendingInvite = InPendingInvite;
 }
 
-void UShooterGameInstance::GotoState(FName NewState)
+void USoldierGameInstance::GotoState(FName NewState)
 {
 	UE_LOG( LogOnline, Log, TEXT( "GotoState: NewState: %s" ), *NewState.ToString() );
 
 	PendingState = NewState;
 }
 
-void UShooterGameInstance::MaybeChangeState()
+void USoldierGameInstance::MaybeChangeState()
 {
-	if ( (PendingState != CurrentState) && (PendingState != ShooterGameInstanceState::None) )
+	if ( (PendingState != CurrentState) && (PendingState != SoldierGameInstanceState::None) )
 	{
 		FName const OldState = CurrentState;
 
@@ -600,58 +600,58 @@ void UShooterGameInstance::MaybeChangeState()
 		BeginNewState(PendingState, OldState);
 
 		// clear pending change
-		PendingState = ShooterGameInstanceState::None;
+		PendingState = SoldierGameInstanceState::None;
 	}
 }
 
-void UShooterGameInstance::EndCurrentState(FName NextState)
+void USoldierGameInstance::EndCurrentState(FName NextState)
 {
 	// per-state custom ending code here
-	if (CurrentState == ShooterGameInstanceState::PendingInvite)
+	if (CurrentState == SoldierGameInstanceState::PendingInvite)
 	{
 		EndPendingInviteState();
 	}
-	else if (CurrentState == ShooterGameInstanceState::WelcomeScreen)
+	else if (CurrentState == SoldierGameInstanceState::WelcomeScreen)
 	{
 		EndWelcomeScreenState();
 	}
-	else if (CurrentState == ShooterGameInstanceState::MainMenu)
+	else if (CurrentState == SoldierGameInstanceState::MainMenu)
 	{
 		EndMainMenuState();
 	}
-	else if (CurrentState == ShooterGameInstanceState::MessageMenu)
+	else if (CurrentState == SoldierGameInstanceState::MessageMenu)
 	{
 		EndMessageMenuState();
 	}
-	else if (CurrentState == ShooterGameInstanceState::Playing)
+	else if (CurrentState == SoldierGameInstanceState::Playing)
 	{
 		EndPlayingState();
 	}
 
-	CurrentState = ShooterGameInstanceState::None;
+	CurrentState = SoldierGameInstanceState::None;
 }
 
-void UShooterGameInstance::BeginNewState(FName NewState, FName PrevState)
+void USoldierGameInstance::BeginNewState(FName NewState, FName PrevState)
 {
 	// per-state custom starting code here
 
-	if (NewState == ShooterGameInstanceState::PendingInvite)
+	if (NewState == SoldierGameInstanceState::PendingInvite)
 	{
 		BeginPendingInviteState();
 	}
-	else if (NewState == ShooterGameInstanceState::WelcomeScreen)
+	else if (NewState == SoldierGameInstanceState::WelcomeScreen)
 	{
 		BeginWelcomeScreenState();
 	}
-	else if (NewState == ShooterGameInstanceState::MainMenu)
+	else if (NewState == SoldierGameInstanceState::MainMenu)
 	{
 		BeginMainMenuState();
 	}
-	else if (NewState == ShooterGameInstanceState::MessageMenu)
+	else if (NewState == SoldierGameInstanceState::MessageMenu)
 	{
 		BeginMessageMenuState();
 	}
-	else if (NewState == ShooterGameInstanceState::Playing)
+	else if (NewState == SoldierGameInstanceState::Playing)
 	{
 		BeginPlayingState();
 	}
@@ -659,25 +659,25 @@ void UShooterGameInstance::BeginNewState(FName NewState, FName PrevState)
 	CurrentState = NewState;
 }
 
-void UShooterGameInstance::BeginPendingInviteState()
+void USoldierGameInstance::BeginPendingInviteState()
 {	
 	if (LoadFrontEndMap(MainMenuMap))
 	{				
-		StartOnlinePrivilegeTask(IOnlineIdentity::FOnGetUserPrivilegeCompleteDelegate::CreateUObject(this, &UShooterGameInstance::OnUserCanPlayInvite), EUserPrivileges::CanPlayOnline, PendingInvite.UserId);
+		StartOnlinePrivilegeTask(IOnlineIdentity::FOnGetUserPrivilegeCompleteDelegate::CreateUObject(this, &USoldierGameInstance::OnUserCanPlayInvite), EUserPrivileges::CanPlayOnline, PendingInvite.UserId);
 	}
 	else
 	{
-		GotoState(ShooterGameInstanceState::WelcomeScreen);
+		GotoState(SoldierGameInstanceState::WelcomeScreen);
 	}
 }
 
-void UShooterGameInstance::EndPendingInviteState()
+void USoldierGameInstance::EndPendingInviteState()
 {
 	// cleanup in case the state changed before the pending invite was handled.
 	CleanupOnlinePrivilegeTask();
 }
 
-void UShooterGameInstance::BeginWelcomeScreenState()
+void USoldierGameInstance::BeginWelcomeScreenState()
 {
 	//this must come before split screen player removal so that the OSS sets all players to not using online features.
 	SetOnlineMode(EOnlineMode::Offline);
@@ -698,7 +698,7 @@ void UShooterGameInstance::BeginWelcomeScreenState()
 	GetGameViewportClient()->SetForceDisableSplitscreen( true );
 }
 
-void UShooterGameInstance::EndWelcomeScreenState()
+void USoldierGameInstance::EndWelcomeScreenState()
 {
 	if (WelcomeMenuUI.IsValid())
 	{
@@ -707,7 +707,7 @@ void UShooterGameInstance::EndWelcomeScreenState()
 	}
 }
 
-void UShooterGameInstance::SetPresenceForLocalPlayers(const FString& StatusStr, const FVariantData& PresenceData)
+void USoldierGameInstance::SetPresenceForLocalPlayers(const FString& StatusStr, const FVariantData& PresenceData)
 {
 	const IOnlinePresencePtr Presence = Online::GetPresenceInterface(GetWorld());
 	if (Presence.IsValid())
@@ -729,10 +729,10 @@ void UShooterGameInstance::SetPresenceForLocalPlayers(const FString& StatusStr, 
 	}
 }
 
-void UShooterGameInstance::BeginMainMenuState()
+void USoldierGameInstance::BeginMainMenuState()
 {
 	// Make sure we're not showing the loadscreen
-	UShooterGameViewportClient * ShooterViewport = Cast<UShooterGameViewportClient>(GetGameViewportClient());
+	USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
 
 	if ( ShooterViewport != NULL )
 	{
@@ -786,7 +786,7 @@ void UShooterGameInstance::BeginMainMenuState()
 	RemoveNetworkFailureHandlers();
 }
 
-void UShooterGameInstance::EndMainMenuState()
+void USoldierGameInstance::EndMainMenuState()
 {
 	if (MainMenuUI.IsValid())
 	{
@@ -795,17 +795,17 @@ void UShooterGameInstance::EndMainMenuState()
 	}
 }
 
-void UShooterGameInstance::BeginMessageMenuState()
+void USoldierGameInstance::BeginMessageMenuState()
 {
 	if (PendingMessage.DisplayString.IsEmpty())
 	{
-		UE_LOG(LogOnlineGame, Warning, TEXT("UShooterGameInstance::BeginMessageMenuState: Display string is empty"));
+		UE_LOG(LogOnlineGame, Warning, TEXT("USoldierGameInstance::BeginMessageMenuState: Display string is empty"));
 		GotoInitialState();
 		return;
 	}
 
 	// Make sure we're not showing the loadscreen
-	UShooterGameViewportClient * ShooterViewport = Cast<UShooterGameViewportClient>(GetGameViewportClient());
+	USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
 
 	if ( ShooterViewport != NULL )
 	{
@@ -819,7 +819,7 @@ void UShooterGameInstance::BeginMessageMenuState()
 	PendingMessage.DisplayString = FText::GetEmpty();
 }
 
-void UShooterGameInstance::EndMessageMenuState()
+void USoldierGameInstance::EndMessageMenuState()
 {
 	if (MessageMenuUI.IsValid())
 	{
@@ -828,7 +828,7 @@ void UShooterGameInstance::EndMessageMenuState()
 	}
 }
 
-void UShooterGameInstance::BeginPlayingState()
+void USoldierGameInstance::BeginPlayingState()
 {
 	bPendingEnableSplitscreen = true;
 
@@ -839,7 +839,7 @@ void UShooterGameInstance::BeginPlayingState()
 	FSlateApplication::Get().SetAllUserFocusToGameViewport();
 }
 
-void UShooterGameInstance::EndPlayingState()
+void USoldierGameInstance::EndPlayingState()
 {
 	// Disallow splitscreen
 	GetGameViewportClient()->SetForceDisableSplitscreen( true );
@@ -873,9 +873,9 @@ void UShooterGameInstance::EndPlayingState()
 	}
 }
 
-void UShooterGameInstance::OnEndSessionComplete( FName SessionName, bool bWasSuccessful )
+void USoldierGameInstance::OnEndSessionComplete( FName SessionName, bool bWasSuccessful )
 {
-	UE_LOG(LogOnline, Log, TEXT("UShooterGameInstance::OnEndSessionComplete: Session=%s bWasSuccessful=%s"), *SessionName.ToString(), bWasSuccessful ? TEXT("true") : TEXT("false") );
+	UE_LOG(LogOnline, Log, TEXT("USoldierGameInstance::OnEndSessionComplete: Session=%s bWasSuccessful=%s"), *SessionName.ToString(), bWasSuccessful ? TEXT("true") : TEXT("false") );
 
 	IOnlineSubsystem* OnlineSub = Online::GetSubsystem(GetWorld());
 	if (OnlineSub)
@@ -893,7 +893,7 @@ void UShooterGameInstance::OnEndSessionComplete( FName SessionName, bool bWasSuc
 	CleanupSessionOnReturnToMenu();
 }
 
-void UShooterGameInstance::CleanupSessionOnReturnToMenu()
+void USoldierGameInstance::CleanupSessionOnReturnToMenu()
 {
 	bool bPendingOnlineOp = false;
 
@@ -941,7 +941,7 @@ void UShooterGameInstance::CleanupSessionOnReturnToMenu()
 	}
 }
 
-void UShooterGameInstance::LabelPlayerAsQuitter(ULocalPlayer* LocalPlayer) const
+void USoldierGameInstance::LabelPlayerAsQuitter(ULocalPlayer* LocalPlayer) const
 {
 	ASoldierPlayerState* const PlayerState = LocalPlayer && LocalPlayer->PlayerController ? Cast<ASoldierPlayerState>(LocalPlayer->PlayerController->PlayerState) : nullptr;	
 	if(PlayerState)
@@ -950,7 +950,7 @@ void UShooterGameInstance::LabelPlayerAsQuitter(ULocalPlayer* LocalPlayer) const
 	}
 }
 
-void UShooterGameInstance::RemoveNetworkFailureHandlers()
+void USoldierGameInstance::RemoveNetworkFailureHandlers()
 {
 	// Remove the local session/travel failure bindings if they exist
 	if (GEngine->OnTravelFailure().IsBoundToObject(this) == true)
@@ -959,21 +959,21 @@ void UShooterGameInstance::RemoveNetworkFailureHandlers()
 	}
 }
 
-void UShooterGameInstance::AddNetworkFailureHandlers()
+void USoldierGameInstance::AddNetworkFailureHandlers()
 {
 	// Add network/travel error handlers (if they are not already there)
 	if (GEngine->OnTravelFailure().IsBoundToObject(this) == false)
 	{
-		TravelLocalSessionFailureDelegateHandle = GEngine->OnTravelFailure().AddUObject(this, &UShooterGameInstance::TravelLocalSessionFailure);
+		TravelLocalSessionFailureDelegateHandle = GEngine->OnTravelFailure().AddUObject(this, &USoldierGameInstance::TravelLocalSessionFailure);
 	}
 }
 
-TSubclassOf<UOnlineSession> UShooterGameInstance::GetOnlineSessionClass()
+TSubclassOf<UOnlineSession> USoldierGameInstance::GetOnlineSessionClass()
 {
 	return USoldierOnlineSessionClient::StaticClass();
 }
 
-bool UShooterGameInstance::HostQuickSession(ULocalPlayer& LocalPlayer, const FOnlineSessionSettings& SessionSettings)
+bool USoldierGameInstance::HostQuickSession(ULocalPlayer& LocalPlayer, const FOnlineSessionSettings& SessionSettings)
 {
 	// This function is different from BeginHostingQuickMatch in that it creates a session and then starts a quick match,
 	// while BeginHostingQuickMatch assumes a session already exists
@@ -981,7 +981,7 @@ bool UShooterGameInstance::HostQuickSession(ULocalPlayer& LocalPlayer, const FOn
 	if (ASoldierGameSession* const GameSession = GetGameSession())
 	{
 		// Add callback delegate for completion
-		OnCreatePresenceSessionCompleteDelegateHandle = GameSession->OnCreatePresenceSessionComplete().AddUObject(this, &UShooterGameInstance::OnCreatePresenceSessionComplete);
+		OnCreatePresenceSessionCompleteDelegateHandle = GameSession->OnCreatePresenceSessionComplete().AddUObject(this, &USoldierGameInstance::OnCreatePresenceSessionComplete);
 
 		TravelURL = GetQuickMatchUrl();
 
@@ -1001,12 +1001,12 @@ bool UShooterGameInstance::HostQuickSession(ULocalPlayer& LocalPlayer, const FOn
 		if (GameSession->HostSession(LocalPlayer.GetPreferredUniqueNetId().GetUniqueNetId(), NAME_GameSession, SessionSettings))
 		{
 			// If any error occurred in the above, pending state would be set
-			if (PendingState == CurrentState || PendingState == ShooterGameInstanceState::None)
+			if (PendingState == CurrentState || PendingState == SoldierGameInstanceState::None)
 			{
 				// Go ahead and go into loading state now
 				// If we fail, the delegate will handle showing the proper messaging and move to the correct state
 				ShowLoadingScreen();
-				GotoState(ShooterGameInstanceState::Playing);
+				GotoState(SoldierGameInstanceState::Playing);
 				return true;
 			}
 		}
@@ -1015,7 +1015,7 @@ bool UShooterGameInstance::HostQuickSession(ULocalPlayer& LocalPlayer, const FOn
 	return false;
 }
 
-bool UShooterGameInstance::HostGame(ULocalPlayer* LocalPlayer, const FString& GameType, const FString& InTravelURL)
+bool USoldierGameInstance::HostGame(ULocalPlayer* LocalPlayer, const FString& GameType, const FString& InTravelURL)
 {
 	if (GetOnlineMode() == EOnlineMode::Offline)
 	{
@@ -1024,7 +1024,7 @@ bool UShooterGameInstance::HostGame(ULocalPlayer* LocalPlayer, const FString& Ga
 		//
 
 		ShowLoadingScreen();
-		GotoState(ShooterGameInstanceState::Playing);
+		GotoState(SoldierGameInstanceState::Playing);
 
 		// Travel to the specified match URL
 		TravelURL = InTravelURL;
@@ -1040,7 +1040,7 @@ bool UShooterGameInstance::HostGame(ULocalPlayer* LocalPlayer, const FString& Ga
 	if (GameSession)
 	{
 		// add callback delegate for completion
-		OnCreatePresenceSessionCompleteDelegateHandle = GameSession->OnCreatePresenceSessionComplete().AddUObject(this, &UShooterGameInstance::OnCreatePresenceSessionComplete);
+		OnCreatePresenceSessionCompleteDelegateHandle = GameSession->OnCreatePresenceSessionComplete().AddUObject(this, &USoldierGameInstance::OnCreatePresenceSessionComplete);
 
 		TravelURL = InTravelURL;
 		bool const bIsLanMatch = InTravelURL.Contains(TEXT("?bIsLanMatch"));
@@ -1053,12 +1053,12 @@ bool UShooterGameInstance::HostGame(ULocalPlayer* LocalPlayer, const FString& Ga
 		if (GameSession->HostSession(LocalPlayer->GetPreferredUniqueNetId().GetUniqueNetId(), NAME_GameSession, GameType, MapName, bIsLanMatch, true, ASoldierGameSession::DEFAULT_NUM_PLAYERS))
 		{
 			// If any error occurred in the above, pending state would be set
-			if ( (PendingState == CurrentState) || (PendingState == ShooterGameInstanceState::None) )
+			if ( (PendingState == CurrentState) || (PendingState == SoldierGameInstanceState::None) )
 			{
 				// Go ahead and go into loading state now
 				// If we fail, the delegate will handle showing the proper messaging and move to the correct state
 				ShowLoadingScreen();
-				GotoState(ShooterGameInstanceState::Playing);
+				GotoState(SoldierGameInstanceState::Playing);
 				return true;
 			}
 		}
@@ -1067,7 +1067,7 @@ bool UShooterGameInstance::HostGame(ULocalPlayer* LocalPlayer, const FString& Ga
 	return false;
 }
 
-bool UShooterGameInstance::JoinSession(ULocalPlayer* LocalPlayer, int32 SessionIndexInSearchResults)
+bool USoldierGameInstance::JoinSession(ULocalPlayer* LocalPlayer, int32 SessionIndexInSearchResults)
 {
 	// needs to tear anything down based on current state?
 
@@ -1076,16 +1076,16 @@ bool UShooterGameInstance::JoinSession(ULocalPlayer* LocalPlayer, int32 SessionI
 	{
 		AddNetworkFailureHandlers();
 
-		OnJoinSessionCompleteDelegateHandle = GameSession->OnJoinSessionComplete().AddUObject(this, &UShooterGameInstance::OnJoinSessionComplete);
+		OnJoinSessionCompleteDelegateHandle = GameSession->OnJoinSessionComplete().AddUObject(this, &USoldierGameInstance::OnJoinSessionComplete);
 		if (GameSession->JoinSession(LocalPlayer->GetPreferredUniqueNetId().GetUniqueNetId(), NAME_GameSession, SessionIndexInSearchResults))
 		{
 			// If any error occured in the above, pending state would be set
-			if ( (PendingState == CurrentState) || (PendingState == ShooterGameInstanceState::None) )
+			if ( (PendingState == CurrentState) || (PendingState == SoldierGameInstanceState::None) )
 			{
 				// Go ahead and go into loading state now
 				// If we fail, the delegate will handle showing the proper messaging and move to the correct state
 				ShowLoadingScreen();
-				GotoState(ShooterGameInstanceState::Playing);
+				GotoState(SoldierGameInstanceState::Playing);
 				return true;
 			}
 		}
@@ -1094,7 +1094,7 @@ bool UShooterGameInstance::JoinSession(ULocalPlayer* LocalPlayer, int32 SessionI
 	return false;
 }
 
-bool UShooterGameInstance::JoinSession(ULocalPlayer* LocalPlayer, const FOnlineSessionSearchResult& SearchResult)
+bool USoldierGameInstance::JoinSession(ULocalPlayer* LocalPlayer, const FOnlineSessionSearchResult& SearchResult)
 {
 	// needs to tear anything down based on current state?
 	ASoldierGameSession* const GameSession = GetGameSession();
@@ -1102,16 +1102,16 @@ bool UShooterGameInstance::JoinSession(ULocalPlayer* LocalPlayer, const FOnlineS
 	{
 		AddNetworkFailureHandlers();
 
-		OnJoinSessionCompleteDelegateHandle = GameSession->OnJoinSessionComplete().AddUObject(this, &UShooterGameInstance::OnJoinSessionComplete);
+		OnJoinSessionCompleteDelegateHandle = GameSession->OnJoinSessionComplete().AddUObject(this, &USoldierGameInstance::OnJoinSessionComplete);
 		if (GameSession->JoinSession(LocalPlayer->GetPreferredUniqueNetId().GetUniqueNetId(), NAME_GameSession, SearchResult))
 		{
 			// If any error occured in the above, pending state would be set
-			if ( (PendingState == CurrentState) || (PendingState == ShooterGameInstanceState::None) )
+			if ( (PendingState == CurrentState) || (PendingState == SoldierGameInstanceState::None) )
 			{
 				// Go ahead and go into loading state now
 				// If we fail, the delegate will handle showing the proper messaging and move to the correct state
 				ShowLoadingScreen();
-				GotoState(ShooterGameInstanceState::Playing);
+				GotoState(SoldierGameInstanceState::Playing);
 				return true;
 			}
 		}
@@ -1120,7 +1120,7 @@ bool UShooterGameInstance::JoinSession(ULocalPlayer* LocalPlayer, const FOnlineS
 	return false;
 }
 
-bool UShooterGameInstance::PlayDemo(ULocalPlayer* LocalPlayer, const FString& DemoName)
+bool USoldierGameInstance::PlayDemo(ULocalPlayer* LocalPlayer, const FString& DemoName)
 {
 	ShowLoadingScreen();
 
@@ -1131,7 +1131,7 @@ bool UShooterGameInstance::PlayDemo(ULocalPlayer* LocalPlayer, const FString& De
 }
 
 /** Callback which is intended to be called upon finding sessions */
-void UShooterGameInstance::OnJoinSessionComplete(EOnJoinSessionCompleteResult::Type Result)
+void USoldierGameInstance::OnJoinSessionComplete(EOnJoinSessionCompleteResult::Type Result)
 {
 	// unhook the delegate
 	ASoldierGameSession* const GameSession = GetGameSession();
@@ -1147,7 +1147,7 @@ void UShooterGameInstance::OnJoinSessionComplete(EOnJoinSessionCompleteResult::T
 		if (Sessions.IsValid() && LocalPlayers[1]->GetPreferredUniqueNetId().IsValid())
 		{
 			Sessions->RegisterLocalPlayer(*LocalPlayers[1]->GetPreferredUniqueNetId(), NAME_GameSession,
-				FOnRegisterLocalPlayerCompleteDelegate::CreateUObject(this, &UShooterGameInstance::OnRegisterJoiningLocalPlayerComplete));
+				FOnRegisterLocalPlayerCompleteDelegate::CreateUObject(this, &USoldierGameInstance::OnRegisterJoiningLocalPlayerComplete));
 		}
 	}
 	else
@@ -1157,7 +1157,7 @@ void UShooterGameInstance::OnJoinSessionComplete(EOnJoinSessionCompleteResult::T
 	}
 }
 
-void UShooterGameInstance::FinishJoinSession(EOnJoinSessionCompleteResult::Type Result)
+void USoldierGameInstance::FinishJoinSession(EOnJoinSessionCompleteResult::Type Result)
 {
 	if (Result != EOnJoinSessionCompleteResult::Success)
 	{
@@ -1184,12 +1184,12 @@ void UShooterGameInstance::FinishJoinSession(EOnJoinSessionCompleteResult::Type 
 	InternalTravelToSession(NAME_GameSession);
 }
 
-void UShooterGameInstance::OnRegisterJoiningLocalPlayerComplete(const FUniqueNetId& PlayerId, EOnJoinSessionCompleteResult::Type Result)
+void USoldierGameInstance::OnRegisterJoiningLocalPlayerComplete(const FUniqueNetId& PlayerId, EOnJoinSessionCompleteResult::Type Result)
 {
 	FinishJoinSession(Result);
 }
 
-void UShooterGameInstance::InternalTravelToSession(const FName& SessionName)
+void USoldierGameInstance::InternalTravelToSession(const FName& SessionName)
 {
 	APlayerController * const PlayerController = GetFirstLocalPlayerController();
 
@@ -1238,7 +1238,7 @@ void UShooterGameInstance::InternalTravelToSession(const FName& SessionName)
 }
 
 /** Callback which is intended to be called upon session creation */
-void UShooterGameInstance::OnCreatePresenceSessionComplete(FName SessionName, bool bWasSuccessful)
+void USoldierGameInstance::OnCreatePresenceSessionComplete(FName SessionName, bool bWasSuccessful)
 {
 	ASoldierGameSession* const GameSession = GetGameSession();
 	if (GameSession)
@@ -1252,7 +1252,7 @@ void UShooterGameInstance::OnCreatePresenceSessionComplete(FName SessionName, bo
 			if (Sessions.IsValid() && LocalPlayers[1]->GetPreferredUniqueNetId().IsValid())
 			{
 				Sessions->RegisterLocalPlayer(*LocalPlayers[1]->GetPreferredUniqueNetId(), NAME_GameSession,
-					FOnRegisterLocalPlayerCompleteDelegate::CreateUObject(this, &UShooterGameInstance::OnRegisterLocalPlayerComplete));
+					FOnRegisterLocalPlayerCompleteDelegate::CreateUObject(this, &USoldierGameInstance::OnRegisterLocalPlayerComplete));
 			}
 		}
 		else
@@ -1264,7 +1264,7 @@ void UShooterGameInstance::OnCreatePresenceSessionComplete(FName SessionName, bo
 }
 
 /** Initiates the session searching */
-bool UShooterGameInstance::FindSessions(ULocalPlayer* PlayerOwner, bool bIsDedicatedServer, bool bFindLAN)
+bool USoldierGameInstance::FindSessions(ULocalPlayer* PlayerOwner, bool bIsDedicatedServer, bool bFindLAN)
 {
 	bool bResult = false;
 
@@ -1275,7 +1275,7 @@ bool UShooterGameInstance::FindSessions(ULocalPlayer* PlayerOwner, bool bIsDedic
 		if (GameSession)
 		{
 			GameSession->OnFindSessionsComplete().RemoveAll(this);
-			OnSearchSessionsCompleteDelegateHandle = GameSession->OnFindSessionsComplete().AddUObject(this, &UShooterGameInstance::OnSearchSessionsComplete);
+			OnSearchSessionsCompleteDelegateHandle = GameSession->OnFindSessionsComplete().AddUObject(this, &USoldierGameInstance::OnSearchSessionsComplete);
 
 			GameSession->FindSessions(PlayerOwner->GetPreferredUniqueNetId().GetUniqueNetId(), NAME_GameSession, bFindLAN, !bIsDedicatedServer);
 
@@ -1287,7 +1287,7 @@ bool UShooterGameInstance::FindSessions(ULocalPlayer* PlayerOwner, bool bIsDedic
 }
 
 /** Callback which is intended to be called upon finding sessions */
-void UShooterGameInstance::OnSearchSessionsComplete(bool bWasSuccessful)
+void USoldierGameInstance::OnSearchSessionsComplete(bool bWasSuccessful)
 {
 	ASoldierGameSession* const Session = GetGameSession();
 	if (Session)
@@ -1296,7 +1296,7 @@ void UShooterGameInstance::OnSearchSessionsComplete(bool bWasSuccessful)
 	}
 }
 
-bool UShooterGameInstance::Tick(float DeltaSeconds)
+bool USoldierGameInstance::Tick(float DeltaSeconds)
 {
 	// Dedicated server doesn't need to worry about game state
 	if (IsDedicatedServerInstance() == true)
@@ -1304,7 +1304,7 @@ bool UShooterGameInstance::Tick(float DeltaSeconds)
 		return true;
 	}
 
-	UShooterGameViewportClient* ShooterViewport = Cast<UShooterGameViewportClient>(GetGameViewportClient());
+	USoldierGameViewportClient* ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
 	if (FSlateApplication::IsInitialized() && ShooterViewport != nullptr)
 	{
 		if (FSlateApplication::Get().GetGameViewport() != ShooterViewport->GetGameViewportWidget())
@@ -1318,15 +1318,15 @@ bool UShooterGameInstance::Tick(float DeltaSeconds)
 
 	MaybeChangeState();
 
-	if (CurrentState != ShooterGameInstanceState::WelcomeScreen && ShooterViewport != nullptr)
+	if (CurrentState != SoldierGameInstanceState::WelcomeScreen && ShooterViewport != nullptr)
 	{
 		// If at any point we aren't licensed (but we are after welcome screen) bounce them back to the welcome screen
-		if (!bIsLicensed && CurrentState != ShooterGameInstanceState::None && ShooterViewport != nullptr && !ShooterViewport->IsShowingDialog())
+		if (!bIsLicensed && CurrentState != SoldierGameInstanceState::None && ShooterViewport != nullptr && !ShooterViewport->IsShowingDialog())
 		{
 			const FText ReturnReason	= NSLOCTEXT( "ProfileMessages", "NeedLicense", "The signed in users do not have a license for this game. Please purchase ShooterGame from the Xbox Marketplace or sign in a user with a valid license." );
 			const FText OKButton		= NSLOCTEXT( "DialogButtons", "OKAY", "OK" );
 
-			ShowMessageThenGotoState( ReturnReason, OKButton, FText::GetEmpty(), ShooterGameInstanceState::WelcomeScreen );
+			ShowMessageThenGotoState( ReturnReason, OKButton, FText::GetEmpty(), SoldierGameInstanceState::WelcomeScreen );
 		}
 
 		// Show controller disconnected dialog if any local players have an invalid controller
@@ -1346,7 +1346,7 @@ bool UShooterGameInstance::Tick(float DeltaSeconds)
 						NSLOCTEXT("DialogButtons", "AButtonContinue", "A - Continue"),
 #endif
 						FText::GetEmpty(),
-						FOnClicked::CreateUObject(this, &UShooterGameInstance::OnControllerReconnectConfirm),
+						FOnClicked::CreateUObject(this, &USoldierGameInstance::OnControllerReconnectConfirm),
 						FOnClicked()
 					);
 				}
@@ -1355,7 +1355,7 @@ bool UShooterGameInstance::Tick(float DeltaSeconds)
 	}
 
 	// If we have a pending invite, and we are at the welcome screen, and the session is properly shut down, accept it
-	if (PendingInvite.UserId.IsValid() && PendingInvite.bPrivilegesCheckedAndAllowed && CurrentState == ShooterGameInstanceState::PendingInvite)
+	if (PendingInvite.UserId.IsValid() && PendingInvite.bPrivilegesCheckedAndAllowed && CurrentState == SoldierGameInstanceState::PendingInvite)
 	{
 		IOnlineSubsystem* OnlineSub = Online::GetSubsystem(GetWorld());
 		IOnlineSessionPtr Sessions = (OnlineSub != NULL) ? OnlineSub->GetSessionInterface() : NULL;
@@ -1393,41 +1393,41 @@ bool UShooterGameInstance::Tick(float DeltaSeconds)
 	return true;
 }
 
-bool UShooterGameInstance::HandleOpenCommand(const TCHAR* Cmd, FOutputDevice& Ar, UWorld* InWorld)
+bool USoldierGameInstance::HandleOpenCommand(const TCHAR* Cmd, FOutputDevice& Ar, UWorld* InWorld)
 {
 	bool const bOpenSuccessful = Super::HandleOpenCommand(Cmd, Ar, InWorld);
 	if (bOpenSuccessful)
 	{
-		GotoState(ShooterGameInstanceState::Playing);
+		GotoState(SoldierGameInstanceState::Playing);
 	}
 
 	return bOpenSuccessful;
 }
 
-bool UShooterGameInstance::HandleDisconnectCommand(const TCHAR* Cmd, FOutputDevice& Ar, UWorld* InWorld)
+bool USoldierGameInstance::HandleDisconnectCommand(const TCHAR* Cmd, FOutputDevice& Ar, UWorld* InWorld)
 {
 	bool const bDisconnectSuccessful = Super::HandleDisconnectCommand(Cmd, Ar, InWorld);
 	if (bDisconnectSuccessful)
 	{
-		GotoState(ShooterGameInstanceState::MainMenu);
+		GotoState(SoldierGameInstanceState::MainMenu);
 	}
 
 	return bDisconnectSuccessful;
 }
 
-bool UShooterGameInstance::HandleTravelCommand(const TCHAR* Cmd, FOutputDevice& Ar, UWorld* InWorld)
+bool USoldierGameInstance::HandleTravelCommand(const TCHAR* Cmd, FOutputDevice& Ar, UWorld* InWorld)
 {
 	bool const bTravelSuccessful = Super::HandleTravelCommand(Cmd, Ar, InWorld);
 	if (bTravelSuccessful)
 	{
-		GotoState(ShooterGameInstanceState::Playing);
+		GotoState(SoldierGameInstanceState::Playing);
 	}
 
 	return bTravelSuccessful;
 }
 
 
-void UShooterGameInstance::HandleSignInChangeMessaging()
+void USoldierGameInstance::HandleSignInChangeMessaging()
 {
 	// Master user signed out, go to initial state (if we aren't there already)
 	if ( CurrentState != GetInitialState() )
@@ -1444,7 +1444,7 @@ void UShooterGameInstance::HandleSignInChangeMessaging()
 	}
 }
 
-void UShooterGameInstance::HandleUserLoginChanged(int32 GameUserIndex, ELoginStatus::Type PreviousLoginStatus, ELoginStatus::Type LoginStatus, const FUniqueNetId& UserId)
+void USoldierGameInstance::HandleUserLoginChanged(int32 GameUserIndex, ELoginStatus::Type PreviousLoginStatus, ELoginStatus::Type LoginStatus, const FUniqueNetId& UserId)
 {
 	// On Switch, accounts can play in LAN games whether they are signed in online or not. 
 #if PLATFORM_SWITCH
@@ -1486,9 +1486,9 @@ void UShooterGameInstance::HandleUserLoginChanged(int32 GameUserIndex, ELoginSta
 	}
 }
 
-void UShooterGameInstance::HandleAppWillDeactivate()
+void USoldierGameInstance::HandleAppWillDeactivate()
 {
-	if (CurrentState == ShooterGameInstanceState::Playing)
+	if (CurrentState == SoldierGameInstanceState::Playing)
 	{
 		// Just have the first player controller pause the game.
 		UWorld* const GameWorld = GetWorld();
@@ -1518,16 +1518,16 @@ void UShooterGameInstance::HandleAppWillDeactivate()
 	}
 }
 
-void UShooterGameInstance::HandleAppSuspend()
+void USoldierGameInstance::HandleAppSuspend()
 {
 	// Players will lose connection on resume. However it is possible the game will exit before we get a resume, so we must kick off round end events here.
-	UE_LOG( LogOnline, Warning, TEXT( "UShooterGameInstance::HandleAppSuspend" ) );
+	UE_LOG( LogOnline, Warning, TEXT( "USoldierGameInstance::HandleAppSuspend" ) );
 	UWorld* const World = GetWorld(); 
 	ASoldierGameState* const GameState = World != NULL ? World->GetGameState<ASoldierGameState>() : NULL;
 
-	if ( CurrentState != ShooterGameInstanceState::None && CurrentState != GetInitialState() )
+	if ( CurrentState != SoldierGameInstanceState::None && CurrentState != GetInitialState() )
 	{
-		UE_LOG( LogOnline, Warning, TEXT( "UShooterGameInstance::HandleAppSuspend: Sending round end event for players" ) );
+		UE_LOG( LogOnline, Warning, TEXT( "USoldierGameInstance::HandleAppSuspend: Sending round end event for players" ) );
 
 		// Send round end events for local players
 		for (int i = 0; i < LocalPlayers.Num(); ++i)
@@ -1542,19 +1542,19 @@ void UShooterGameInstance::HandleAppSuspend()
 	}
 }
 
-void UShooterGameInstance::HandleAppResume()
+void USoldierGameInstance::HandleAppResume()
 {
-	UE_LOG( LogOnline, Log, TEXT( "UShooterGameInstance::HandleAppResume" ) );
+	UE_LOG( LogOnline, Log, TEXT( "USoldierGameInstance::HandleAppResume" ) );
 
-	if ( CurrentState != ShooterGameInstanceState::None && CurrentState != GetInitialState() )
+	if ( CurrentState != SoldierGameInstanceState::None && CurrentState != GetInitialState() )
 	{
-		UE_LOG( LogOnline, Warning, TEXT( "UShooterGameInstance::HandleAppResume: Attempting to sign out players" ) );
+		UE_LOG( LogOnline, Warning, TEXT( "USoldierGameInstance::HandleAppResume: Attempting to sign out players" ) );
 
 		for ( int32 i = 0; i < LocalPlayers.Num(); ++i )
 		{
 			if ( LocalPlayers[i]->GetCachedUniqueNetId().IsValid() && LocalPlayerOnlineStatus[i] == ELoginStatus::LoggedIn && !IsLocalPlayerOnline( LocalPlayers[i] ) )
 			{
-				UE_LOG( LogOnline, Log, TEXT( "UShooterGameInstance::HandleAppResume: Signed out during resume." ) );
+				UE_LOG( LogOnline, Log, TEXT( "USoldierGameInstance::HandleAppResume: Signed out during resume." ) );
 				HandleSignInChangeMessaging();
 				break;
 			}
@@ -1562,18 +1562,18 @@ void UShooterGameInstance::HandleAppResume()
 	}
 }
 
-void UShooterGameInstance::HandleAppLicenseUpdate()
+void USoldierGameInstance::HandleAppLicenseUpdate()
 {
 	TSharedPtr<GenericApplication> GenericApplication = FSlateApplication::Get().GetPlatformApplication();
 	bIsLicensed = GenericApplication->ApplicationLicenseValid();
 }
 
-void UShooterGameInstance::HandleSafeFrameChanged()
+void USoldierGameInstance::HandleSafeFrameChanged()
 {
 	UCanvas::UpdateAllCanvasSafeZoneData();
 }
 
-void UShooterGameInstance::RemoveExistingLocalPlayer(ULocalPlayer* ExistingPlayer)
+void USoldierGameInstance::RemoveExistingLocalPlayer(ULocalPlayer* ExistingPlayer)
 {
 	check(ExistingPlayer);
 	if (ExistingPlayer->PlayerController != NULL)
@@ -1590,7 +1590,7 @@ void UShooterGameInstance::RemoveExistingLocalPlayer(ULocalPlayer* ExistingPlaye
 	RemoveLocalPlayer( ExistingPlayer );
 }
 
-void UShooterGameInstance::RemoveSplitScreenPlayers()
+void USoldierGameInstance::RemoveSplitScreenPlayers()
 {
 	// if we had been split screen, toss the extra players now
 	// remove every player, back to front, except the first one
@@ -1601,10 +1601,10 @@ void UShooterGameInstance::RemoveSplitScreenPlayers()
 	}
 }
 
-FReply UShooterGameInstance::OnPairingUsePreviousProfile()
+FReply USoldierGameInstance::OnPairingUsePreviousProfile()
 {
 	// Do nothing (except hide the message) if they want to continue using previous profile
-	UShooterGameViewportClient * ShooterViewport = Cast<UShooterGameViewportClient>(GetGameViewportClient());
+	USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
 
 	if ( ShooterViewport != nullptr )
 	{
@@ -1614,18 +1614,18 @@ FReply UShooterGameInstance::OnPairingUsePreviousProfile()
 	return FReply::Handled();
 }
 
-FReply UShooterGameInstance::OnPairingUseNewProfile()
+FReply USoldierGameInstance::OnPairingUseNewProfile()
 {
 	HandleSignInChangeMessaging();
 	return FReply::Handled();
 }
 
-void UShooterGameInstance::HandleControllerPairingChanged( int GameUserIndex, const FUniqueNetId& PreviousUser, const FUniqueNetId& NewUser )
+void USoldierGameInstance::HandleControllerPairingChanged( int GameUserIndex, const FUniqueNetId& PreviousUser, const FUniqueNetId& NewUser )
 {
-	UE_LOG(LogOnlineGame, Log, TEXT("UShooterGameInstance::HandleControllerPairingChanged GameUserIndex %d PreviousUser '%s' NewUser '%s'"),
+	UE_LOG(LogOnlineGame, Log, TEXT("USoldierGameInstance::HandleControllerPairingChanged GameUserIndex %d PreviousUser '%s' NewUser '%s'"),
 		GameUserIndex, *PreviousUser.ToString(), *NewUser.ToString());
 	
-	if ( CurrentState == ShooterGameInstanceState::WelcomeScreen )
+	if ( CurrentState == SoldierGameInstanceState::WelcomeScreen )
 	{
 		// Don't care about pairing changes at welcome screen
 		return;
@@ -1669,7 +1669,7 @@ void UShooterGameInstance::HandleControllerPairingChanged( int GameUserIndex, co
 	// to continue controlling the old player with this controller
 	if ( ControlledLocalPlayer != nullptr && ControlledLocalPlayer != NewLocalPlayer )
 	{
-		UShooterGameViewportClient * ShooterViewport = Cast<UShooterGameViewportClient>(GetGameViewportClient());
+		USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
 
 		if ( ShooterViewport != nullptr )
 		{
@@ -1679,17 +1679,17 @@ void UShooterGameInstance::HandleControllerPairingChanged( int GameUserIndex, co
 				NSLOCTEXT("ProfileMessages", "PairingChanged", "Your controller has been paired to another profile, would you like to switch to this new profile now? Selecting YES will sign out of the previous profile."),
 				NSLOCTEXT("DialogButtons", "YES", "A - YES"),
 				NSLOCTEXT("DialogButtons", "NO", "B - NO"),
-				FOnClicked::CreateUObject(this, &UShooterGameInstance::OnPairingUseNewProfile),
-				FOnClicked::CreateUObject(this, &UShooterGameInstance::OnPairingUsePreviousProfile)
+				FOnClicked::CreateUObject(this, &USoldierGameInstance::OnPairingUseNewProfile),
+				FOnClicked::CreateUObject(this, &USoldierGameInstance::OnPairingUsePreviousProfile)
 			);
 		}
 	}
 #endif
 }
 
-void UShooterGameInstance::HandleControllerConnectionChange( bool bIsConnection, int32 Unused, int32 GameUserIndex )
+void USoldierGameInstance::HandleControllerConnectionChange( bool bIsConnection, int32 Unused, int32 GameUserIndex )
 {
-	UE_LOG(LogOnlineGame, Log, TEXT("UShooterGameInstance::HandleControllerConnectionChange bIsConnection %d GameUserIndex %d"),
+	UE_LOG(LogOnlineGame, Log, TEXT("USoldierGameInstance::HandleControllerConnectionChange bIsConnection %d GameUserIndex %d"),
 		bIsConnection, GameUserIndex);
 
 	if(!bIsConnection)
@@ -1709,9 +1709,9 @@ void UShooterGameInstance::HandleControllerConnectionChange( bool bIsConnection,
 	}
 }
 
-FReply UShooterGameInstance::OnControllerReconnectConfirm()
+FReply USoldierGameInstance::OnControllerReconnectConfirm()
 {
-	UShooterGameViewportClient * ShooterViewport = Cast<UShooterGameViewportClient>(GetGameViewportClient());
+	USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
 	if(ShooterViewport)
 	{
 		ShooterViewport->HideDialog();
@@ -1720,7 +1720,7 @@ FReply UShooterGameInstance::OnControllerReconnectConfirm()
 	return FReply::Handled();
 }
 
-TSharedPtr< const FUniqueNetId > UShooterGameInstance::GetUniqueNetIdFromControllerId( const int ControllerId )
+TSharedPtr< const FUniqueNetId > USoldierGameInstance::GetUniqueNetIdFromControllerId( const int ControllerId )
 {
 	IOnlineIdentityPtr OnlineIdentityInt = Online::GetIdentityInterface(GetWorld());
 
@@ -1737,13 +1737,13 @@ TSharedPtr< const FUniqueNetId > UShooterGameInstance::GetUniqueNetIdFromControl
 	return nullptr;
 }
 
-void UShooterGameInstance::SetOnlineMode(EOnlineMode InOnlineMode)
+void USoldierGameInstance::SetOnlineMode(EOnlineMode InOnlineMode)
 {
 	OnlineMode = InOnlineMode;
 	UpdateUsingMultiplayerFeatures(InOnlineMode == EOnlineMode::Online);
 }
 
-void UShooterGameInstance::UpdateUsingMultiplayerFeatures(bool bIsUsingMultiplayerFeatures)
+void USoldierGameInstance::UpdateUsingMultiplayerFeatures(bool bIsUsingMultiplayerFeatures)
 {
 	IOnlineSubsystem* OnlineSub = Online::GetSubsystem(GetWorld());
 
@@ -1762,21 +1762,21 @@ void UShooterGameInstance::UpdateUsingMultiplayerFeatures(bool bIsUsingMultiplay
 	}
 }
 
-void UShooterGameInstance::TravelToSession(const FName& SessionName)
+void USoldierGameInstance::TravelToSession(const FName& SessionName)
 {
 	// Added to handle failures when joining using quickmatch (handles issue of joining a game that just ended, i.e. during game ending timer)
 	AddNetworkFailureHandlers();
 	ShowLoadingScreen();
-	GotoState(ShooterGameInstanceState::Playing);
+	GotoState(SoldierGameInstanceState::Playing);
 	InternalTravelToSession(SessionName);
 }
 
-void UShooterGameInstance::SetIgnorePairingChangeForControllerId( const int32 ControllerId )
+void USoldierGameInstance::SetIgnorePairingChangeForControllerId( const int32 ControllerId )
 {
 	IgnorePairingChangeForControllerId = ControllerId;
 }
 
-bool UShooterGameInstance::IsLocalPlayerOnline(ULocalPlayer* LocalPlayer)
+bool USoldierGameInstance::IsLocalPlayerOnline(ULocalPlayer* LocalPlayer)
 {
 	if (LocalPlayer == NULL)
 	{
@@ -1803,7 +1803,7 @@ bool UShooterGameInstance::IsLocalPlayerOnline(ULocalPlayer* LocalPlayer)
 	return false;
 }
 
-bool UShooterGameInstance::IsLocalPlayerSignedIn(ULocalPlayer* LocalPlayer)
+bool USoldierGameInstance::IsLocalPlayerSignedIn(ULocalPlayer* LocalPlayer)
 {
 	if (LocalPlayer == NULL)
 	{
@@ -1827,10 +1827,10 @@ bool UShooterGameInstance::IsLocalPlayerSignedIn(ULocalPlayer* LocalPlayer)
 	return false;
 }
 
-bool UShooterGameInstance::ValidatePlayerForOnlinePlay(ULocalPlayer* LocalPlayer)
+bool USoldierGameInstance::ValidatePlayerForOnlinePlay(ULocalPlayer* LocalPlayer)
 {
 	// Get the viewport
-	UShooterGameViewportClient * ShooterViewport = Cast<UShooterGameViewportClient>(GetGameViewportClient());
+	USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
 
 #if PLATFORM_XBOXONE
 	if (CurrentConnectionStatus != EOnlineServerConnectionStatus::Connected)
@@ -1847,8 +1847,8 @@ bool UShooterGameInstance::ValidatePlayerForOnlinePlay(ULocalPlayer* LocalPlayer
 				Msg,
 				OKButtonString,
 				FText::GetEmpty(),
-				FOnClicked::CreateUObject(this, &UShooterGameInstance::OnConfirmGeneric),
-				FOnClicked::CreateUObject(this, &UShooterGameInstance::OnConfirmGeneric)
+				FOnClicked::CreateUObject(this, &USoldierGameInstance::OnConfirmGeneric),
+				FOnClicked::CreateUObject(this, &USoldierGameInstance::OnConfirmGeneric)
 			);
 		}
 
@@ -1870,8 +1870,8 @@ bool UShooterGameInstance::ValidatePlayerForOnlinePlay(ULocalPlayer* LocalPlayer
 				Msg,
 				OKButtonString,
 				FText::GetEmpty(),
-				FOnClicked::CreateUObject(this, &UShooterGameInstance::OnConfirmGeneric),
-				FOnClicked::CreateUObject(this, &UShooterGameInstance::OnConfirmGeneric)
+				FOnClicked::CreateUObject(this, &USoldierGameInstance::OnConfirmGeneric),
+				FOnClicked::CreateUObject(this, &USoldierGameInstance::OnConfirmGeneric)
 			);
 		}
 
@@ -1881,10 +1881,10 @@ bool UShooterGameInstance::ValidatePlayerForOnlinePlay(ULocalPlayer* LocalPlayer
 	return true;
 }
 
-bool UShooterGameInstance::ValidatePlayerIsSignedIn(ULocalPlayer* LocalPlayer)
+bool USoldierGameInstance::ValidatePlayerIsSignedIn(ULocalPlayer* LocalPlayer)
 {
 	// Get the viewport
-	UShooterGameViewportClient * ShooterViewport = Cast<UShooterGameViewportClient>(GetGameViewportClient());
+	USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
 
 	if (!IsLocalPlayerSignedIn(LocalPlayer))
 	{
@@ -1900,8 +1900,8 @@ bool UShooterGameInstance::ValidatePlayerIsSignedIn(ULocalPlayer* LocalPlayer)
 				Msg,
 				OKButtonString,
 				FText::GetEmpty(),
-				FOnClicked::CreateUObject(this, &UShooterGameInstance::OnConfirmGeneric),
-				FOnClicked::CreateUObject(this, &UShooterGameInstance::OnConfirmGeneric)
+				FOnClicked::CreateUObject(this, &USoldierGameInstance::OnConfirmGeneric),
+				FOnClicked::CreateUObject(this, &USoldierGameInstance::OnConfirmGeneric)
 			);
 		}
 
@@ -1912,9 +1912,9 @@ bool UShooterGameInstance::ValidatePlayerIsSignedIn(ULocalPlayer* LocalPlayer)
 }
 
 
-FReply UShooterGameInstance::OnConfirmGeneric()
+FReply USoldierGameInstance::OnConfirmGeneric()
 {
-	UShooterGameViewportClient * ShooterViewport = Cast<UShooterGameViewportClient>(GetGameViewportClient());
+	USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
 	if(ShooterViewport)
 	{
 		ShooterViewport->HideDialog();
@@ -1923,9 +1923,9 @@ FReply UShooterGameInstance::OnConfirmGeneric()
 	return FReply::Handled();
 }
 
-void UShooterGameInstance::StartOnlinePrivilegeTask(const IOnlineIdentity::FOnGetUserPrivilegeCompleteDelegate& Delegate, EUserPrivileges::Type Privilege, TSharedPtr< const FUniqueNetId > UserId)
+void USoldierGameInstance::StartOnlinePrivilegeTask(const IOnlineIdentity::FOnGetUserPrivilegeCompleteDelegate& Delegate, EUserPrivileges::Type Privilege, TSharedPtr< const FUniqueNetId > UserId)
 {
-	WaitMessageWidget = SNew(SShooterWaitDialog)
+	WaitMessageWidget = SNew(SSoldierWaitDialog)
 		.MessageText(NSLOCTEXT("NetworkStatus", "CheckingPrivilegesWithServer", "Checking privileges with server.  Please wait..."));
 
 	if (GEngine && GEngine->GameViewport)
@@ -1946,7 +1946,7 @@ void UShooterGameInstance::StartOnlinePrivilegeTask(const IOnlineIdentity::FOnGe
 	}
 }
 
-void UShooterGameInstance::CleanupOnlinePrivilegeTask()
+void USoldierGameInstance::CleanupOnlinePrivilegeTask()
 {
 	if (GEngine && GEngine->GameViewport && WaitMessageWidget.IsValid())
 	{
@@ -1955,10 +1955,10 @@ void UShooterGameInstance::CleanupOnlinePrivilegeTask()
 	}
 }
 
-void UShooterGameInstance::DisplayOnlinePrivilegeFailureDialogs(const FUniqueNetId& UserId, EUserPrivileges::Type Privilege, uint32 PrivilegeResults)
+void USoldierGameInstance::DisplayOnlinePrivilegeFailureDialogs(const FUniqueNetId& UserId, EUserPrivileges::Type Privilege, uint32 PrivilegeResults)
 {	
 	// Show warning that the user cannot play due to age restrictions
-	UShooterGameViewportClient * ShooterViewport = Cast<UShooterGameViewportClient>(GetGameViewportClient());
+	USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
 	TWeakObjectPtr<ULocalPlayer> OwningPlayer;
 	if (GEngine)
 	{
@@ -1993,8 +1993,8 @@ void UShooterGameInstance::DisplayOnlinePrivilegeFailureDialogs(const FUniqueNet
 				NSLOCTEXT("OnlinePrivilegeResult", "RequiredSystemUpdate", "A required system update is available.  Please upgrade to access online features."),
 				NSLOCTEXT("DialogButtons", "OKAY", "OK"),
 				FText::GetEmpty(),
-				FOnClicked::CreateUObject(this, &UShooterGameInstance::OnConfirmGeneric),
-				FOnClicked::CreateUObject(this, &UShooterGameInstance::OnConfirmGeneric)
+				FOnClicked::CreateUObject(this, &USoldierGameInstance::OnConfirmGeneric),
+				FOnClicked::CreateUObject(this, &USoldierGameInstance::OnConfirmGeneric)
 				);
 		}
 		else if ((PrivilegeResults & (uint32)IOnlineIdentity::EPrivilegeResults::RequiredPatchAvailable) != 0)
@@ -2005,8 +2005,8 @@ void UShooterGameInstance::DisplayOnlinePrivilegeFailureDialogs(const FUniqueNet
 				NSLOCTEXT("OnlinePrivilegeResult", "RequiredPatchAvailable", "A required game patch is available.  Please upgrade to access online features."),
 				NSLOCTEXT("DialogButtons", "OKAY", "OK"),
 				FText::GetEmpty(),
-				FOnClicked::CreateUObject(this, &UShooterGameInstance::OnConfirmGeneric),
-				FOnClicked::CreateUObject(this, &UShooterGameInstance::OnConfirmGeneric)
+				FOnClicked::CreateUObject(this, &USoldierGameInstance::OnConfirmGeneric),
+				FOnClicked::CreateUObject(this, &USoldierGameInstance::OnConfirmGeneric)
 				);
 		}
 		else if ((PrivilegeResults & (uint32)IOnlineIdentity::EPrivilegeResults::AgeRestrictionFailure) != 0)
@@ -2017,8 +2017,8 @@ void UShooterGameInstance::DisplayOnlinePrivilegeFailureDialogs(const FUniqueNet
 				NSLOCTEXT("OnlinePrivilegeResult", "AgeRestrictionFailure", "Cannot play due to age restrictions!"),
 				NSLOCTEXT("DialogButtons", "OKAY", "OK"),
 				FText::GetEmpty(),
-				FOnClicked::CreateUObject(this, &UShooterGameInstance::OnConfirmGeneric),
-				FOnClicked::CreateUObject(this, &UShooterGameInstance::OnConfirmGeneric)
+				FOnClicked::CreateUObject(this, &USoldierGameInstance::OnConfirmGeneric),
+				FOnClicked::CreateUObject(this, &USoldierGameInstance::OnConfirmGeneric)
 				);
 		}
 		else if ((PrivilegeResults & (uint32)IOnlineIdentity::EPrivilegeResults::UserNotFound) != 0)
@@ -2029,8 +2029,8 @@ void UShooterGameInstance::DisplayOnlinePrivilegeFailureDialogs(const FUniqueNet
 				NSLOCTEXT("OnlinePrivilegeResult", "UserNotFound", "Cannot play due invalid user!"),
 				NSLOCTEXT("DialogButtons", "OKAY", "OK"),
 				FText::GetEmpty(),
-				FOnClicked::CreateUObject(this, &UShooterGameInstance::OnConfirmGeneric),
-				FOnClicked::CreateUObject(this, &UShooterGameInstance::OnConfirmGeneric)
+				FOnClicked::CreateUObject(this, &USoldierGameInstance::OnConfirmGeneric),
+				FOnClicked::CreateUObject(this, &USoldierGameInstance::OnConfirmGeneric)
 				);
 		}
 		else if ((PrivilegeResults & (uint32)IOnlineIdentity::EPrivilegeResults::GenericFailure) != 0)
@@ -2041,19 +2041,19 @@ void UShooterGameInstance::DisplayOnlinePrivilegeFailureDialogs(const FUniqueNet
 				NSLOCTEXT("OnlinePrivilegeResult", "GenericFailure", "Cannot play online.  Check your network connection."),
 				NSLOCTEXT("DialogButtons", "OKAY", "OK"),
 				FText::GetEmpty(),
-				FOnClicked::CreateUObject(this, &UShooterGameInstance::OnConfirmGeneric),
-				FOnClicked::CreateUObject(this, &UShooterGameInstance::OnConfirmGeneric)
+				FOnClicked::CreateUObject(this, &USoldierGameInstance::OnConfirmGeneric),
+				FOnClicked::CreateUObject(this, &USoldierGameInstance::OnConfirmGeneric)
 				);
 		}
 	}
 }
 
-void UShooterGameInstance::OnRegisterLocalPlayerComplete(const FUniqueNetId& PlayerId, EOnJoinSessionCompleteResult::Type Result)
+void USoldierGameInstance::OnRegisterLocalPlayerComplete(const FUniqueNetId& PlayerId, EOnJoinSessionCompleteResult::Type Result)
 {
 	FinishSessionCreation(Result);
 }
 
-void UShooterGameInstance::FinishSessionCreation(EOnJoinSessionCompleteResult::Type Result)
+void USoldierGameInstance::FinishSessionCreation(EOnJoinSessionCompleteResult::Type Result)
 {
 	if (Result == EOnJoinSessionCompleteResult::Success)
 	{
@@ -2071,24 +2071,24 @@ void UShooterGameInstance::FinishSessionCreation(EOnJoinSessionCompleteResult::T
 	}
 }
 
-FString UShooterGameInstance::GetQuickMatchUrl()
+FString USoldierGameInstance::GetQuickMatchUrl()
 {
 	static const FString QuickMatchUrl(TEXT("/Game/Maps/Highrise?game=TDM?listen"));
 	return QuickMatchUrl;
 }
 
-void UShooterGameInstance::BeginHostingQuickMatch()
+void USoldierGameInstance::BeginHostingQuickMatch()
 {
 	ShowLoadingScreen();
-	GotoState(ShooterGameInstanceState::Playing);
+	GotoState(SoldierGameInstanceState::Playing);
 
 	// Travel to the specified match URL
 	GetWorld()->ServerTravel(GetQuickMatchUrl());	
 }
 
-void UShooterGameInstance::OnPlayTogetherEventReceived(const int32 UserIndex, const TArray<TSharedPtr<const FUniqueNetId>>& UserIdList)
+void USoldierGameInstance::OnPlayTogetherEventReceived(const int32 UserIndex, const TArray<TSharedPtr<const FUniqueNetId>>& UserIdList)
 {
-	PlayTogetherInfo = FShooterPlayTogetherInfo(UserIndex, UserIdList);
+	PlayTogetherInfo = FSoldierPlayTogetherInfo(UserIndex, UserIdList);
 
 	const IOnlineSubsystem* const OnlineSub = Online::GetSubsystem(GetWorld());
 	check(OnlineSub);
@@ -2104,21 +2104,21 @@ void UShooterGameInstance::OnPlayTogetherEventReceived(const int32 UserIndex, co
 		SendPlayTogetherInvites();
 	}
 	// Always handle Play Together in the main menu since the player has session customization options.
-	else if (CurrentState == ShooterGameInstanceState::MainMenu)
+	else if (CurrentState == SoldierGameInstanceState::MainMenu)
 	{
 		MainMenuUI->OnPlayTogetherEventReceived();
 	}
-	else if (CurrentState == ShooterGameInstanceState::WelcomeScreen)
+	else if (CurrentState == SoldierGameInstanceState::WelcomeScreen)
 	{
-		StartOnlinePrivilegeTask(IOnlineIdentity::FOnGetUserPrivilegeCompleteDelegate::CreateUObject(this, &UShooterGameInstance::OnUserCanPlayTogether), EUserPrivileges::CanPlayOnline, PendingInvite.UserId);
+		StartOnlinePrivilegeTask(IOnlineIdentity::FOnGetUserPrivilegeCompleteDelegate::CreateUObject(this, &USoldierGameInstance::OnUserCanPlayTogether), EUserPrivileges::CanPlayOnline, PendingInvite.UserId);
 	}
 	else
 	{
-		GotoState(ShooterGameInstanceState::MainMenu);
+		GotoState(SoldierGameInstanceState::MainMenu);
 	}
 }
 
-void UShooterGameInstance::SendPlayTogetherInvites()
+void USoldierGameInstance::SendPlayTogetherInvites()
 {
 	const IOnlineSubsystem* const OnlineSub = Online::GetSubsystem(GetWorld());
 	check(OnlineSub);
@@ -2145,11 +2145,11 @@ void UShooterGameInstance::SendPlayTogetherInvites()
 			}
 		}
 
-		PlayTogetherInfo = FShooterPlayTogetherInfo();
+		PlayTogetherInfo = FSoldierPlayTogetherInfo();
 	}
 }
 
-void UShooterGameInstance::ReceivedNetworkEncryptionToken(const FString& EncryptionToken, const FOnEncryptionKeyResponse& Delegate)
+void USoldierGameInstance::ReceivedNetworkEncryptionToken(const FString& EncryptionToken, const FOnEncryptionKeyResponse& Delegate)
 {
 	// This is a simple implementation to demonstrate using encryption for game traffic using a hardcoded key.
 	// For a complete implementation, you would likely want to retrieve the encryption key from a secure source,
@@ -2174,7 +2174,7 @@ void UShooterGameInstance::ReceivedNetworkEncryptionToken(const FString& Encrypt
 
 }
 
-void UShooterGameInstance::ReceivedNetworkEncryptionAck(const FOnEncryptionKeyResponse& Delegate)
+void USoldierGameInstance::ReceivedNetworkEncryptionAck(const FOnEncryptionKeyResponse& Delegate)
 {
 	// This is a simple implementation to demonstrate using encryption for game traffic using a hardcoded key.
 	// For a complete implementation, you would likely want to retrieve the encryption key from a secure source,

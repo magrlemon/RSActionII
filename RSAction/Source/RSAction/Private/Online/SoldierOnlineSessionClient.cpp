@@ -2,7 +2,7 @@
 
 #include "RSAction.h"
 #include "SoldierOnlineSessionClient.h"
-#include "ShooterGameInstance.h"
+#include "SoldierGameInstance.h"
 
 USoldierOnlineSessionClient::USoldierOnlineSessionClient()
 {
@@ -34,11 +34,11 @@ void USoldierOnlineSessionClient::OnSessionUserInviteAccepted(
 		return;
 	}
 
-	UShooterGameInstance* ShooterGameInstance = Cast<UShooterGameInstance>(GetGameInstance());
+	USoldierGameInstance* SoldierGameInstance = Cast<USoldierGameInstance>(GetGameInstance());
 
-	if (ShooterGameInstance)
+	if (SoldierGameInstance)
 	{
-		FShooterPendingInvite PendingInvite;
+		FSoldierPendingInvite PendingInvite;
 
 		// Set the pending invite, and then go to the initial screen, which is where we will process it
 		PendingInvite.ControllerId = ControllerId;
@@ -46,15 +46,15 @@ void USoldierOnlineSessionClient::OnSessionUserInviteAccepted(
 		PendingInvite.InviteResult = InviteResult;
 		PendingInvite.bPrivilegesCheckedAndAllowed = false;
 
-		ShooterGameInstance->SetPendingInvite(PendingInvite);
-		ShooterGameInstance->GotoState(ShooterGameInstanceState::PendingInvite);
+		SoldierGameInstance->SetPendingInvite(PendingInvite);
+		SoldierGameInstance->GotoState(SoldierGameInstanceState::PendingInvite);
 	}
 }
 
 void USoldierOnlineSessionClient::OnPlayTogetherEventReceived(int32 UserIndex, TArray<TSharedPtr<const FUniqueNetId>> UserIdList)
 {	
-	if (UShooterGameInstance* const ShooterGameInstance = Cast<UShooterGameInstance>(GetGameInstance()))
+	if (USoldierGameInstance* const SoldierGameInstance = Cast<USoldierGameInstance>(GetGameInstance()))
 	{
-		ShooterGameInstance->OnPlayTogetherEventReceived(UserIndex, UserIdList);
+		SoldierGameInstance->OnPlayTogetherEventReceived(UserIndex, UserIdList);
 	}
 }

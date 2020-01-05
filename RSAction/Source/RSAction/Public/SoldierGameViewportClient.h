@@ -3,13 +3,13 @@
 #pragma once
 
 #include "SoldierTypes.h"
-#include "ShooterGameViewportClient.generated.h"
+#include "SoldierGameViewportClient.generated.h"
 
 class SSoldierConfirmationDialog;
 
-struct FShooterGameLoadingScreenBrush : public FSlateDynamicImageBrush, public FGCObject
+struct FSoldierGameLoadingScreenBrush : public FSlateDynamicImageBrush, public FGCObject
 {
-	FShooterGameLoadingScreenBrush( const FName InTextureName, const FVector2D& InImageSize )
+	FSoldierGameLoadingScreenBrush( const FName InTextureName, const FVector2D& InImageSize )
 		: FSlateDynamicImageBrush( InTextureName, InImageSize )
 	{
 		SetResourceObject(LoadObject<UObject>( nullptr, *InTextureName.ToString() ));
@@ -21,10 +21,10 @@ struct FShooterGameLoadingScreenBrush : public FSlateDynamicImageBrush, public F
 	}
 };
 
-class SShooterLoadingScreen : public SCompoundWidget
+class SSoldierLoadingScreen : public SCompoundWidget
 {
 public:
-	SLATE_BEGIN_ARGS(SShooterLoadingScreen) {}
+	SLATE_BEGIN_ARGS(SSoldierLoadingScreen) {}
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
@@ -40,7 +40,7 @@ private:
 };
 
 UCLASS(Within=Engine, transient, config=Engine)
-class UShooterGameViewportClient : public UGameViewportClient
+class USoldierGameViewportClient : public UGameViewportClient
 {
 	GENERATED_UCLASS_BODY()
 
@@ -90,5 +90,5 @@ protected:
 	/** Dialog widget to show temporary messages ("Controller disconnected", "Parental Controls don't allow you to play online", etc) */
 	TSharedPtr<SSoldierConfirmationDialog>			DialogWidget;
 
-	TSharedPtr<SShooterLoadingScreen>				LoadingScreenWidget;
+	TSharedPtr<SSoldierLoadingScreen>				LoadingScreenWidget;
 };
