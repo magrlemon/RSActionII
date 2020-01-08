@@ -1,0 +1,43 @@
+{
+	"FileVersion" : 3,
+	"Version" : 1,
+	"VersionName" : "2.1",
+	"FriendlyName" : "DcxVehicle",
+	"Description" : "Implementation of NVIDIA PhysX Vehicles for Unreal Engine 4.",
+	"Category" : "Vehicles",
+	"CreatedBy" : "Dotex Games",
+	"CreatedByURL" : "",
+	"DocsURL" : "",
+	"MarketplaceURL" : "com.epicgames.launcher://ue/marketplace/content/bf81cafcacd3441cb800648bab376ff6",
+	"SupportURL" : "",
+	"EngineVersion" : "4.16.0",
+	"CanContainContent" : false,
+	"IsBetaVersion" : false,
+	"Installed" : true,
+	"RequiresBuildPlatform" : false,
+	"Modules" :
+	[
+		{
+			"Name" : "DcxVehicle",
+			"Type" : "Runtime",
+			"LoadingPhase" : "Default",
+			"WhitelistPlatforms" :
+			[
+				"Win32",
+				"Win64",
+				"Mac"
+			]
+		},
+		{
+			"Name" : "DcxVehicleEditor",
+			"Type" : "Editor",
+			"LoadingPhase" : "PostEngineInit",
+			"WhitelistPlatforms" :
+			[
+				"Win32",
+				"Win64",
+				"Mac"
+			]
+		}
+	]
+}
