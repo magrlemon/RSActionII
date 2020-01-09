@@ -145,10 +145,11 @@ float UDcxVehicleWheelsComponent::GetWheelRotationAngle(int32 WheelIndex) const
 	float WheelRotationAngle = 0.0f;
 	if (PVehicleWheels)
 	{
-		/*UpdatedPrimitive->GetBodyInstance()->ExecuteOnPhysicsReadOnly([&]
+		/*UpdatedPrimitive->GetBodyInstance()->ExecuteOnPhysicsReadOnly([&]*/
+		FPhysicsCommand::ExecuteRead(UpdatedPrimitive->GetBodyInstance()->ActorHandle, [&](const FPhysicsActorHandle_PhysX& Actor)
 		{
 			WheelRotationAngle = -1.0f * FMath::DegreesToRadians(PVehicleWheels->mWheelsDynData.getWheelRotationAngle(WheelIndex));
-		});*/
+		});
 	}
 	return WheelRotationAngle;
 }
@@ -211,10 +212,11 @@ bool UDcxVehicleWheelsComponent::IsWheelDisabled(int32 WheelIndex) const
 	bool IsDisabled = false;
 	if (PVehicleWheels)
 	{
-		/*UpdatedPrimitive->GetBodyInstance()->ExecuteOnPhysicsReadOnly([&]
+		/*UpdatedPrimitive->GetBodyInstance()->ExecuteOnPhysicsReadOnly([&]*/
+		FPhysicsCommand::ExecuteRead(UpdatedPrimitive->GetBodyInstance()->ActorHandle, [&](const FPhysicsActorHandle_PhysX& Actor)
 		{
 			IsDisabled = PVehicleWheels->mWheelsSimData.getIsWheelDisabled(WheelIndex);
-		});*/
+		});
 	}
 	return IsDisabled;
 }
@@ -682,8 +684,8 @@ FVector UDcxVehicleWheelsComponent::GetChassisCMOffset() const
 	{
 		if (const FBodyInstance* BodyInstance = UpdatedPrimitive->GetBodyInstance())
 		{
-			FPhysicsCommand::ExecuteWrite(UpdatedPrimitive->GetBodyInstance()->ActorHandle, [&](FPhysicsActorHandle_PhysX& pActor)
-			//FPhysicsCommand::ExecuteRead(UpdatedPrimitive->GetBodyInstance()->ActorHandle, [&](const FPhysicsActorHandle_PhysX& pActor)
+			//FPhysicsCommand::ExecuteWrite(UpdatedPrimitive->GetBodyInstance()->ActorHandle, [&](FPhysicsActorHandle_PhysX& pActor)
+			FPhysicsCommand::ExecuteRead(UpdatedPrimitive->GetBodyInstance()->ActorHandle, [&](const FPhysicsActorHandle_PhysX& pActor)
 			//ExecuteOnPxRigidDynamicReadOnly(BodyInstance, [&](const PxRigidDynamic* PVehicleActor)
 			{				
 				PxRigidDynamic* PVehicleActor = FPhysicsInterface_PhysX::GetPxRigidDynamic_AssumesLocked(pActor);

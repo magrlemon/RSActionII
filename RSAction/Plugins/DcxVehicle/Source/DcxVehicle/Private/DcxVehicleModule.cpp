@@ -43,6 +43,7 @@ void FDcxVehicleModule::StartupModule()
 
 void FDcxVehicleModule::ShutdownModule()
 {
+	//PxCloseVehicleSDK();
 }
 
 void FDcxVehicleModule::UpdatePhysxMaterial(UPhysicalMaterial* PhysicalMaterial)
