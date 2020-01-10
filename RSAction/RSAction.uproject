@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{E12BEC3D-4625-A6E6-3823-33955FBDC9D7}",
+	"EngineAssociation": "{FFCB6ADB-4888-4047-32CE-72B23B8BC04E}",
 	"Category": "Samples",
 	"Description": "",
 	"Modules": [
@@ -71,6 +71,11 @@
 		{
 			"Name": "Gauntlet",
 			"Enabled": true
+		},
+		{
+			"Name": "DcxVehicle",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/bf81cafcacd3441cb800648bab376ff6"
 		}
 	],
 	"TargetPlatforms": [
