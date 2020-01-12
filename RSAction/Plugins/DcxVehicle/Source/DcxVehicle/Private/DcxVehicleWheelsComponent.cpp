@@ -526,7 +526,7 @@ void UDcxVehicleWheelsComponent::SetupWheelShapes()
 
 			if (BodySetup)
 			{
-				PxMeshScale PMeshScale(U2PVector(UpdatedComponent->RelativeScale3D * MeshScale), PxQuat(PxIdentity));
+				PxMeshScale PMeshScale(U2PVector(UpdatedComponent->GetRelativeScale3D() * MeshScale), PxQuat(PxIdentity));
 				if (BodySetup->AggGeom.ConvexElems.Num() == 1)
 				{
 					PxConvexMesh* PConvexMesh = BodySetup->AggGeom.ConvexElems[0].GetConvexMesh();
@@ -663,7 +663,7 @@ FVector UDcxVehicleWheelsComponent::GetWheelCMOffset(const FDcxVehicleWheelConfi
 		USkinnedMeshComponent* Mesh = GetMesh();
 		if (Mesh && Mesh->SkeletalMesh)
 		{
-			const FVector BonePosition = Mesh->SkeletalMesh->GetComposedRefPoseMatrix(WheelConfig.BoneName).GetOrigin() * Mesh->RelativeScale3D;
+			const FVector BonePosition = Mesh->SkeletalMesh->GetComposedRefPoseMatrix(WheelConfig.BoneName).GetOrigin() * Mesh->GetRelativeScale3D();
 			const FMatrix BodyMatrix = Mesh->SkeletalMesh->GetComposedRefPoseMatrix(Mesh->GetBodyInstance()->BodySetup->BoneName);
 			const FVector LocalBonePosition = BodyMatrix.InverseTransformPosition(BonePosition);
 			WheelCMOffset += LocalBonePosition;

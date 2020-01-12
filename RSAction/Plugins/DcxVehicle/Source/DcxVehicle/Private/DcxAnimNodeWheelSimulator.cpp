@@ -13,11 +13,11 @@ FDcxAnimNodeWheelSimulator::FDcxAnimNodeWheelSimulator()
 	Proxy = NULL;
 }
 
-void FDcxAnimNodeWheelSimulator::Initialize(const FAnimationInitializeContext& Context)
+void FDcxAnimNodeWheelSimulator::Initialize_AnyThread(const FAnimationInitializeContext& Context)
 {
 	Proxy = (FDcxVehicleAnimInstanceProxy*)Context.AnimInstanceProxy;
 
-	Super::Initialize(Context);
+	Super::Initialize_AnyThread(Context);
 }
 
 bool FDcxAnimNodeWheelSimulator::CanUpdateInWorkerThread() const
@@ -33,7 +33,7 @@ void  FDcxAnimNodeWheelSimulator::EvaluateSkeletalControl_AnyThread(FComponentSp
 	const FBoneContainer& BoneContainer = Output.Pose.GetPose().GetBoneContainer();
 	for (FDcxVehicleWheelLookup& Lookup : Lookups)
 	{
-		if (!Lookup.BoneReference.IsValid(BoneContainer) || !Proxy->WheelAnimData[Lookup.WheelIndex].IsValid)
+		if (!Lookup.BoneReference.IsValidToEvaluate(BoneContainer) || !Proxy->WheelAnimData[Lookup.WheelIndex].IsValid)
 			continue;
 
 		FTransform ComponentTM = Output.AnimInstanceProxy->GetComponentTransform();
@@ -52,7 +52,7 @@ bool FDcxAnimNodeWheelSimulator::IsValidToEvaluate(const USkeleton* Skeleton, co
 
 	for (FDcxVehicleWheelLookup& Lookup : Lookups)
 	{
-		if (Lookup.BoneReference.IsValid(RequiredBones))
+		if (Lookup.BoneReference.IsValidToEvaluate(RequiredBones))
 			return true;
 	}
 

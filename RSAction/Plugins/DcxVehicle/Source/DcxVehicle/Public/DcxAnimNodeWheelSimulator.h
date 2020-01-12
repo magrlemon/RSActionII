@@ -23,7 +23,7 @@ public:
 
 	FDcxAnimNodeWheelSimulator();
 
-	virtual void Initialize(const FAnimationInitializeContext& Context) override;
+	virtual void Initialize_AnyThread(const FAnimationInitializeContext& Context) override;
 	virtual bool CanUpdateInWorkerThread() const override;
 
 protected:

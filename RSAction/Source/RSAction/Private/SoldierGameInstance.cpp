@@ -24,7 +24,7 @@ FAutoConsoleVariable CVarShooterGameTestEncryption(TEXT("ShooterGame.TestEncrypt
 
 void SSoldierWaitDialog::Construct(const FArguments& InArgs)
 {
-	const FSoldierMenuItemStyle* ItemStyle = &FSoldierStyle::Get().GetWidgetStyle<FSoldierMenuItemStyle>("DefaultShooterMenuItemStyle");
+	const FSoldierMenuItemStyle* ItemStyle = &FSoldierStyle::Get().GetWidgetStyle<FSoldierMenuItemStyle>("DefaultSoldierMenuItemStyle");
 	const FButtonStyle* ButtonStyle = &FSoldierStyle::Get().GetWidgetStyle<FButtonStyle>("DefaultShooterButtonStyle");
 	ChildSlot
 		.VAlign(VAlign_Center)
