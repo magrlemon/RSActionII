@@ -19,6 +19,7 @@
 #include "Online/SoldierGameSession.h"
 #include "Online/SoldierOnlineSessionClient.h"
 #include "OnlineSubsystemUtils.h"
+#include "DcxVehicleAPI.h"
 
 FAutoConsoleVariable CVarShooterGameTestEncryption(TEXT("ShooterGame.TestEncryption"), 0, TEXT("If true, clients will send an encryption token with their request to join the server and attempt to encrypt the connection using a debug key. This is NOT SECURE and for demonstration purposes only."));
 
@@ -152,6 +153,7 @@ void USoldierGameInstance::Init()
 	{
 		DebugTestEncryptionKey[i] = uint8(i);
 	}
+	InitializeDcxVehicle();
 }
 
 void USoldierGameInstance::Shutdown()

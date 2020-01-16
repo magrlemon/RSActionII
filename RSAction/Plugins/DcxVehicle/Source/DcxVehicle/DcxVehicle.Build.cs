@@ -22,6 +22,12 @@ namespace UnrealBuildTool.Rules
                     "PhysicsCore"
                 }
             );
+            //PublicIncludePaths.AddRange(
+            //    new string[]
+            //    {
+            //        "ThirdParty/PhysX3/PhysX_3.4/Include"
+            //    }
+            //    );
 		}
     }
 }

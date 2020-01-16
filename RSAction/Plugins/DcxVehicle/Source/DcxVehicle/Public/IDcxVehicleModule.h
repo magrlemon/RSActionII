@@ -6,7 +6,7 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(DcxVehicleLog, Log, All);
 
-class IDcxVehicleModule : public IModuleInterface
+DCXVEHICLE_API class IDcxVehicleModule : public IModuleInterface
 {
 public:
 

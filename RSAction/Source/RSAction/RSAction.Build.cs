@@ -30,9 +30,17 @@ public class RSAction : ModuleRules
 				"AIModule",
 				"GameplayTasks",
 				"Gauntlet",
+                //"PhysicsCore",
+                "DcxVehicle",
 			}
 		);
 
+        PublicIncludePaths.AddRange(
+            new string[]
+            {
+                "DcxVehicle/Public",
+            }
+        );
         PrivateDependencyModuleNames.AddRange(
 			new string[] {
 				"InputCore",
@@ -59,8 +67,9 @@ public class RSAction : ModuleRules
 
 		PrivateIncludePathModuleNames.AddRange(
 			new string[] {
-				"NetworkReplayStreaming"
-			}
+				"NetworkReplayStreaming",
+                
+            }
 		);
 
 		if (Target.bBuildDeveloperTools || (Target.Configuration != UnrealTargetConfiguration.Shipping && Target.Configuration != UnrealTargetConfiguration.Test))

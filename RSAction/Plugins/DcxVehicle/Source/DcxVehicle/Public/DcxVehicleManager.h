@@ -1,7 +1,7 @@
 // Copyright 2016 Dotex Games. All Rights Reserved.
 
 #pragma once
-
+#include "vehicle/PxVehicleUpdate.h"
 //class FPhysScene;
 class UDcxVehicleWheelsComponent;
 

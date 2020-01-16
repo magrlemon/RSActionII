@@ -14,6 +14,7 @@ class FSoldierMainMenu;
 class FSoldierWelcomeMenu;
 class FSoldierMessageMenu;
 class ASoldierGameSession;
+class FDcxVehicleManager;
 
 namespace SoldierGameInstanceState
 {
@@ -223,7 +224,6 @@ private:
 
 	UPROPERTY(config)
 	FString MainMenuMap;
-
 
 	FName CurrentState;
 	FName PendingState;
