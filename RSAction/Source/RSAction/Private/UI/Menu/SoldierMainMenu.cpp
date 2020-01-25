@@ -23,9 +23,9 @@
 
 #define MAX_BOT_COUNT 8
 
-static const FString MapNames[] = { TEXT("Sanctuary"), TEXT("Highrise") };
-static const FString JoinMapNames[] = { TEXT("Any"), TEXT("Sanctuary"), TEXT("Highrise") };
-static const FName PackageNames[] = { TEXT("Sanctuary.umap"), TEXT("Highrise.umap") };
+static const FString MapNames[] = { TEXT("DesertTownDemo"), TEXT("DesertTownDemo_1217") };
+static const FString JoinMapNames[] = { TEXT("Any"), TEXT("DesertTownDemo"), TEXT("DesertTownDemo_1217") };
+static const FName PackageNames[] = { TEXT("DesertTownDemo_1217.umap"), TEXT("DesertTownDemo_1217.umap") };
 static const int DefaultTDMMap = 1;
 static const int DefaultFFAMap = 0; 
 static const float QuickmatchUIAnimationTimeDuration = 30.f;
@@ -354,7 +354,7 @@ void FSoldierMainMenu::Construct(TWeakObjectPtr<USoldierGameInstance> _GameInsta
 		MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("Quit", "QUIT"), this, &FSoldierMainMenu::OnUIQuit);
 #endif
 
-		MenuWidget->CurrentMenuTitle = LOCTEXT("MainMenu","MAIN MENU");
+		MenuWidget->CurrentMenuTitle = LOCTEXT("MainMenu","MAIN ²Ëµ¥");
 		MenuWidget->OnGoBack.BindSP(this, &FSoldierMainMenu::OnMenuGoBack);
 		MenuWidget->MainMenu = MenuWidget->CurrentMenu = RootMenuItem->SubMenu;
 		MenuWidget->OnMenuHidden.BindSP(this, &FSoldierMainMenu::OnMenuHidden);

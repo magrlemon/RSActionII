@@ -1246,11 +1246,11 @@ void ASoldierPlayerController::UpdateAchievementsOnGameEnd()
 				if (World)
 				{			
 					FString MapName = *FPackageName::GetShortName(World->PersistentLevel->GetOutermost()->GetName());
-					if (MapName.Find(TEXT("Highrise")) != -1)
+					if (MapName.Find(TEXT("DesertTownDemo_1217")) != -1)
 					{
 						UpdateAchievementProgress(ACH_PLAY_HIGHRISE, 100.0f);
 					}
-					else if (MapName.Find(TEXT("Sanctuary")) != -1)
+					else if (MapName.Find(TEXT("DesertTownDemo_1217")) != -1)
 					{
 						UpdateAchievementProgress(ACH_PLAY_SANCTUARY, 100.0f);
 					}
@@ -1321,7 +1321,7 @@ void ASoldierPlayerController::UpdateLeaderboardsOnGameEnd()
 
 							// the call will copy the user id and write object to its own memory
 							Leaderboards->WriteLeaderboards(SoldierPlayerState->SessionName, *UserId, ResultsWriteObject);
-							Leaderboards->FlushLeaderboards(TEXT("SHOOTERGAME"));
+							Leaderboards->FlushLeaderboards(TEXT("RSA_II"));
 						}
 					}
 				}

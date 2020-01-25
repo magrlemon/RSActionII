@@ -67,8 +67,7 @@ public class RSAction : ModuleRules
 
 		PrivateIncludePathModuleNames.AddRange(
 			new string[] {
-				"NetworkReplayStreaming",
-                
+				"NetworkReplayStreaming"
             }
 		);
 

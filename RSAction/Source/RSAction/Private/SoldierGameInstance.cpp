@@ -19,14 +19,13 @@
 #include "Online/SoldierGameSession.h"
 #include "Online/SoldierOnlineSessionClient.h"
 #include "OnlineSubsystemUtils.h"
-#include "DcxVehicleAPI.h"
 
 FAutoConsoleVariable CVarShooterGameTestEncryption(TEXT("ShooterGame.TestEncryption"), 0, TEXT("If true, clients will send an encryption token with their request to join the server and attempt to encrypt the connection using a debug key. This is NOT SECURE and for demonstration purposes only."));
 
 void SSoldierWaitDialog::Construct(const FArguments& InArgs)
 {
-	const FSoldierMenuItemStyle* ItemStyle = &FSoldierStyle::Get().GetWidgetStyle<FSoldierMenuItemStyle>("DefaultShooterMenuItemStyle");
-	const FButtonStyle* ButtonStyle = &FSoldierStyle::Get().GetWidgetStyle<FButtonStyle>("DefaultShooterButtonStyle");
+	const FSoldierMenuItemStyle* ItemStyle = &FSoldierStyle::Get().GetWidgetStyle<FSoldierMenuItemStyle>("DefaultSoldierMenuItemStyle");
+	const FButtonStyle* ButtonStyle = &FSoldierStyle::Get().GetWidgetStyle<FButtonStyle>("DefaultSoldierButtonStyle");
 	ChildSlot
 		.VAlign(VAlign_Center)
 		.HAlign(HAlign_Center)
@@ -46,7 +45,7 @@ void SSoldierWaitDialog::Construct(const FArguments& InArgs)
 				.BorderBackgroundColor(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f))
 				[
 					SNew(STextBlock)
-					.TextStyle(FSoldierStyle::Get(), "ShooterGame.MenuHeaderTextStyle")
+					.TextStyle(FSoldierStyle::Get(), "RSAction.MenuHeaderTextStyle")
 					.ColorAndOpacity(this, &SSoldierWaitDialog::GetTextColor)
 					.Text(InArgs._MessageText)
 					.WrapTextAt(500.0f)
@@ -153,7 +152,6 @@ void USoldierGameInstance::Init()
 	{
 		DebugTestEncryptionKey[i] = uint8(i);
 	}
-	InitializeDcxVehicle();
 }
 
 void USoldierGameInstance::Shutdown()
@@ -248,10 +246,10 @@ void USoldierGameInstance::OnPreLoadMap(const FString& MapName)
 void USoldierGameInstance::OnPostLoadMap(UWorld*)
 {
 	// Make sure we hide the loading screen when the level is done loading
-	USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
-	if (ShooterViewport != nullptr)
+	USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
+	if (SoldierViewport != nullptr)
 	{
-		ShooterViewport->HideLoadingScreen();
+		SoldierViewport->HideLoadingScreen();
 	}
 }
 
@@ -497,11 +495,11 @@ void USoldierGameInstance::ShowLoadingScreen()
 		LoadingScreenModule->StartInGameLoadingScreen();
 	}
 
-	USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
+	USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
 
-	if ( ShooterViewport != NULL )
+	if (SoldierViewport != NULL )
 	{
-		ShooterViewport->ShowLoadingScreen();
+		SoldierViewport->ShowLoadingScreen();
 	}
 }
 
@@ -734,11 +732,11 @@ void USoldierGameInstance::SetPresenceForLocalPlayers(const FString& StatusStr, 
 void USoldierGameInstance::BeginMainMenuState()
 {
 	// Make sure we're not showing the loadscreen
-	USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
+	USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
 
-	if ( ShooterViewport != NULL )
+	if ( SoldierViewport != NULL )
 	{
-		ShooterViewport->HideLoadingScreen();
+		SoldierViewport->HideLoadingScreen();
 	}
 
 	SetOnlineMode(EOnlineMode::Offline);
@@ -807,11 +805,11 @@ void USoldierGameInstance::BeginMessageMenuState()
 	}
 
 	// Make sure we're not showing the loadscreen
-	USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
+	USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
 
-	if ( ShooterViewport != NULL )
+	if ( SoldierViewport != NULL )
 	{
-		ShooterViewport->HideLoadingScreen();
+		SoldierViewport->HideLoadingScreen();
 	}
 
 	check(!MessageMenuUI.IsValid());
@@ -1306,10 +1304,10 @@ bool USoldierGameInstance::Tick(float DeltaSeconds)
 		return true;
 	}
 
-	USoldierGameViewportClient* ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
-	if (FSlateApplication::IsInitialized() && ShooterViewport != nullptr)
+	USoldierGameViewportClient* SoldierViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
+	if (FSlateApplication::IsInitialized() && SoldierViewport != nullptr)
 	{
-		if (FSlateApplication::Get().GetGameViewport() != ShooterViewport->GetGameViewportWidget())
+		if (FSlateApplication::Get().GetGameViewport() != SoldierViewport->GetGameViewportWidget())
 		{
 			return true;
 		}
@@ -1320,10 +1318,10 @@ bool USoldierGameInstance::Tick(float DeltaSeconds)
 
 	MaybeChangeState();
 
-	if (CurrentState != SoldierGameInstanceState::WelcomeScreen && ShooterViewport != nullptr)
+	if (CurrentState != SoldierGameInstanceState::WelcomeScreen && SoldierViewport != nullptr)
 	{
 		// If at any point we aren't licensed (but we are after welcome screen) bounce them back to the welcome screen
-		if (!bIsLicensed && CurrentState != SoldierGameInstanceState::None && ShooterViewport != nullptr && !ShooterViewport->IsShowingDialog())
+		if (!bIsLicensed && CurrentState != SoldierGameInstanceState::None && SoldierViewport != nullptr && !SoldierViewport->IsShowingDialog())
 		{
 			const FText ReturnReason	= NSLOCTEXT( "ProfileMessages", "NeedLicense", "The signed in users do not have a license for this game. Please purchase ShooterGame from the Xbox Marketplace or sign in a user with a valid license." );
 			const FText OKButton		= NSLOCTEXT( "DialogButtons", "OKAY", "OK" );
@@ -1332,13 +1330,13 @@ bool USoldierGameInstance::Tick(float DeltaSeconds)
 		}
 
 		// Show controller disconnected dialog if any local players have an invalid controller
-		if (!ShooterViewport->IsShowingDialog())
+		if (!SoldierViewport->IsShowingDialog())
 		{
 			for (int i = 0; i < LocalPlayers.Num(); ++i)
 			{
 				if (LocalPlayers[i] && LocalPlayers[i]->GetControllerId() == -1)
 				{
-					ShooterViewport->ShowDialog( 
+					SoldierViewport->ShowDialog( 
 						LocalPlayers[i],
 						ESoldierDialogType::ControllerDisconnected,
 						FText::Format(NSLOCTEXT("ProfileMessages", "PlayerReconnectControllerFmt", "Player {0}, please reconnect your controller."), FText::AsNumber(i + 1)),
@@ -1606,11 +1604,11 @@ void USoldierGameInstance::RemoveSplitScreenPlayers()
 FReply USoldierGameInstance::OnPairingUsePreviousProfile()
 {
 	// Do nothing (except hide the message) if they want to continue using previous profile
-	USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
+	USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
 
-	if ( ShooterViewport != nullptr )
+	if ( SoldierViewport != nullptr )
 	{
-		ShooterViewport->HideDialog();
+		SoldierViewport->HideDialog();
 	}
 
 	return FReply::Handled();
@@ -1671,11 +1669,11 @@ void USoldierGameInstance::HandleControllerPairingChanged( int GameUserIndex, co
 	// to continue controlling the old player with this controller
 	if ( ControlledLocalPlayer != nullptr && ControlledLocalPlayer != NewLocalPlayer )
 	{
-		USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
+		USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
 
-		if ( ShooterViewport != nullptr )
+		if ( SoldierViewport != nullptr )
 		{
-			ShooterViewport->ShowDialog( 
+			SoldierViewport->ShowDialog( 
 				nullptr,
 				ESoldierDialogType::Generic,
 				NSLOCTEXT("ProfileMessages", "PairingChanged", "Your controller has been paired to another profile, would you like to switch to this new profile now? Selecting YES will sign out of the previous profile."),
@@ -1713,10 +1711,10 @@ void USoldierGameInstance::HandleControllerConnectionChange( bool bIsConnection,
 
 FReply USoldierGameInstance::OnControllerReconnectConfirm()
 {
-	USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
-	if(ShooterViewport)
+	USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
+	if(SoldierViewport)
 	{
-		ShooterViewport->HideDialog();
+		SoldierViewport->HideDialog();
 	}
 
 	return FReply::Handled();
@@ -1832,18 +1830,18 @@ bool USoldierGameInstance::IsLocalPlayerSignedIn(ULocalPlayer* LocalPlayer)
 bool USoldierGameInstance::ValidatePlayerForOnlinePlay(ULocalPlayer* LocalPlayer)
 {
 	// Get the viewport
-	USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
+	USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
 
 #if PLATFORM_XBOXONE
 	if (CurrentConnectionStatus != EOnlineServerConnectionStatus::Connected)
 	{
 		// Don't let them play online if they aren't connected to Xbox LIVE
-		if (ShooterViewport != NULL)
+		if (SoldierViewport != NULL)
 		{
 			const FText Msg				= NSLOCTEXT("NetworkFailures", "ServiceDisconnected", "You must be connected to the Xbox LIVE service to play online.");
 			const FText OKButtonString	= NSLOCTEXT("DialogButtons", "OKAY", "OK");
 
-			ShooterViewport->ShowDialog( 
+			SoldierViewport->ShowDialog( 
 				NULL,
 				ESoldierDialogType::Generic,
 				Msg,
@@ -1861,12 +1859,12 @@ bool USoldierGameInstance::ValidatePlayerForOnlinePlay(ULocalPlayer* LocalPlayer
 	if (!IsLocalPlayerOnline(LocalPlayer))
 	{
 		// Don't let them play online if they aren't online
-		if (ShooterViewport != NULL)
+		if (SoldierViewport != NULL)
 		{
 			const FText Msg				= NSLOCTEXT("NetworkFailures", "MustBeSignedIn", "You must be signed in to play online");
 			const FText OKButtonString	= NSLOCTEXT("DialogButtons", "OKAY", "OK");
 
-			ShooterViewport->ShowDialog( 
+			SoldierViewport->ShowDialog( 
 				NULL,
 				ESoldierDialogType::Generic,
 				Msg,
@@ -1886,17 +1884,17 @@ bool USoldierGameInstance::ValidatePlayerForOnlinePlay(ULocalPlayer* LocalPlayer
 bool USoldierGameInstance::ValidatePlayerIsSignedIn(ULocalPlayer* LocalPlayer)
 {
 	// Get the viewport
-	USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
+	USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
 
 	if (!IsLocalPlayerSignedIn(LocalPlayer))
 	{
 		// Don't let them play online if they aren't online
-		if (ShooterViewport != NULL)
+		if (SoldierViewport != NULL)
 		{
 			const FText Msg = NSLOCTEXT("NetworkFailures", "MustBeSignedIn", "You must be signed in to play online");
 			const FText OKButtonString = NSLOCTEXT("DialogButtons", "OKAY", "OK");
 
-			ShooterViewport->ShowDialog(
+			SoldierViewport->ShowDialog(
 				NULL,
 				ESoldierDialogType::Generic,
 				Msg,
@@ -1916,10 +1914,10 @@ bool USoldierGameInstance::ValidatePlayerIsSignedIn(ULocalPlayer* LocalPlayer)
 
 FReply USoldierGameInstance::OnConfirmGeneric()
 {
-	USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
-	if(ShooterViewport)
+	USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
+	if(SoldierViewport)
 	{
-		ShooterViewport->HideDialog();
+		SoldierViewport->HideDialog();
 	}
 
 	return FReply::Handled();
@@ -1960,7 +1958,7 @@ void USoldierGameInstance::CleanupOnlinePrivilegeTask()
 void USoldierGameInstance::DisplayOnlinePrivilegeFailureDialogs(const FUniqueNetId& UserId, EUserPrivileges::Type Privilege, uint32 PrivilegeResults)
 {	
 	// Show warning that the user cannot play due to age restrictions
-	USoldierGameViewportClient * ShooterViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
+	USoldierGameViewportClient * SoldierViewport = Cast<USoldierGameViewportClient>(GetGameViewportClient());
 	TWeakObjectPtr<ULocalPlayer> OwningPlayer;
 	if (GEngine)
 	{
@@ -1977,7 +1975,7 @@ void USoldierGameInstance::DisplayOnlinePrivilegeFailureDialogs(const FUniqueNet
 		}
 	}
 	
-	if (ShooterViewport != NULL && OwningPlayer.IsValid())
+	if (SoldierViewport != NULL && OwningPlayer.IsValid())
 	{
 		if ((PrivilegeResults & (uint32)IOnlineIdentity::EPrivilegeResults::AccountTypeFailure) != 0)
 		{
@@ -1989,7 +1987,7 @@ void USoldierGameInstance::DisplayOnlinePrivilegeFailureDialogs(const FUniqueNet
 		}
 		else if ((PrivilegeResults & (uint32)IOnlineIdentity::EPrivilegeResults::RequiredSystemUpdate) != 0)
 		{
-			ShooterViewport->ShowDialog(
+			SoldierViewport->ShowDialog(
 				OwningPlayer.Get(),
 				ESoldierDialogType::Generic,
 				NSLOCTEXT("OnlinePrivilegeResult", "RequiredSystemUpdate", "A required system update is available.  Please upgrade to access online features."),
@@ -2001,7 +1999,7 @@ void USoldierGameInstance::DisplayOnlinePrivilegeFailureDialogs(const FUniqueNet
 		}
 		else if ((PrivilegeResults & (uint32)IOnlineIdentity::EPrivilegeResults::RequiredPatchAvailable) != 0)
 		{
-			ShooterViewport->ShowDialog(
+			SoldierViewport->ShowDialog(
 				OwningPlayer.Get(),
 				ESoldierDialogType::Generic,
 				NSLOCTEXT("OnlinePrivilegeResult", "RequiredPatchAvailable", "A required game patch is available.  Please upgrade to access online features."),
@@ -2013,7 +2011,7 @@ void USoldierGameInstance::DisplayOnlinePrivilegeFailureDialogs(const FUniqueNet
 		}
 		else if ((PrivilegeResults & (uint32)IOnlineIdentity::EPrivilegeResults::AgeRestrictionFailure) != 0)
 		{
-			ShooterViewport->ShowDialog(
+			SoldierViewport->ShowDialog(
 				OwningPlayer.Get(),
 				ESoldierDialogType::Generic,
 				NSLOCTEXT("OnlinePrivilegeResult", "AgeRestrictionFailure", "Cannot play due to age restrictions!"),
@@ -2025,7 +2023,7 @@ void USoldierGameInstance::DisplayOnlinePrivilegeFailureDialogs(const FUniqueNet
 		}
 		else if ((PrivilegeResults & (uint32)IOnlineIdentity::EPrivilegeResults::UserNotFound) != 0)
 		{
-			ShooterViewport->ShowDialog(
+			SoldierViewport->ShowDialog(
 				OwningPlayer.Get(),
 				ESoldierDialogType::Generic,
 				NSLOCTEXT("OnlinePrivilegeResult", "UserNotFound", "Cannot play due invalid user!"),
@@ -2037,7 +2035,7 @@ void USoldierGameInstance::DisplayOnlinePrivilegeFailureDialogs(const FUniqueNet
 		}
 		else if ((PrivilegeResults & (uint32)IOnlineIdentity::EPrivilegeResults::GenericFailure) != 0)
 		{
-			ShooterViewport->ShowDialog(
+			SoldierViewport->ShowDialog(
 				OwningPlayer.Get(),
 				ESoldierDialogType::Generic,
 				NSLOCTEXT("OnlinePrivilegeResult", "GenericFailure", "Cannot play online.  Check your network connection."),
@@ -2075,7 +2073,7 @@ void USoldierGameInstance::FinishSessionCreation(EOnJoinSessionCompleteResult::T
 
 FString USoldierGameInstance::GetQuickMatchUrl()
 {
-	static const FString QuickMatchUrl(TEXT("/Game/Maps/Highrise?game=TDM?listen"));
+	static const FString QuickMatchUrl(TEXT("/Game/Maps/DesertTownDemo_1217?game=TDM?listen"));
 	return QuickMatchUrl;
 }
 
