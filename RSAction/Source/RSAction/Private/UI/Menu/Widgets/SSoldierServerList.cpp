@@ -113,25 +113,25 @@ void SSoldierServerList::UpdateSearchStatus()
 					if (NumSearchResults == 0)
 					{
 #if PLATFORM_PS4
-						StatusText = LOCTEXT("NoServersFound","NO SERVERS FOUND, PRESS SQUARE TO TRY AGAIN");
+						StatusText = LOCTEXT("NoServersFound","");
 #elif PLATFORM_XBOXONE
-						StatusText = LOCTEXT("NoServersFound","NO SERVERS FOUND, PRESS X TO TRY AGAIN");
+						StatusText = LOCTEXT("NoServersFound","");
 #elif PLATFORM_SWITCH
-						StatusText = LOCTEXT("NoServersFound", "NO SERVERS FOUND, PRESS <img src=\"SoldierGame.Switch.Left\"/> TO TRY AGAIN");
+						StatusText = LOCTEXT("NoServersFound", "");
 #else
-						StatusText = LOCTEXT("NoServersFound","NO SERVERS FOUND, PRESS SPACE TO TRY AGAIN");
+						StatusText = LOCTEXT("NoServersFound","");
 #endif
 					}
 					else
 					{
 #if PLATFORM_PS4
-						StatusText = LOCTEXT("ServersRefresh","PRESS SQUARE TO REFRESH SERVER LIST");
+						StatusText = LOCTEXT("ServersRefresh","");
 #elif PLATFORM_XBOXONE
-						StatusText = LOCTEXT("ServersRefresh","PRESS X TO REFRESH SERVER LIST");
+						StatusText = LOCTEXT("ServersRefresh","");
 #elif PLATFORM_SWITCH
-						StatusText = LOCTEXT("ServersRefresh", "PRESS <img src=\"SoldierGame.Switch.Left\"/> TO REFRESH SERVER LIST");
+						StatusText = LOCTEXT("ServersRefresh", "");
 #else
-						StatusText = LOCTEXT("ServersRefresh","PRESS SPACE TO REFRESH SERVER LIST");
+						StatusText = LOCTEXT("ServersRefresh","");
 #endif
 					}
 

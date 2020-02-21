@@ -213,7 +213,7 @@ void FSoldierWelcomeMenu::HandleLoginUIClosed(TSharedPtr<const FUniqueNetId> Uni
 	// If they don't currently have a license, let them know, but don't let them proceed
 	if (!bIsLicensed && SoldierViewport != NULL)
 	{
-		const FText StopReason	= NSLOCTEXT( "ProfileMessages", "NeedLicense", "The signed in users do not have a license for this game. Please purchase SoldierGame from the Xbox Marketplace or sign in a user with a valid license." );
+		const FText StopReason	= NSLOCTEXT( "ProfileMessages", "NeedLicense", "" );
 		const FText OKButton	= NSLOCTEXT( "DialogButtons", "OKAY", "OK" );
 
 		SoldierViewport->ShowDialog( 

@@ -148,8 +148,8 @@ void SSoldierOnlineStore::BeginGettingOffers()
 						TSharedPtr<FStoreEntry> NewOffer = MakeShareable(new FStoreEntry());;
 						NewOffer->OnlineId = OfferRef->OfferId;
 						NewOffer->Title = OfferRef->Title.IsEmptyOrWhitespace() ? NSLOCTEXT("SoldierOnlineStore", "DefaultOfferTitle", "EmptyTitle") : OfferRef->Title;
-						NewOffer->Description = OfferRef->Description.IsEmptyOrWhitespace() ? NSLOCTEXT("SoldierOnlineStore", "DefaultOfferDescription", "EmptyDescription") : OfferRef->Description;
-						NewOffer->Price = OfferRef->GetDisplayPrice().IsEmptyOrWhitespace() ? NSLOCTEXT("SoldierOnlineStore", "DefaultOfferDescription", "EmptyPrice") : OfferRef->GetDisplayPrice();
+						NewOffer->Description = OfferRef->Description.IsEmptyOrWhitespace() ? NSLOCTEXT("SoldierOnlineStore", "DefaultOfferDescription", "") : OfferRef->Description;
+						NewOffer->Price = OfferRef->GetDisplayPrice().IsEmptyOrWhitespace() ? NSLOCTEXT("SoldierOnlineStore", "DefaultOfferDescription", "") : OfferRef->GetDisplayPrice();
 
 						OfferList.Add(NewOffer);
 					}
@@ -232,17 +232,17 @@ void SSoldierOnlineStore::SetStoreState(EStoreState NewState)
 	switch (State)
 	{
 		case EStoreState::PurchasingAnOffer:
-			StatusText = FText(NSLOCTEXT("SoldierOnlineStore", "Status", "Purchasing..."));
+			StatusText = FText(NSLOCTEXT("SoldierOnlineStore", "Status", ""));
 			break;
 
 		case EStoreState::GettingOffers:
-			StatusText = FText(NSLOCTEXT("SoldierOnlineStore", "Status", "Checking what's available..."));
+			StatusText = FText(NSLOCTEXT("SoldierOnlineStore", "Status", ""));
 			break;
 
 		case EStoreState::Browsing:
 			if (OfferList.Num() == 0)
 			{
-				StatusText = FText(NSLOCTEXT("SoldierOnlineStore", "Status", "No offers found - press Space to refresh"));
+				StatusText = FText(NSLOCTEXT("SoldierOnlineStore", "Status", ""));
 				break;
 			}
 			// intended fall-through

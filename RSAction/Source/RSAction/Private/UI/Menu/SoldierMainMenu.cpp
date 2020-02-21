@@ -354,7 +354,7 @@ void FSoldierMainMenu::Construct(TWeakObjectPtr<USoldierGameInstance> _GameInsta
 		MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("Quit", "QUIT"), this, &FSoldierMainMenu::OnUIQuit);
 #endif
 
-		MenuWidget->CurrentMenuTitle = LOCTEXT("MainMenu","MAIN ²Ëµ¥");
+
 		MenuWidget->OnGoBack.BindSP(this, &FSoldierMainMenu::OnMenuGoBack);
 		MenuWidget->MainMenu = MenuWidget->CurrentMenu = RootMenuItem->SubMenu;
 		MenuWidget->OnMenuHidden.BindSP(this, &FSoldierMainMenu::OnMenuHidden);
