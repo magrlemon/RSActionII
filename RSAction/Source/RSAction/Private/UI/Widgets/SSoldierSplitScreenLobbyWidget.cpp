@@ -24,19 +24,19 @@ static FAutoConsoleVariableRef CVarSoldierSplitScreenMax(
 void SSoldierSplitScreenLobby::Construct( const FArguments& InArgs )
 {
 #if PLATFORM_PS4
-	PressToPlayText = LOCTEXT("PressToPlay", "Press cross button to Play");
-	PressToFindText = LOCTEXT("PressToFind", "Press cross button to Find Match");
-	PressToStartMatchText = LOCTEXT("PressToStart", "Press cross button To Start Match");
+	PressToPlayText = LOCTEXT("PressToPlay", "");
+	PressToFindText = LOCTEXT("PressToFind", "");
+	PressToStartMatchText = LOCTEXT("PressToStart", "");
 #else
-	PressToPlayText = LOCTEXT("PressToPlay", "Press A to Play");
-	PressToFindText = LOCTEXT("PressToFind", "Press A to Find Match");
-	PressToStartMatchText = LOCTEXT("PressToStart", "Press A To Start Match");	
+	PressToPlayText = LOCTEXT("PressToPlay", "");
+	PressToFindText = LOCTEXT("PressToFind", "");
+	PressToStartMatchText = LOCTEXT("PressToStart", "");	
 #endif
 
 #if PLATFORM_SWITCH
-	PressToPlayText = LOCTEXT("PressToPlay", "<img src=\"SoldierGame.Switch.Right\"/> Select User");
-	PressToFindText = LOCTEXT("PressToFind", "Press <img src=\"SoldierGame.Switch.Right\"/> to Find Match");
-	PressToStartMatchText = LOCTEXT("PressToStart", "<img src=\"SoldierGame.Switch.Right\"/> Start Match / <img src=\"SoldierGame.Switch.Up\"/> Connect Controllers");
+	PressToPlayText = LOCTEXT("PressToPlay", "");
+	PressToFindText = LOCTEXT("PressToFind", "");
+	PressToStartMatchText = LOCTEXT("PressToStart", "");
 	PlayAsGuestText = LOCTEXT("PlayAsGuest", "<img src=\"SoldierGame.Switch.Left\"/> Play As Guest");
 #endif	
 
