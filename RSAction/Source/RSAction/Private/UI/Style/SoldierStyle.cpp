@@ -54,61 +54,61 @@ TSharedRef< FSlateStyleSet > FSoldierStyle::Create()
 
 	// Fonts still need to be specified in code for now
 	Style.Set("SoldierGame.MenuServerListTextStyle", FTextBlockStyle()
-		.SetFont(TTF_FONT("Fonts/Roboto-Black", 14))
+		.SetFont(TTF_FONT("Fonts/msyh-Black", 14))
 		.SetColorAndOpacity(FLinearColor::White)
 		.SetShadowOffset(FIntPoint(-1,1))
 		);
 
 	Style.Set("SoldierGame.MenuStoreListTextStyle", FTextBlockStyle()
-		.SetFont(TTF_FONT("Fonts/Roboto-Black", 14))
+		.SetFont(TTF_FONT("Fonts/msyh-Black", 14))
 		.SetColorAndOpacity(FLinearColor::White)
 		.SetShadowOffset(FIntPoint(-1, 1))
 	);
 
 	Style.Set("SoldierGame.ScoreboardListTextStyle", FTextBlockStyle()
-		.SetFont(TTF_FONT("Fonts/Roboto-Black", 14))
+		.SetFont(TTF_FONT("Fonts/msyh-Black", 14))
 		.SetColorAndOpacity(FLinearColor::White)
 		.SetShadowOffset(FIntPoint(-1,1))
 		);
 
 	Style.Set("SoldierGame.MenuProfileNameStyle", FTextBlockStyle()
-		.SetFont(TTF_FONT("Fonts/Roboto-Black", 18))
+		.SetFont(TTF_FONT("Fonts/msyh-Black", 18))
 		.SetColorAndOpacity(FLinearColor::White)
 		.SetShadowOffset(FIntPoint(-1,1))
 		);
 
 	Style.Set("SoldierGame.MenuTextStyle", FTextBlockStyle()
-		.SetFont(TTF_FONT("Fonts/Roboto-Black", 20))
+		.SetFont(TTF_FONT("Fonts/msyh-Black", 20))
 		.SetColorAndOpacity(FLinearColor::White)
 		.SetShadowOffset(FIntPoint(-1,1))
 		);
 
 	Style.Set("SoldierGame.MenuHeaderTextStyle", FTextBlockStyle()
-		.SetFont(TTF_FONT("Fonts/Roboto-Black", 26))
+		.SetFont(TTF_FONT("Fonts/msyh-Black", 26))
 		.SetColorAndOpacity(FLinearColor::White)
 		.SetShadowOffset(FIntPoint(-1,1))
 		);
 
 	Style.Set("SoldierGame.WelcomeScreen.WelcomeTextStyle", FTextBlockStyle()
-		.SetFont(TTF_FONT("Fonts/Roboto-Medium", 32))
+		.SetFont(TTF_FONT("Fonts/msyhbd-Medium", 32))
 		.SetColorAndOpacity(FLinearColor::White)
 		.SetShadowOffset(FIntPoint(-1,1))
 		);
 
 	Style.Set("SoldierGame.DefaultScoreboard.Row.HeaderTextStyle", FTextBlockStyle()
-		.SetFont(TTF_FONT("Fonts/Roboto-Black", 24))
+		.SetFont(TTF_FONT("Fonts/msyh-Black", 24))
 		.SetColorAndOpacity(FLinearColor::White)
 		.SetShadowOffset(FVector2D(0,1))
 		);
 
 	Style.Set("SoldierGame.DefaultScoreboard.Row.StatTextStyle", FTextBlockStyle()
-		.SetFont(TTF_FONT("Fonts/Roboto-Regular", 18))
+		.SetFont(TTF_FONT("Fonts/msyhl-Regular", 18))
 		.SetColorAndOpacity(FLinearColor::White)
 		.SetShadowOffset(FVector2D(0,1))
 		);
 
 	Style.Set("SoldierGame.SplitScreenLobby.StartMatchTextStyle", FTextBlockStyle()
-		.SetFont(TTF_FONT("Fonts/Roboto-Regular", 16))
+		.SetFont(TTF_FONT("Fonts/msyhl-Regular", 16))
 		.SetColorAndOpacity(FLinearColor::Green)
 		.SetShadowOffset(FVector2D(0,1))
 		);
