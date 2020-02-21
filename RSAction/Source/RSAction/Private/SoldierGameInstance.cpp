@@ -179,11 +179,11 @@ void USoldierGameInstance::HandleNetworkConnectionStatusChanged( const FString& 
 
 		// Display message on consoles
 #if PLATFORM_XBOXONE
-		const FText ReturnReason	= NSLOCTEXT( "NetworkFailures", "ServiceUnavailable", "Connection to Xbox LIVE has been lost." );
+		const FText ReturnReason	= NSLOCTEXT( "NetworkFailures", "ServiceUnavailable", "" );
 #elif PLATFORM_PS4
-		const FText ReturnReason	= NSLOCTEXT( "NetworkFailures", "ServiceUnavailable", "Connection to \"PSN\" has been lost." );
+		const FText ReturnReason	= NSLOCTEXT( "NetworkFailures", "ServiceUnavailable", "" );
 #else
-		const FText ReturnReason	= NSLOCTEXT( "NetworkFailures", "ServiceUnavailable", "Connection has been lost." );
+		const FText ReturnReason	= NSLOCTEXT( "NetworkFailures", "ServiceUnavailable", "" );
 #endif
 		const FText OKButton		= NSLOCTEXT( "DialogButtons", "OKAY", "OK" );
 		
@@ -215,11 +215,11 @@ void USoldierGameInstance::HandleSessionFailure( const FUniqueNetId& NetId, ESes
 
 		// Display message on consoles
 #if PLATFORM_XBOXONE
-		const FText ReturnReason	= NSLOCTEXT( "NetworkFailures", "ServiceUnavailable", "Connection to Xbox LIVE has been lost." );
+		const FText ReturnReason	= NSLOCTEXT( "NetworkFailures", "ServiceUnavailable", "" );
 #elif PLATFORM_PS4
-		const FText ReturnReason	= NSLOCTEXT( "NetworkFailures", "ServiceUnavailable", "Connection to PSN has been lost." );
+		const FText ReturnReason	= NSLOCTEXT( "NetworkFailures", "ServiceUnavailable", "" );
 #else
-		const FText ReturnReason	= NSLOCTEXT( "NetworkFailures", "ServiceUnavailable", "Connection has been lost." );
+		const FText ReturnReason	= NSLOCTEXT( "NetworkFailures", "ServiceUnavailable", "" );
 #endif
 		const FText OKButton		= NSLOCTEXT( "DialogButtons", "OKAY", "OK" );
 		
@@ -559,7 +559,7 @@ void USoldierGameInstance::TravelLocalSessionFailure(UWorld *World, ETravelFailu
 	ASoldierPlayerController_Menu* const FirstPC = Cast<ASoldierPlayerController_Menu>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	if (FirstPC != nullptr)
 	{
-		FText ReturnReason = NSLOCTEXT("NetworkErrors", "JoinSessionFailed", "Join Session failed.");
+		FText ReturnReason = NSLOCTEXT("NetworkErrors", "JoinSessionFailed", "");
 		if (ReasonString.IsEmpty() == false)
 		{
 			ReturnReason = FText::Format(NSLOCTEXT("NetworkErrors", "JoinSessionFailedReasonFmt", "Join Session failed. {0}"), FText::FromString(ReasonString));
@@ -1165,13 +1165,13 @@ void USoldierGameInstance::FinishJoinSession(EOnJoinSessionCompleteResult::Type 
 		switch (Result)
 		{
 		case EOnJoinSessionCompleteResult::SessionIsFull:
-			ReturnReason = NSLOCTEXT("NetworkErrors", "JoinSessionFailed", "Game is full.");
+			ReturnReason = NSLOCTEXT("NetworkErrors", "JoinSessionFailed", "");
 			break;
 		case EOnJoinSessionCompleteResult::SessionDoesNotExist:
-			ReturnReason = NSLOCTEXT("NetworkErrors", "JoinSessionFailed", "Game no longer exists.");
+			ReturnReason = NSLOCTEXT("NetworkErrors", "JoinSessionFailed", "");
 			break;
 		default:
-			ReturnReason = NSLOCTEXT("NetworkErrors", "JoinSessionFailed", "Join failed.");
+			ReturnReason = NSLOCTEXT("NetworkErrors", "JoinSessionFailed", "");
 			break;
 		}
 
@@ -1323,7 +1323,7 @@ bool USoldierGameInstance::Tick(float DeltaSeconds)
 		// If at any point we aren't licensed (but we are after welcome screen) bounce them back to the welcome screen
 		if (!bIsLicensed && CurrentState != SoldierGameInstanceState::None && SoldierViewport != nullptr && !SoldierViewport->IsShowingDialog())
 		{
-			const FText ReturnReason	= NSLOCTEXT( "ProfileMessages", "NeedLicense", "The signed in users do not have a license for this game. Please purchase ShooterGame from the Xbox Marketplace or sign in a user with a valid license." );
+			const FText ReturnReason	= NSLOCTEXT( "ProfileMessages", "NeedLicense", "" );
 			const FText OKButton		= NSLOCTEXT( "DialogButtons", "OKAY", "OK" );
 
 			ShowMessageThenGotoState( ReturnReason, OKButton, FText::GetEmpty(), SoldierGameInstanceState::WelcomeScreen );
