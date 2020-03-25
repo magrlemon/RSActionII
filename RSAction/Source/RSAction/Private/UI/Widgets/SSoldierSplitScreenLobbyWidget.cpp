@@ -24,9 +24,9 @@ static FAutoConsoleVariableRef CVarSoldierSplitScreenMax(
 void SSoldierSplitScreenLobby::Construct( const FArguments& InArgs )
 {
 #if PLATFORM_PS4
-	PressToPlayText = LOCTEXT("PressToPlay", "");
-	PressToFindText = LOCTEXT("PressToFind", "");
-	PressToStartMatchText = LOCTEXT("PressToStart", "");
+	PressToPlayText = LOCTEXT("PressToPlay", "Press cross button to Play");
+	PressToFindText = LOCTEXT("PressToFind", "Press cross button to Find Match");
+	PressToStartMatchText = LOCTEXT("PressToStart", "Press cross button To Start Match");
 #else
 	PressToPlayText = LOCTEXT("PressToPlay", "");
 	PressToFindText = LOCTEXT("PressToFind", "");

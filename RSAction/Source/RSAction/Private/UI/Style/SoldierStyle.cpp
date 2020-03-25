@@ -114,7 +114,7 @@ TSharedRef< FSlateStyleSet > FSoldierStyle::Create()
 		);
 
 	Style.Set("SoldierGame.DemoListCheckboxTextStyle", FTextBlockStyle()
-		.SetFont(TTF_FONT("Fonts/Roboto-Black", 12))
+		.SetFont(TTF_FONT("Fonts/msyh-Black", 12))
 		.SetColorAndOpacity(FLinearColor::White)
 		.SetShadowOffset(FIntPoint(-1,1))
 		);

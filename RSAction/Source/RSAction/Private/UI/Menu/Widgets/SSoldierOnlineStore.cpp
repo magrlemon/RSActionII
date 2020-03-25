@@ -147,7 +147,7 @@ void SSoldierOnlineStore::BeginGettingOffers()
 
 						TSharedPtr<FStoreEntry> NewOffer = MakeShareable(new FStoreEntry());;
 						NewOffer->OnlineId = OfferRef->OfferId;
-						NewOffer->Title = OfferRef->Title.IsEmptyOrWhitespace() ? NSLOCTEXT("SoldierOnlineStore", "DefaultOfferTitle", "EmptyTitle") : OfferRef->Title;
+						NewOffer->Title = OfferRef->Title.IsEmptyOrWhitespace() ? NSLOCTEXT("SoldierOnlineStore", "DefaultOfferTitle", "") : OfferRef->Title;
 						NewOffer->Description = OfferRef->Description.IsEmptyOrWhitespace() ? NSLOCTEXT("SoldierOnlineStore", "DefaultOfferDescription", "") : OfferRef->Description;
 						NewOffer->Price = OfferRef->GetDisplayPrice().IsEmptyOrWhitespace() ? NSLOCTEXT("SoldierOnlineStore", "DefaultOfferDescription", "") : OfferRef->GetDisplayPrice();
 

@@ -100,7 +100,7 @@
 
 DEFINE_LOG_CATEGORY( LogShooterReplicationGraph );
 
-float CVar_SoldierRepGraph_DestructionInfoMaxDist = 30000.f;
+float CVar_SoldierRepGraph_DestructionInfoMaxDist = 300000.f;
 static FAutoConsoleVariableRef CVarSoldierRepGraphDestructMaxDist(TEXT("SoldierRepGraph.DestructInfo.MaxDist"), CVar_SoldierRepGraph_DestructionInfoMaxDist, TEXT("Max distance (not squared) to rep destruct infos at"), ECVF_Default );
 
 int32 CVar_SoldierRepGraph_DisplayClientLevelStreaming = 0;

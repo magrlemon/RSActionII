@@ -67,6 +67,24 @@ ASoldierCharacter::ASoldierCharacter(const FObjectInitializer& ObjectInitializer
 
 	BaseTurnRate = 45.f;
 	BaseLookUpRate = 45.f;
+	m_ECameraMode = ESoldierCamreMode::E_CameraMode_None;
+	m_CameraDistance = 300.0f;
+
+	m_ZoomBlendStartDis = 0.f;
+	m_ZoomBlendEndDis = 0.f;
+	m_ZoomBlendTimeToGo = 0.f;
+
+	m_SwitchBlendStartLoc = FVector(0.f, 0.f, 0.f);
+	m_SwitchBlendStartRot = FRotator(0.f, 0.f, 0.f);
+	m_SwitchBlendTimeToGo = 0.f;
+
+	m_CameraBlendTime = 1.f;
+	m_CameraBlendExp = 2.f;
+
+	bWantsToCrouch = false;
+	bWantsToProne = false;
+
+	m_bMesh3P = false;
 }
 
 void ASoldierCharacter::PostInitializeComponents()
@@ -105,6 +123,11 @@ void ASoldierCharacter::PostInitializeComponents()
 	}
 }
 
+void ASoldierCharacter::BeginPlay() {
+	Super::BeginPlay();
+
+}
+
 void ASoldierCharacter::Destroyed()
 {
 	Super::Destroyed();
@@ -124,6 +147,7 @@ void ASoldierCharacter::PawnClientRestart()
 	// set team colors for 1st person view
 	UMaterialInstanceDynamic* Mesh1PMID = Mesh1P->CreateAndSetMaterialInstanceDynamic(0);
 	UpdateTeamColors(Mesh1PMID);
+
 }
 
 void ASoldierCharacter::PossessedBy(class AController* InController)
@@ -183,12 +207,14 @@ bool ASoldierCharacter::IsEnemyFor(AController* TestPC) const
 void ASoldierCharacter::UpdatePawnMeshes()
 {
 	bool const bFirstPerson = IsFirstPerson();
-
 	Mesh1P->VisibilityBasedAnimTickOption = !bFirstPerson ? EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered : EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 	Mesh1P->SetOwnerNoSee(!bFirstPerson);
 
 	GetMesh()->VisibilityBasedAnimTickOption = bFirstPerson ? EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered : EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 	GetMesh()->SetOwnerNoSee(bFirstPerson);
+
+	if (GetWeapon())
+		GetWeapon()->SwapMesh1P3PWeaponHidden();
 }
 
 void ASoldierCharacter::UpdateTeamColors(UMaterialInstanceDynamic* UseMID)
@@ -204,7 +230,79 @@ void ASoldierCharacter::UpdateTeamColors(UMaterialInstanceDynamic* UseMID)
 	}
 }
 
-void ASoldierCharacter::OnCameraUpdate(const FVector& CameraLocation, const FRotator& CameraRotation)
+void ASoldierCharacter::CalcCamera(float DeltaTime, struct FMinimalViewInfo& OutResult) {
+	FVector CameraLoc(0.f, 0.f, 0.f);
+	FRotator CameraRot(0.f, 0.f, 0.f);
+	FVector Pos(0.f, 0.f, 0.f);
+
+	switch (m_ECameraMode)
+	{
+	case ESoldierCamreMode::E_CameraMode_First:
+		GetActorEyesViewPoint(CameraLoc, CameraRot);
+		UpdateMesh1PCameraTransform(CameraLoc, CameraRot);
+		CameraLoc = GetTransform().TransformPosition(FVector(0.0f, -10.0f,80.0f)) ;
+		Pos = CameraLoc;
+		break;
+	case ESoldierCamreMode::E_CameraMode_Third:
+		CameraRot = GetController()->GetControlRotation(); 
+		CameraLoc = GetActorLocation();
+		Pos = CameraLoc - CameraRot.Vector()*m_CameraDistance + FVector(0.0f, 0.0f, 80.0f);
+		break;
+	case ESoldierCamreMode::E_CameraMode_ThirdRot:
+
+		CameraRot = GetController()->GetControlRotation();
+		CameraLoc = GetTransform().TransformPosition(FVector(0.0f, 100.0f, 80.0f));
+		Pos = CameraLoc - CameraRot.Vector()*m_CameraDistance ;
+		break;
+	case ESoldierCamreMode::E_CameraMode_Top:
+		Pos.X = 0.f;
+		Pos.Y = 0.f;
+		Pos.Z = m_CameraDistance;
+		CameraLoc = GetActorLocation();
+		CameraRot = FRotator(-90.f, 0.f, 0.f);
+		Pos = CameraLoc + Pos;
+		GetController()->SetControlRotation(FRotator(0.f, 0.f, 0.f));
+		break;
+	case ESoldierCamreMode::E_CameraMode_WOW:
+		CameraLoc = GetActorLocation();
+		CameraRot = GetController()->GetControlRotation();
+		Pos = CameraLoc - CameraRot.Vector()*m_CameraDistance + FVector(0.0f, 0.0f, 80.0f);
+		break;
+	default:
+		GetActorEyesViewPoint(CameraLoc, CameraRot);
+		Pos = CameraLoc;
+		break;
+	}
+	//--------------------------------------------------------摄像机碰撞检测
+	FCollisionQueryParams BoxParams(TEXT("Camera"), false, this);
+	FHitResult Result;
+	if (CameraLoc != Pos)
+	{
+		GetWorld()->SweepSingleByChannel(Result, CameraLoc, Pos, FQuat::Identity, ECC_Camera, FCollisionShape::MakeBox(FVector(12.f)), BoxParams);
+	}
+
+	//--------------------------------------------------------摄像机切换平滑处理
+	m_SwitchBlendTimeToGo -= DeltaTime;
+	if (m_SwitchBlendTimeToGo > 0.f)
+	{
+		float Dur = (m_CameraBlendTime - m_SwitchBlendTimeToGo) / m_CameraBlendTime;
+		Pos = FMath::Lerp(m_SwitchBlendStartLoc, Pos, FMath::Pow(Dur, 1.f / m_CameraBlendExp));
+		CameraRot = FMath::Lerp(m_SwitchBlendStartRot, CameraRot, FMath::Pow(Dur, 1.f / m_CameraBlendExp));
+	}
+	//--------------------------------------------------------摄像机缩放平滑处理
+	m_ZoomBlendTimeToGo -= DeltaTime;
+	if (m_ZoomBlendTimeToGo > 0.f)
+	{
+		float Dur = (m_CameraBlendTime - m_ZoomBlendTimeToGo) / m_CameraBlendTime;
+		m_CameraDistance = FMath::Lerp(m_ZoomBlendStartDis, m_ZoomBlendEndDis, FMath::Pow(Dur, 1.f / m_CameraBlendExp));
+	}
+
+	OutResult.Location = (Result.GetActor() == NULL) ? Pos : Result.Location;
+
+	OutResult.Rotation = CameraRot;
+}
+
+void ASoldierCharacter::UpdateMesh1PCameraTransform(const FVector& CameraLocation, const FRotator& CameraRotation)
 {
 	USkeletalMeshComponent* DefMesh1P = Cast<USkeletalMeshComponent>(GetClass()->GetDefaultSubobjectByName(TEXT("PawnMesh1P")));
 	const FMatrix DefMeshLS = FRotationTranslationMatrix(DefMesh1P->GetRelativeRotation(), DefMesh1P->GetRelativeLocation());
@@ -645,6 +743,7 @@ void ASoldierCharacter::EquipWeapon(ASoldierWeapon* Weapon)
 		{
 			ServerEquipWeapon(Weapon);
 		}
+		GetWeapon()->SwapMesh1P3PWeaponHidden();
 	}
 }
 
@@ -876,6 +975,13 @@ void ASoldierCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ASoldierCharacter::OnStartRunning);
 	PlayerInputComponent->BindAction("RunToggle", IE_Pressed, this, &ASoldierCharacter::OnStartRunningToggle);
 	PlayerInputComponent->BindAction("Run", IE_Released, this, &ASoldierCharacter::OnStopRunning);
+
+	//First Person Or ThirdPerson to be Changed
+	PlayerInputComponent->BindAction("CameraMode", IE_Released, this, &ASoldierCharacter::ChangeCameraMode);
+
+	PlayerInputComponent->BindAction("SoldierCrouch", IE_Released, this, &ASoldierCharacter::SoldierAnimCrouch);
+
+	PlayerInputComponent->BindAction("SoldierProne", IE_Released, this, &ASoldierCharacter::SoldierAnimProne);
 }
 
 
@@ -884,8 +990,10 @@ void ASoldierCharacter::MoveForward(float Val)
 	if (Controller && Val != 0.f)
 	{
 		// Limit pitch when walking or falling
-		const bool bLimitRotation = (GetCharacterMovement()->IsMovingOnGround() || GetCharacterMovement()->IsFalling());
-		const FRotator Rotation = bLimitRotation ? GetActorRotation() : Controller->GetControlRotation();
+		const bool bLimitRotation =  (GetCharacterMovement()->IsMovingOnGround() || GetCharacterMovement()->IsFalling());
+		const FRotator Rotation =( bLimitRotation) ? Controller->GetControlRotation() : GetActorRotation() ;
+
+		//GEngine->AddOnScreenDebugMessage(INDEX_NONE, 3600.0f, FColor(255, 48, 16), FString::SanitizeFloat(Rotation.Yaw));
 		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::X);
 		AddMovementInput(Direction, Val);
 	}
@@ -895,8 +1003,24 @@ void ASoldierCharacter::MoveRight(float Val)
 {
 	if (Val != 0.f)
 	{
-		const FQuat Rotation = GetActorQuat();
-		const FVector Direction = FQuatRotationMatrix(Rotation).GetScaledAxis(EAxis::Y);
+		FRotator Rotation;
+		if (m_ECameraMode == E_CameraMode_WOW)
+		{
+			if (m_bViewingCharacter)
+				Rotation = GetActorRotation();
+			else
+				Rotation = GetControlRotation();
+		}
+		else
+			Rotation = GetControlRotation();
+
+		FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// Get forward vector
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		//const FQuat Rotation = GetActorQuat();
+		//const FVector Direction = FQuatRotationMatrix(Rotation).GetScaledAxis(EAxis::Y);
 		AddMovementInput(Direction, Val);
 	}
 }
@@ -1044,6 +1168,156 @@ bool ASoldierCharacter::IsRunning() const
 	}
 
 	return (bWantsToRun || bWantsToRunToggled) && !GetVelocity().IsZero() && (GetVelocity().GetSafeNormal2D() | GetActorForwardVector()) > -0.1;
+}
+
+
+void ASoldierCharacter::ChangeCameraMode() {
+
+	m_SwitchBlendTimeToGo = m_CameraBlendTime;
+	m_SwitchBlendStartLoc = Cast<ASoldierPlayerController>(GetController())->PlayerCameraManager->GetCameraLocation();
+	m_SwitchBlendStartRot = Cast<ASoldierPlayerController>(GetController())->PlayerCameraManager->GetCameraRotation();
+	FString strMode = "empty ";
+	m_ECameraMode = (enum ESoldierCamreMode)(m_ECameraMode + 1);
+	if (m_ECameraMode >= ESoldierCamreMode::E_CameraMode_Max)
+	{
+		m_ECameraMode = (enum ESoldierCamreMode) 1;
+	}
+
+	switch (m_ECameraMode)
+	{
+	case ESoldierCamreMode::E_CameraMode_First:
+	{
+		//移动方向为当前Controller方向
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+		GetCharacterMovement()->RotationRate = FRotator(0.0f, 1000.f, 0.0f);
+		bUseControllerRotationPitch = false;
+		bUseControllerRotationYaw = true;
+		bUseControllerRotationRoll = false;
+		m_bMesh3P = false;
+		//第一人称视角下，角色模型自己看不见，其他人能看见
+		GetMesh()->SetOwnerNoSee(true);
+		GetMesh()->SetOnlyOwnerSee(false);
+		//第一人称视角下，手臂只有自己能看见
+		Mesh1P->SetOwnerNoSee(false);
+		Mesh1P->SetOnlyOwnerSee(true);
+		Mesh1P->SetHiddenInGame(false);
+
+		strMode = "E_CameraMode_First";
+		break;
+	}
+	case ESoldierCamreMode::E_CameraMode_Third:
+	{
+		//移动方向为当前Controller方向
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
+
+		bUseControllerRotationPitch = false;
+		bUseControllerRotationYaw = false;
+		bUseControllerRotationRoll = false;
+		m_bMesh3P = true;
+		//第三人称视角下，角色模型自己可以看见，其他人也可以看见
+		GetMesh()->SetOwnerNoSee(false);
+		GetMesh()->SetOnlyOwnerSee(false);
+		//第三人称视角下，直接隐藏手臂
+		Mesh1P->SetHiddenInGame(true);
+		Mesh1P->SetOwnerNoSee(true);
+		Mesh1P->SetOnlyOwnerSee(true);
+
+		strMode = "E_CameraMode_Third";
+		break;
+	}
+	case ESoldierCamreMode::E_CameraMode_ThirdRot:
+	{//移动方向为当前Controller方向
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
+
+		bUseControllerRotationPitch = false;
+		bUseControllerRotationYaw = true;
+		bUseControllerRotationRoll = false;
+		m_bMesh3P = true;
+		//第三人称视角下，角色模型自己可以看见，其他人也可以看见
+		GetMesh()->SetOwnerNoSee(false);
+		GetMesh()->SetOnlyOwnerSee(false);
+		//第三人称视角下，直接隐藏手臂
+		Mesh1P->SetHiddenInGame(true);
+		Mesh1P->SetOwnerNoSee(true);
+		Mesh1P->SetOnlyOwnerSee(true);
+
+		strMode = "E_CameraMode_ThirdRot";
+		break;
+	}
+	case ESoldierCamreMode::E_CameraMode_Top:
+	{
+		//移动方向为当前Controller方向
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
+
+		bUseControllerRotationPitch = false;
+		bUseControllerRotationYaw = false;
+		bUseControllerRotationRoll = false;
+		m_bMesh3P = true;
+		//第三人称视角下，角色模型自己可以看见，其他人也可以看见
+		GetMesh()->SetOwnerNoSee(false);
+		GetMesh()->SetOnlyOwnerSee(false);
+		//第三人称视角下，直接隐藏手臂
+		Mesh1P->SetHiddenInGame(true);
+		Mesh1P->SetOwnerNoSee(true);
+		Mesh1P->SetOnlyOwnerSee(true);
+
+		strMode = "E_CameraMode_Top";
+
+		break;
+	}
+	case ESoldierCamreMode::E_CameraMode_WOW:
+	{
+		//移动方向为当前Controller方向
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.f, 0.0f);
+
+		bUseControllerRotationPitch = false;
+		bUseControllerRotationYaw = false;
+		bUseControllerRotationRoll = false;
+		m_bMesh3P = true;
+		//第三人称视角下，角色模型自己可以看见，其他人也可以看见
+		GetMesh()->SetOwnerNoSee(false);
+		GetMesh()->SetOnlyOwnerSee(false);
+		//第三人称视角下，直接隐藏手臂
+		Mesh1P->SetHiddenInGame(true);
+		Mesh1P->SetOwnerNoSee(true);
+		Mesh1P->SetOnlyOwnerSee(true);
+
+		strMode = "E_CameraMode_WOW";
+		break;
+	}
+	default:
+		break;
+	}
+	if(GetWeapon())
+		GetWeapon()->SwapMesh1P3PWeaponHidden();
+	GEngine->AddOnScreenDebugMessage(-1, 8.f, FColor::Red, strMode);
+}
+
+
+/** Player Run Crouch Animation */
+void ASoldierCharacter::SoldierAnimCrouch() {
+	bWantsToCrouch = !bWantsToCrouch;
+	//bWantsToCrouch = true;
+	bWantsToProne = false;
+	bIsCrouched = bWantsToCrouch;
+	float maxWalkSpeed;
+	bWantsToCrouch == 1 ? maxWalkSpeed = 220.f : maxWalkSpeed = 375.0f;
+	GetCharacterMovement()->MaxWalkSpeed = maxWalkSpeed;
+	//GetCharacterMovement()->MaxWalkSpeedCrouched = maxWalkSpeed;
+}
+
+/** Player Run Prone Animation */
+void ASoldierCharacter::SoldierAnimProne(){
+	bWantsToCrouch = false;
+	bWantsToProne = !bWantsToProne;
+
+	float maxProneSpeed;
+	bWantsToProne == 1 ? maxProneSpeed = 28.0f : maxProneSpeed = 375.0f;
+	GetCharacterMovement()->MaxWalkSpeed = maxProneSpeed;
 }
 
 void ASoldierCharacter::Tick(float DeltaSeconds)
@@ -1259,11 +1533,26 @@ bool ASoldierCharacter::IsFiring() const
 	return bWantsToFire;
 };
 
-bool ASoldierCharacter::IsFirstPerson() const
+
+bool ASoldierCharacter::IsCrouched() const
 {
-	return IsAlive() && Controller && Controller->IsLocalPlayerController();
+	return bWantsToCrouch;
 }
 
+
+bool ASoldierCharacter::IsProning() const
+{
+	return bWantsToProne;
+}
+
+bool ASoldierCharacter::IsFirstPerson() const
+{
+	return IsAlive() && Controller && Controller->IsLocalPlayerController() && IsMesh3P();
+}
+
+bool ASoldierCharacter::IsMesh3P() const {
+	return !m_bMesh3P;
+}
 int32 ASoldierCharacter::GetMaxHealth() const
 {
 	return GetClass()->GetDefaultObject<ASoldierCharacter>()->Health;

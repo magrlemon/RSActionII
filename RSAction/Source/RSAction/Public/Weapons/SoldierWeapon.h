@@ -120,6 +120,8 @@ class ASoldierWeapon : public AActor
 	//////////////////////////////////////////////////////////////////////////
 	// Inventory
 
+	void SwapMesh1P3PWeaponHidden();
+
 	/** weapon is being equipped by owner pawn */
 	virtual void OnEquip(const ASoldierWeapon* LastWeapon);
 
@@ -498,7 +500,6 @@ protected:
 
 	/** detaches weapon mesh from pawn */
 	void DetachMeshFromPawn();
-
 
 	//////////////////////////////////////////////////////////////////////////
 	// Weapon usage helpers

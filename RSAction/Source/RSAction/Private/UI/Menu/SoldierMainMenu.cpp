@@ -328,8 +328,8 @@ void FSoldierMainMenu::Construct(TWeakObjectPtr<USoldierGameInstance> _GameInsta
 		MenuHelper::AddCustomMenuItem(LeaderboardItem,SAssignNew(LeaderboardWidget,SSoldierLeaderboard).OwnerWidget(MenuWidget).PlayerOwner(GetPlayerOwner()));
 
 		// Purchases
-		MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("Store", "ONLINE STORE"), this, &FSoldierMainMenu::OnShowOnlineStore);
-		MenuHelper::AddCustomMenuItem(OnlineStoreItem, SAssignNew(OnlineStoreWidget, SSoldierOnlineStore).OwnerWidget(MenuWidget).PlayerOwner(GetPlayerOwner()));
+		//MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("Store", "ONLINE STORE"), this, &FSoldierMainMenu::OnShowOnlineStore);
+		//MenuHelper::AddCustomMenuItem(OnlineStoreItem, SAssignNew(OnlineStoreWidget, SSoldierOnlineStore).OwnerWidget(MenuWidget).PlayerOwner(GetPlayerOwner()));
 
 #if !SHOOTER_CONSOLE_UI
 
@@ -354,7 +354,7 @@ void FSoldierMainMenu::Construct(TWeakObjectPtr<USoldierGameInstance> _GameInsta
 		MenuHelper::AddMenuItemSP(RootMenuItem, LOCTEXT("Quit", "QUIT"), this, &FSoldierMainMenu::OnUIQuit);
 #endif
 
-
+		MenuWidget->CurrentMenuTitle = LOCTEXT("MainMenu","MAIN MENU");
 		MenuWidget->OnGoBack.BindSP(this, &FSoldierMainMenu::OnMenuGoBack);
 		MenuWidget->MainMenu = MenuWidget->CurrentMenu = RootMenuItem->SubMenu;
 		MenuWidget->OnMenuHidden.BindSP(this, &FSoldierMainMenu::OnMenuHidden);

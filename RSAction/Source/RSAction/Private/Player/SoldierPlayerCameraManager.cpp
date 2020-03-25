@@ -20,11 +20,7 @@ void ASoldierPlayerCameraManager::UpdateCamera(float DeltaTime)
 		const float TargetFOV = MyPawn->IsTargeting() ? TargetingFOV : NormalFOV;
 		DefaultFOV = FMath::FInterpTo(DefaultFOV, TargetFOV, DeltaTime, 20.0f);
 	}
-
+	
 	Super::UpdateCamera(DeltaTime);
 
-	if (MyPawn && MyPawn->IsFirstPerson())
-	{
-		MyPawn->OnCameraUpdate(GetCameraLocation(), GetCameraRotation());
-	}
 }

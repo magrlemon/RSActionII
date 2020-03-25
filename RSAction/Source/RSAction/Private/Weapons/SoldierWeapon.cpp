@@ -75,6 +75,15 @@ void ASoldierWeapon::Destroyed()
 //////////////////////////////////////////////////////////////////////////
 // Inventory
 
+void ASoldierWeapon::SwapMesh1P3PWeaponHidden() {
+	if (MyPawn)
+	{
+		bool bMesh1P = MyPawn->IsFirstPerson();
+		Mesh1P->SetHiddenInGame(!bMesh1P);
+		Mesh3P->SetHiddenInGame(bMesh1P);
+	}
+}
+
 void ASoldierWeapon::OnEquip(const ASoldierWeapon* LastWeapon)
 {
 	AttachMeshToPawn();
@@ -185,7 +194,7 @@ void ASoldierWeapon::AttachMeshToPawn()
 	{
 		// Remove and hide both first and third person meshes
 		DetachMeshFromPawn();
-
+		
 		// For locally controller players we attach both weapons and let the bOnlyOwnerSee, bOwnerNoSee flags deal with visibility.
 		FName AttachPoint = MyPawn->GetWeaponAttachPoint();
 		if( MyPawn->IsLocallyControlled() == true )
@@ -206,6 +215,7 @@ void ASoldierWeapon::AttachMeshToPawn()
 		}
 	}
 }
+
 
 void ASoldierWeapon::DetachMeshFromPawn()
 {
@@ -827,15 +837,16 @@ void ASoldierWeapon::SimulateWeaponFire()
 				AController* PlayerCon = MyPawn->GetController();				
 				if( PlayerCon != NULL )
 				{
+					bool bOwnerSee = MyPawn->IsFirstPerson();
 					Mesh1P->GetSocketLocation(MuzzleAttachPoint);
 					MuzzlePSC = UGameplayStatics::SpawnEmitterAttached(MuzzleFX, Mesh1P, MuzzleAttachPoint);
-					MuzzlePSC->bOwnerNoSee = false;
-					MuzzlePSC->bOnlyOwnerSee = true;
+					MuzzlePSC->bOwnerNoSee = !bOwnerSee;
+					MuzzlePSC->bOnlyOwnerSee = bOwnerSee;
 
 					Mesh3P->GetSocketLocation(MuzzleAttachPoint);
 					MuzzlePSCSecondary = UGameplayStatics::SpawnEmitterAttached(MuzzleFX, Mesh3P, MuzzleAttachPoint);
-					MuzzlePSCSecondary->bOwnerNoSee = true;
-					MuzzlePSCSecondary->bOnlyOwnerSee = false;				
+					MuzzlePSCSecondary->bOwnerNoSee = bOwnerSee;
+					MuzzlePSCSecondary->bOnlyOwnerSee = !bOwnerSee;
 				}				
 			}
 			else

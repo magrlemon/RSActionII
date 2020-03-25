@@ -8,11 +8,29 @@
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnSoldierCharacterEquipWeapon, ASoldierCharacter*, ASoldierWeapon* /* new */);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnSoldierCharacterUnEquipWeapon, ASoldierCharacter*, ASoldierWeapon* /* old */);
 
+UENUM()
+enum   ESoldierCamreMode  {
+	E_CameraMode_None,
+	//第一人称，只有手臂
+	E_CameraMode_First,
+	//第三人称，角色不会跟随视角自动旋转
+	E_CameraMode_Third,
+	//第三人称，角色跟随视角自动旋转
+	E_CameraMode_ThirdRot,
+	//顶视角
+	E_CameraMode_Top,
+	//WOW视角
+	E_CameraMode_WOW,
+
+	E_CameraMode_Max
+};
+
 UCLASS(Abstract)
 class ASoldierCharacter : public ACharacter
 {
 	GENERATED_UCLASS_BODY()
 
+	virtual void BeginPlay() override;
 	virtual void BeginDestroy() override;
 
 	/** spawn inventory, setup initial variables */
@@ -39,13 +57,18 @@ class ASoldierCharacter : public ACharacter
 	/** [client] called when replication is paused for this actor */
 	virtual void OnReplicationPausedChanged(bool bIsReplicationPaused) override;
 
+
+
 	/**
 	* Add camera pitch to first person mesh.
 	*
 	*	@param	CameraLocation	Location of the Camera.
 	*	@param	CameraRotation	Rotation of the Camera.
 	*/
-	void OnCameraUpdate(const FVector& CameraLocation, const FRotator& CameraRotation);
+	//void OnCameraUpdate(const FVector& CameraLocation, const FRotator& CameraRotation);
+
+	UFUNCTION()
+	void UpdateMesh1PCameraTransform(const FVector& CameraLocation, const FRotator& CameraRotation);
 
 	/** get aim offsets */
 	UFUNCTION(BlueprintCallable, Category = "Game|Weapon")
@@ -194,6 +217,15 @@ class ASoldierCharacter : public ACharacter
 	/** player released run action */
 	void OnStopRunning();
 
+	/** Player ChangeView First Person or ThirdPerson*/
+	void ChangeCameraMode();
+
+	/** Player Run Crouch Animation */
+	void SoldierAnimCrouch();
+
+	/** Player Run Prone Animation */
+	void SoldierAnimProne();
+
 	//////////////////////////////////////////////////////////////////////////
 	// Reading data
 
@@ -247,6 +279,14 @@ class ASoldierCharacter : public ACharacter
 	UFUNCTION(BlueprintCallable, Category = Mesh)
 	virtual bool IsFirstPerson() const;
 
+
+	/** get Crouched state */
+	UFUNCTION(BlueprintCallable, Category = "Game|Animation")
+		bool IsCrouched() const;
+
+	/** get Proning state */
+	UFUNCTION(BlueprintCallable, Category = "Game|Animation")
+	bool IsProning() const;
 	/** get max health */
 	int32 GetMaxHealth() const;
 
@@ -316,6 +356,15 @@ protected:
 
 	/** current firing state */
 	uint8 bWantsToFire : 1;
+
+	/** current crouch state */
+	uint8 bWantsToCrouch : 1;
+
+	/** current Prone state */
+	uint8 bWantsToProne : 1;
+
+	/** current Pawn is Mesh3P */
+	uint8 m_bMesh3P : 1;
 
 	/** when low health effects should start */
 	float LowHealthPercentage;
@@ -389,7 +438,7 @@ private:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Damage & death
-
+	bool IsMesh3P() const;
 public:
 
 	/** Identifies if pawn is in its dying state */
@@ -450,6 +499,7 @@ protected:
 	/** updates current weapon */
 	void SetCurrentWeapon(class ASoldierWeapon* NewWeapon, class ASoldierWeapon* LastWeapon = NULL);
 
+
 	/** current weapon rep handler */
 	UFUNCTION()
 	void OnRep_CurrentWeapon(class ASoldierWeapon* LastWeapon);
@@ -474,10 +524,51 @@ protected:
 
 	/** Builds list of points to check for pausing replication for a connection*/
 	void BuildPauseReplicationCheckPoints(TArray<FVector>& RelevancyCheckPoints);
+public:
+		/**
+* Add camera pitch to third person mesh.
+*
+*	@param	DeltaTime.
+*	@param	OutResult.
+*/
+virtual void CalcCamera(float DeltaTime, struct FMinimalViewInfo& OutResult);
 
 protected:
 	/** Returns Mesh1P subobject **/
 	FORCEINLINE USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
+
+	UPROPERTY()
+	TEnumAsByte<enum ESoldierCamreMode> m_ECameraMode;
+
+	UPROPERTY()
+	float m_CameraDistance = 300.0f;
+
+	UPROPERTY()
+	bool m_bViewingCharacter = false;
+
+	//--------------------------------------------------------摄像机平滑相关
+	UPROPERTY()
+	float m_ZoomBlendStartDis;
+	UPROPERTY()
+	float m_ZoomBlendEndDis;
+	UPROPERTY()
+	float m_ZoomBlendTimeToGo;
+
+
+	UPROPERTY()
+	FVector m_SwitchBlendStartLoc;
+	UPROPERTY()
+	FRotator m_SwitchBlendStartRot;
+	UPROPERTY()
+	float m_SwitchBlendTimeToGo;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+	float m_CameraBlendTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+	float m_CameraBlendExp;
+
+
 };
 
 

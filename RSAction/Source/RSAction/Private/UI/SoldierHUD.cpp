@@ -36,8 +36,8 @@ ASoldierHUD::ASoldierHUD(const FObjectInitializer& ObjectInitializer) : Super(Ob
 	// Fonts are not included in dedicated server builds.
 	#if !UE_SERVER
 	{
-		static ConstructorHelpers::FObjectFinder<UFont> BigFontOb(TEXT("/Game/UI/HUD/Roboto51"));
-		static ConstructorHelpers::FObjectFinder<UFont> NormalFontOb(TEXT("/Game/UI/HUD/Roboto18"));
+		static ConstructorHelpers::FObjectFinder<UFont> BigFontOb(TEXT("/Game/UI/HUD/STZ_FONT"));
+		static ConstructorHelpers::FObjectFinder<UFont> NormalFontOb(TEXT("/Game/UI/HUD/STZ_FONT"));
 		BigFont = BigFontOb.Object;
 		NormalFont = NormalFontOb.Object;
 	}
