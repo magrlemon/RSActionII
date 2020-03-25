@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{37BCE061-42E0-F50D-E35B-5DA49762A0B0}",
+	"EngineAssociation": "{E12BEC3D-4625-A6E6-3823-33955FBDC9D7}",
 	"Category": "Samples",
 	"Description": "",
 	"Modules": [
@@ -76,6 +76,10 @@
 			"Name": "DcxVehicle",
 			"Enabled": true,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/bf81cafcacd3441cb800648bab376ff6"
+		},
+		{
+			"Name": "WebSocketNetworking",
+			"Enabled": true
 		}
 	],
 	"TargetPlatforms": [
