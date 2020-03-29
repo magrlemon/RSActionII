@@ -226,6 +226,8 @@ class ASoldierCharacter : public ACharacter
 	/** Player Run Prone Animation */
 	void SoldierAnimProne();
 
+	void LoginTank();
+
 	//////////////////////////////////////////////////////////////////////////
 	// Reading data
 
@@ -305,6 +307,7 @@ class ASoldierCharacter : public ACharacter
 
 	/** Update the team color of all player meshes. */
 	void UpdateTeamColorsAllMIDs();
+
 private:
 
 	/** pawn mesh: 1st person view */

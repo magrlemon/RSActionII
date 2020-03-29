@@ -15,6 +15,7 @@ class FSoldierWelcomeMenu;
 class FSoldierMessageMenu;
 class ASoldierGameSession;
 class FDcxVehicleManager;
+class IVehicle;
 
 namespace SoldierGameInstanceState
 {
@@ -217,6 +218,19 @@ public:
 	/** Resets Play Together PS4 system event info after it's been handled */
 	void ResetPlayTogetherInfo() { PlayTogetherInfo = FSoldierPlayTogetherInfo(); }
 
+	UFUNCTION(BlueprintCallable)
+	AActor* GetActiveVehicle() { return ActiveVehicle; }
+	UFUNCTION(BlueprintCallable)
+	void SetActiveVehicle(AActor* vehicle);
+	UFUNCTION(BlueprintCallable)
+	void VehicleDetect(bool enter, AActor* vehicle, AActor* enterActor);	
+	UFUNCTION(BlueprintCallable)
+	bool IsLoginVehicle() { return bLoginVehicle; }
+	UFUNCTION(BlueprintCallable)
+	bool IsEnterVehicle() { return bEnterVehicle; }
+	UFUNCTION(BlueprintCallable)
+	void SetLoginVehicle(bool login) { bLoginVehicle = login; }
+
 private:
 
 	UPROPERTY(config)
@@ -409,6 +423,10 @@ protected:
 	bool HandleOpenCommand(const TCHAR* Cmd, FOutputDevice& Ar, UWorld* InWorld);
 	bool HandleDisconnectCommand(const TCHAR* Cmd, FOutputDevice& Ar, UWorld* InWorld);
 	bool HandleTravelCommand(const TCHAR* Cmd, FOutputDevice& Ar, UWorld* InWorld);
+private:
+	AActor* ActiveVehicle;
+	bool bLoginVehicle;
+	bool bEnterVehicle;
 };
 
 

@@ -32,7 +32,11 @@ public class RSAction : ModuleRules
 				"Gauntlet",
                 //"PhysicsCore",
                 "DcxVehicle",
-			}
+                "PhysX",
+                "PhysXVehicles",
+                "PhysXVehicleLib",
+                "PhysicsCore",
+            }
 		);
 
         PublicIncludePaths.AddRange(

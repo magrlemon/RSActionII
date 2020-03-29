@@ -19,6 +19,7 @@
 #include "Online/SoldierGameSession.h"
 #include "Online/SoldierOnlineSessionClient.h"
 #include "OnlineSubsystemUtils.h"
+#include "Vehicles/Vehicle.h"
 
 FAutoConsoleVariable CVarShooterGameTestEncryption(TEXT("ShooterGame.TestEncryption"), 0, TEXT("If true, clients will send an encryption token with their request to join the server and attempt to encrypt the connection using a debug key. This is NOT SECURE and for demonstration purposes only."));
 
@@ -88,6 +89,9 @@ USoldierGameInstance::USoldierGameInstance(const FObjectInitializer& ObjectIniti
 	, bIsLicensed(true) // Default to licensed (should have been checked by OS on boot)
 {
 	CurrentState = SoldierGameInstanceState::None;
+	bLoginVehicle = false;
+	bEnterVehicle = false;
+	ActiveVehicle = nullptr;
 }
 
 void USoldierGameInstance::Init() 
@@ -2186,4 +2190,30 @@ void USoldierGameInstance::ReceivedNetworkEncryptionAck(const FOnEncryptionKeyRe
 	Response.EncryptionData.Key = DebugTestEncryptionKey;
 
 	Delegate.ExecuteIfBound(Response);
+}
+
+void USoldierGameInstance::VehicleDetect(bool enter, AActor* vehicle, AActor* enterActor)
+{
+	bEnterVehicle = enter;
+	if (enter)
+	{	
+		if (vehicle->GetClass()->ImplementsInterface(UVehicle::StaticClass()))
+		{
+			SetActiveVehicle(vehicle);
+		}
+	}
+	else if(vehicle && enterActor)
+	{
+		float dist = FVector::Dist(vehicle->GetActorLocation(), enterActor->GetActorLocation());
+		//IVehicle* vehicleInterface = Cast<IVehicle>(vehicle);
+		if (!IVehicle::Execute_DetectInArea(vehicle,enterActor))
+		{
+			SetActiveVehicle(nullptr);
+		}
+	}
+}
+
+void USoldierGameInstance::SetActiveVehicle(AActor* vehicle)
+{ 
+	ActiveVehicle = vehicle; 
 }

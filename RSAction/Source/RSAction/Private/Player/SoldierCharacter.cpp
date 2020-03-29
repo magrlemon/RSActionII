@@ -9,6 +9,8 @@
 #include "Animation/AnimInstance.h"
 #include "Sound/SoundNodeLocalPlayer.h"
 #include "AudioThread.h"
+#include "SoldierGameInstance.h"
+#include "Vehicles/Tank.h"
 
 static int32 NetVisualizeRelevancyTestPoints = 0;
 FAutoConsoleVariableRef CVarNetVisualizeRelevancyTestPoints(
@@ -983,11 +985,65 @@ void ASoldierCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAction("SoldierCrouch", IE_Released, this, &ASoldierCharacter::SoldierAnimCrouch);
 
 	PlayerInputComponent->BindAction("SoldierProne", IE_Released, this, &ASoldierCharacter::SoldierAnimProne);
+	PlayerInputComponent->BindAction("LoginTank", IE_Pressed, this, &ASoldierCharacter::LoginTank);
 }
 
+void ASoldierCharacter::LoginTank()
+{
+	USoldierGameInstance* sGameInstance = StaticCast<USoldierGameInstance*>(GWorld->GetGameInstance());
+	AActor* vehicle = sGameInstance->GetActiveVehicle();
+	if (sGameInstance != nullptr && vehicle != nullptr)
+	{
+		FVector vehiclePos = vehicle->GetActorLocation();
+		if (/*mainActor != nullptr && */sGameInstance->IsEnterVehicle() && !sGameInstance->IsLoginVehicle())
+		{
+			EAttachmentRule Rule0 = EAttachmentRule::SnapToTarget;
+
+			FAttachmentTransformRules Rules(Rule0, Rule0, Rule0, false);
+
+			UGameplayStatics::GetPlayerController(this, 0)->SetViewTargetWithBlend(vehicle);
+			sGameInstance->SetLoginVehicle(true);
+			this->AttachToActor(vehicle, Rules);
+			this->SetActorEnableCollision(false);
+			//this->DisableComponentsSimulatePhysics();
+			this->SetActorHiddenInGame(true);
+			//FVector relPos = vehiclePos - GetActorLocation();
+			//IVehicle::Execute_SetRelLogPos(sGameInstance->GetActiveVehicle(), relPos);
+		}
+		else if (sGameInstance->IsLoginVehicle())
+		{
+			UGameplayStatics::GetPlayerController(this, 0)->SetViewTargetWithBlend(this);
+			sGameInstance->SetLoginVehicle(false);
+			vehicle->SetActorEnableCollision(false);
+			this->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+
+			/*FVector relPos = IVehicle::Execute_GetRelLogPos(sGameInstance->GetActiveVehicle());
+			this->SetActorLocation(mainActor->GetActorLocation() + relPos);*/
+			this->SetActorRelativeLocation(vehiclePos + FVector(250, 250, 150),false,nullptr,ETeleportType::TeleportPhysics);			
+			
+			//this->SetActorLocation(vehiclePos + FVector(350, 350, 200));
+			vehicle->SetActorLocation(vehiclePos);
+			vehicle->SetActorEnableCollision(true);
+			this->SetActorHiddenInGame(false);
+			this->SetActorEnableCollision(true);
+		}
+	}
+}
 
 void ASoldierCharacter::MoveForward(float Val)
 {
+	USoldierGameInstance* sGameInstance = StaticCast<USoldierGameInstance*>(GWorld->GetGameInstance());
+	if (sGameInstance != nullptr && sGameInstance->IsLoginVehicle())
+	{
+		float right = GetInputAxisValue("MoveRight");
+		AActor* vehicle = sGameInstance->GetActiveVehicle();
+		if (vehicle && vehicle->GetClass()->ImplementsInterface(UVehicle::StaticClass()))
+			IVehicle::Execute_MoveForwordImpl(vehicle, Val, right);
+		return;
+	}
+
+	this->SetActorEnableCollision(true);
+
 	if (Controller && Val != 0.f)
 	{
 		// Limit pitch when walking or falling
@@ -1002,6 +1058,18 @@ void ASoldierCharacter::MoveForward(float Val)
 
 void ASoldierCharacter::MoveRight(float Val)
 {
+	USoldierGameInstance* sGameInstance = StaticCast<USoldierGameInstance*>(GWorld->GetGameInstance());
+	if (sGameInstance != nullptr && sGameInstance->IsLoginVehicle())
+	{
+		float forward = GetInputAxisValue("MoveForward");
+		AActor* vehicle = sGameInstance->GetActiveVehicle();
+		if (vehicle && vehicle->GetClass()->ImplementsInterface(UVehicle::StaticClass()))
+			IVehicle::Execute_MoveRightImpl(vehicle, forward, Val);
+		return;
+	}
+
+	this->SetActorEnableCollision(true);
+
 	if (Val != 0.f)
 	{
 		FRotator Rotation;
@@ -1320,6 +1388,8 @@ void ASoldierCharacter::SoldierAnimProne(){
 	bWantsToProne == 1 ? maxProneSpeed = 28.0f : maxProneSpeed = 375.0f;
 	GetCharacterMovement()->MaxWalkSpeed = maxProneSpeed;
 }
+
+
 
 void ASoldierCharacter::Tick(float DeltaSeconds)
 {
