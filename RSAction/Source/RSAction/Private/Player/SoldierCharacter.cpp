@@ -370,6 +370,7 @@ float ASoldierCharacter::TakeDamage(float Damage, struct FDamageEvent const& Dam
 	Damage = Game ? Game->ModifyDamage(Damage, this, DamageEvent, EventInstigator, DamageCauser) : 0.f;
 
 	const float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	
 	if (ActualDamage > 0.f)
 	{
 		Health -= ActualDamage;
@@ -743,7 +744,7 @@ void ASoldierCharacter::EquipWeapon(ASoldierWeapon* Weapon)
 		{
 			ServerEquipWeapon(Weapon);
 		}
-		GetWeapon()->SwapMesh1P3PWeaponHidden();
+		Weapon->SwapMesh1P3PWeaponHidden();
 	}
 }
 

@@ -116,6 +116,7 @@ void ASoldierWeapon::OnEquip(const ASoldierWeapon* LastWeapon)
 	}
 
 	ASoldierCharacter::NotifyEquipWeapon.Broadcast(MyPawn, this);
+	SwapMesh1P3PWeaponHidden();
 }
 
 void ASoldierWeapon::OnEquipFinished()
@@ -762,7 +763,7 @@ FHitResult ASoldierWeapon::WeaponTrace(const FVector& StartTrace, const FVector&
 	// Perform trace to retrieve hit info
 	FCollisionQueryParams TraceParams(SCENE_QUERY_STAT(WeaponTrace), true, GetInstigator());
 	TraceParams.bReturnPhysicalMaterial = true;
-
+	TraceParams.bTraceComplex = true;
 	FHitResult Hit(ForceInit);
 	GetWorld()->LineTraceSingleByChannel(Hit, StartTrace, EndTrace, COLLISION_WEAPON, TraceParams);
 
