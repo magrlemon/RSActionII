@@ -21,10 +21,10 @@ public:
 	AActor* GetVehicleActor();*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "MyCategory")
 	bool DetectInArea(AActor* enterActor);
-	//UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "MyCategory")
-	//void SetRelLogPos(FVector pos);
-	//UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "MyCategory")
-	//FVector GetRelLogPos();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "MyCategory")
+	void AimAzimuth(float value);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "MyCategory")
+	void AimElevation(float value);
 
 public:
 	

@@ -4,8 +4,8 @@
 
 //#include "CamouflageComponent.h"
 //#include "VehicleDustType.h"
-//#include "TankCameraMovementComponent.h"
-//#include "TankMainWeaponComponent.h"
+#include "TankCameraMovementComponent.h"
+#include "TankMainWeaponComponent.h"
 #include "TankMovementComponent.h"
 //#include "TankSpottingComponent.h"
 //#include "VehicleEngineSoundNode.h"
@@ -39,11 +39,10 @@ ATank::ATank() : Super()
 	ChassisMesh->SetGenerateOverlapEvents(true);
 	ChassisMesh->SetCanEverAffectNavigation(true);
 	RootComponent = ChassisMesh;
-	
-	/*CameraMovementComponent = CreateDefaultSubobject<UTankCameraMovementComponent>(FName("TankCameraMovementComponent"));
 
 	MainWeaponComponent = CreateDefaultSubobject<UTankMainWeaponComponent>(FName("TankMainWeaponComponent"));
-	SpottingComponent = CreateDefaultSubobject<UTankSpottingComponent>(FName("TankSpottingComponent"));
+	CameraMovementComponent = CreateDefaultSubobject<UTankCameraMovementComponent>(FName("TankCameraMovementComponent"));	
+	/*SpottingComponent = CreateDefaultSubobject<UTankSpottingComponent>(FName("TankSpottingComponent"));
 	CamouflageComponent = CreateDefaultSubobject<UCamouflageComponent>(FName("TankCamouflageComponent"));*/
 
 	MovementComponent = CreateDefaultSubobject<UTankMovementComponent>(FName("TankMovementComponent"));
@@ -68,7 +67,7 @@ ATank::ATank() : Super()
 	TurretRotateAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("TurretRotateAudio"));
 	TurretRotateAudioComponent->bAutoActivate = false;
 	TurretRotateAudioComponent->SetupAttachment(ChassisMesh);
-	//MainWeaponComponent->SetTurretRotateAudioComponent(TurretRotateAudioComponent);
+	MainWeaponComponent->SetTurretRotateAudioComponent(TurretRotateAudioComponent);
 
 	AITarget = CreateDefaultSubobject<USceneComponent>(TEXT("AITarget"));
 	AITarget->SetupAttachment(ChassisMesh);
@@ -565,33 +564,31 @@ void ATank::SetHighlight(bool bHighlight)
 
 float ATank::GetHullAlignment() const
 {
-	return 0;
-	//const auto hullYawVector = FVector::VectorPlaneProject(GetActorForwardVector(), CameraMovementComponent->GetCameraUpVector()).GetSafeNormal();
-	//const auto angle = FMath::RadiansToDegrees(FMath::Acos(hullYawVector | CameraMovementComponent->GetCameraForwardVector()));
-	//return (hullYawVector | CameraMovementComponent->GetCameraRightVector()) > 0 ? angle : -angle;
+	const auto hullYawVector = FVector::VectorPlaneProject(GetActorForwardVector(), CameraMovementComponent->GetCameraUpVector()).GetSafeNormal();
+	const auto angle = FMath::RadiansToDegrees(FMath::Acos(hullYawVector | CameraMovementComponent->GetCameraForwardVector()));
+	return (hullYawVector | CameraMovementComponent->GetCameraRightVector()) > 0 ? angle : -angle;
 }
 
 float ATank::GetTurretAlignment() const
-{
-	return 0;
-	//const auto turretYawVector = FVector::VectorPlaneProject(MainWeaponComponent->GetTurretForwardVector(), CameraMovementComponent->GetCameraUpVector()).GetSafeNormal();
-	//auto angle = FMath::RadiansToDegrees(FMath::Acos(turretYawVector | CameraMovementComponent->GetCameraForwardVector()));
-	//return (turretYawVector | CameraMovementComponent->GetCameraRightVector()) > 0 ? angle : -angle;
+{	
+	const auto turretYawVector = FVector::VectorPlaneProject(MainWeaponComponent->GetTurretForwardVector(), CameraMovementComponent->GetCameraUpVector()).GetSafeNormal();
+	auto angle = FMath::RadiansToDegrees(FMath::Acos(turretYawVector | CameraMovementComponent->GetCameraForwardVector()));
+	return (turretYawVector | CameraMovementComponent->GetCameraRightVector()) > 0 ? angle : -angle;
 }
 
 bool ATank::TryFireGun()
 {
-	//if(MainWeaponComponent->TryFireGun())
-	//{
-	//	SpottingComponent->bHasFired = true;
+	if (MainWeaponComponent->TryFireGun())
+	{
+		/*SpottingComponent->bHasFired = true;
 
-	//	if (CamouflageComponent && CamouflageComponent->GetCamouflageFactor() > 0)
-	//	{
-	//		CamouflageComponent->Deplet(FiringCamouflageDurationPenalty);
-	//	}
-	//	
-	//	return true;
-	//}
+		if (CamouflageComponent && CamouflageComponent->GetCamouflageFactor() > 0)
+		{
+			CamouflageComponent->Deplet(FiringCamouflageDurationPenalty);
+		}*/
+
+		return true;
+	}
 
 	return false;
 }
@@ -602,16 +599,16 @@ void ATank::InitProperties()
 
 void ATank::MoveForwordImpl_Implementation(float forward, float right)
 { 
-	 //MoveForword(input); 
-	float input = forward < 0 ? -1 : 1;	
-	MovementComponent->SetThrottleInput(input * (FMath::Pow(forward,2) + FMath::Pow(right, 2)));
+	MoveBpForward();//test
+	//float input = forward < 0 ? -1 : 1;	
+	//MovementComponent->SetThrottleInput(input * (FMath::Pow(forward,2) + FMath::Pow(right, 2)));
 }
 
 void ATank::MoveRightImpl_Implementation(float forward, float right)
 { 
-	//MoveRight(input); 
-	FVector2D dir(forward, -right);
-	MovementComponent->SetSteeringDirection(dir);
+	MoveBpRight();//test
+	//FVector2D dir(forward, right);
+	//MovementComponent->SetSteeringDirection(dir);
 }
 
 bool ATank::DetectInArea_Implementation(AActor* enterActor)
@@ -620,15 +617,18 @@ bool ATank::DetectInArea_Implementation(AActor* enterActor)
 	return !(dist > fDetectRadius);
 }
 
-//AActor* ATank::GetVehicleActor_Implementation()
-//{ 
-//	return this; 
-//}
-//void ATank::SetRelLogPos_Implementation(FVector pos)
-//{
-//	reletiveLoginPos = pos;
-//}
-//FVector ATank::GetRelLogPos_Implementation()
-//{
-//	return reletiveLoginPos;
-//}
+void ATank::AimAzimuth_Implementation(float value)
+{
+	if (CameraMovementComponent != NULL)
+	{
+		CameraMovementComponent->RotateCameraPitch(value);
+	}
+}
+
+void ATank::AimElevation_Implementation(float value)
+{
+	if (CameraMovementComponent != NULL)
+	{
+		CameraMovementComponent->RotateCameraYaw(value);
+	}
+}

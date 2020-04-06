@@ -10,8 +10,8 @@
 //class AVehicleImpactEffect;
 //class UCamouflageComponent;
 //class UVehicleDustType;
-//class UTankCameraMovementComponent;
-//class UTankMainWeaponComponent;
+class UTankCameraMovementComponent;
+class UTankMainWeaponComponent;
 class UTankMovementComponent;
 //class UTankSpottingComponent;
 
@@ -131,10 +131,10 @@ protected:
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components)
 		USkeletalMeshComponent * ChassisMesh;
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	//	UTankCameraMovementComponent * CameraMovementComponent;
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	//	UTankMainWeaponComponent * MainWeaponComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+		UTankCameraMovementComponent * CameraMovementComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UTankMainWeaponComponent * MainWeaponComponent;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 		UTankMovementComponent * MovementComponent;
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -159,15 +159,17 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "MyCategory")
 	bool DetectInArea(AActor* enterActor);
 	virtual bool DetectInArea_Implementation(AActor* enterActor) override;
-	/*UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
-	AActor* GetVehicleActor();
-	virtual AActor* GetVehicleActor_Implementation() override;*/
-	//UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
-	//void SetRelLogPos(FVector pos);
-	//void SetRelLogPos_Implementation(FVector pos) override;
-	//UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
-	//FVector GetRelLogPos();
-	//FVector GetRelLogPos_Implementation() override;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	void AimAzimuth(float value);
+	void AimAzimuth_Implementation(float value) override;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	void AimElevation(float value);
+	void AimElevation_Implementation(float value) override;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void MoveBpForward();
+	UFUNCTION(BlueprintImplementableEvent)
+	void MoveBpRight();
 
 protected:
 	// Begin Actor overrides

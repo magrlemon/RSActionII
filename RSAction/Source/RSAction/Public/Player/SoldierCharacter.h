@@ -227,6 +227,8 @@ class ASoldierCharacter : public ACharacter
 	void SoldierAnimProne();
 
 	void LoginTank();
+	void AimAzimuth(float value);
+	void AimElevation(float value);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Reading data

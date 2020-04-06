@@ -961,6 +961,9 @@ void ASoldierCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ASoldierCharacter::LookUpAtRate);
 
+	PlayerInputComponent->BindAxis("AimAzimuth", this, &ASoldierCharacter::AimAzimuth);
+	PlayerInputComponent->BindAxis("AimElevation", this, &ASoldierCharacter::AimElevation);
+
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ASoldierCharacter::OnStartFire);
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &ASoldierCharacter::OnStopFire);
 
@@ -1029,7 +1032,30 @@ void ASoldierCharacter::LoginTank()
 		}
 	}
 }
-
+void ASoldierCharacter::AimAzimuth(float value)
+{
+	USoldierGameInstance* sGameInstance = StaticCast<USoldierGameInstance*>(GWorld->GetGameInstance());
+	if (sGameInstance != nullptr && sGameInstance->IsLoginVehicle())
+	{
+		AActor* vehicle = sGameInstance->GetActiveVehicle();
+		if (vehicle && vehicle->GetClass()->ImplementsInterface(UVehicle::StaticClass()))
+		{
+			IVehicle::Execute_AimAzimuth(vehicle, value);
+		}
+	}
+}
+void ASoldierCharacter::AimElevation(float value)
+{
+	USoldierGameInstance* sGameInstance = StaticCast<USoldierGameInstance*>(GWorld->GetGameInstance());
+	if (sGameInstance != nullptr && sGameInstance->IsLoginVehicle())
+	{
+		AActor* vehicle = sGameInstance->GetActiveVehicle();
+		if (vehicle && vehicle->GetClass()->ImplementsInterface(UVehicle::StaticClass()))
+		{
+			IVehicle::Execute_AimElevation(vehicle, value);
+		}
+	}
+}
 void ASoldierCharacter::MoveForward(float Val)
 {
 	USoldierGameInstance* sGameInstance = StaticCast<USoldierGameInstance*>(GWorld->GetGameInstance());
