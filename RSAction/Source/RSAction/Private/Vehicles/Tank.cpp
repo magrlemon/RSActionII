@@ -137,6 +137,8 @@ void ATank::BeginPlay()
 			}, EngineIgnitionDuration, false);
 		}
 	}
+	
+	
 }
 
 void ATank::Tick(float deltaTime)
@@ -631,4 +633,14 @@ void ATank::AimElevation_Implementation(float value)
 	{
 		CameraMovementComponent->RotateCameraYaw(value);
 	}
+}
+
+void ATank::ZoomIn_Implementation()
+{
+	ZoomCamera(1);
+}
+
+void ATank::ZoomOut_Implementation()
+{
+	ZoomCamera(-1);
 }

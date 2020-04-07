@@ -956,13 +956,12 @@ void ASoldierCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAxis("MoveForward", this, &ASoldierCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ASoldierCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("MoveUp", this, &ASoldierCharacter::MoveUp);
+	PlayerInputComponent->BindAxis("AimAzimuth", this, &ASoldierCharacter::AimAzimuth);
+	PlayerInputComponent->BindAxis("AimElevation", this, &ASoldierCharacter::AimElevation);
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("TurnRate", this, &ASoldierCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ASoldierCharacter::LookUpAtRate);
-
-	PlayerInputComponent->BindAxis("AimAzimuth", this, &ASoldierCharacter::AimAzimuth);
-	PlayerInputComponent->BindAxis("AimElevation", this, &ASoldierCharacter::AimElevation);
 
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ASoldierCharacter::OnStartFire);
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &ASoldierCharacter::OnStopFire);
@@ -989,6 +988,8 @@ void ASoldierCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 
 	PlayerInputComponent->BindAction("SoldierProne", IE_Released, this, &ASoldierCharacter::SoldierAnimProne);
 	PlayerInputComponent->BindAction("LoginTank", IE_Pressed, this, &ASoldierCharacter::LoginTank);
+	PlayerInputComponent->BindAction("ZoomIn", IE_Pressed, this, &ASoldierCharacter::ZoomIn);
+	PlayerInputComponent->BindAction("ZoomOut", IE_Pressed, this, &ASoldierCharacter::ZoomOut);
 }
 
 void ASoldierCharacter::LoginTank()
@@ -1000,6 +1001,10 @@ void ASoldierCharacter::LoginTank()
 		FVector vehiclePos = vehicle->GetActorLocation();
 		if (/*mainActor != nullptr && */sGameInstance->IsEnterVehicle() && !sGameInstance->IsLoginVehicle())
 		{
+			bUseControllerRotationPitch = true;
+			bUseControllerRotationYaw = true;
+			bUseControllerRotationRoll = true;
+
 			EAttachmentRule Rule0 = EAttachmentRule::SnapToTarget;
 
 			FAttachmentTransformRules Rules(Rule0, Rule0, Rule0, false);
@@ -1054,6 +1059,39 @@ void ASoldierCharacter::AimElevation(float value)
 		{
 			IVehicle::Execute_AimElevation(vehicle, value);
 		}
+	}
+}
+
+//void ASoldierCharacter::Turn(float value)
+//{
+//	USoldierGameInstance* sGameInstance = StaticCast<USoldierGameInstance*>(GWorld->GetGameInstance());
+//	if (sGameInstance != nullptr && sGameInstance->IsLoginVehicle())
+//	{
+//		AimAzimuth(value);
+//	}
+//	else
+//		Super::AddControllerYawInput(value);
+//}
+
+void ASoldierCharacter::ZoomIn()
+{
+	USoldierGameInstance* sGameInstance = StaticCast<USoldierGameInstance*>(GWorld->GetGameInstance());
+	if (sGameInstance != nullptr && sGameInstance->IsLoginVehicle())
+	{
+		AActor* vehicle = sGameInstance->GetActiveVehicle();
+		if (vehicle != nullptr)
+			IVehicle::Execute_ZoomIn(vehicle);
+	}
+}
+
+void ASoldierCharacter::ZoomOut()
+{
+	USoldierGameInstance* sGameInstance = StaticCast<USoldierGameInstance*>(GWorld->GetGameInstance());
+	if (sGameInstance != nullptr && sGameInstance->IsLoginVehicle())
+	{
+		AActor* vehicle = sGameInstance->GetActiveVehicle();
+		if (vehicle != nullptr)
+			IVehicle::Execute_ZoomOut(vehicle);
 	}
 }
 void ASoldierCharacter::MoveForward(float Val)

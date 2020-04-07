@@ -128,6 +128,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Health)
 		bool bCanDie = true;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera)
+		bool bFirstCameraView = false;
+
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components)
 		USkeletalMeshComponent * ChassisMesh;
@@ -165,6 +168,12 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
 	void AimElevation(float value);
 	void AimElevation_Implementation(float value) override;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	void ZoomIn();
+	void ZoomIn_Implementation() override;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	void ZoomOut();
+	void ZoomOut_Implementation() override;
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void MoveBpForward();
@@ -206,6 +215,8 @@ protected:
 
 	void InitProperties();
 
+	
+
 public:
 	ATank();
 	//UFUNCTION(BlueprintImplementableEvent)
@@ -228,5 +239,8 @@ public:
 		FORCEINLINE int GetRemainingHitpoint() const { return RemainingHitpoint; };
 
 	UFUNCTION(BlueprintCallable)
-		bool TryFireGun();
+	bool TryFireGun();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ZoomCamera(int inc);
 };
