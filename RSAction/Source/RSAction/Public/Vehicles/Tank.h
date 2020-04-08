@@ -19,6 +19,9 @@ class UAudioComponent;
 class UCameraShake;
 class UParticleSystemComponent;
 class USoundCue;
+class UTrackComponent;
+class UInstancedStaticMeshComponent;
+class UCameraComponent;
 
 UCLASS()
 class ATank : public APawn, public IVehicle
@@ -36,6 +39,8 @@ private:
 	bool bTrackRollingSfxPlaying = false;
 	float SkidStartTime = 0;
 	int RemainingHitpoint = 100;
+	int ZoomIndex = 0;
+	bool bFirstCameraView = false;
 
 protected:
 	/** The point where AI should aim at */
@@ -53,6 +58,22 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = Components)
 		UAudioComponent * FullThrottleRotateAudioComponent;
 
+	UPROPERTY(VisibleAnywhere, Category = Components)
+		USpringArmComponent* FirstSpringArm;
+	UPROPERTY(VisibleAnywhere, Category = Components)
+		USpringArmComponent* ThrdSpringArm;
+	UPROPERTY(VisibleAnywhere, Category = Components)
+		UCameraComponent* FirstCamera;
+	UPROPERTY(VisibleAnywhere, Category = Components)
+		UCameraComponent* ThrdCamera;
+	UPROPERTY(VisibleAnywhere, Category = Components)
+		UTrackComponent* LeftTrack;
+	UPROPERTY(VisibleAnywhere, Category = Components)
+		UTrackComponent* RightTrack;
+	UPROPERTY(VisibleAnywhere, Category = Components)
+		UInstancedStaticMeshComponent* LeftTrackMesh;
+	UPROPERTY(VisibleAnywhere, Category = Components)
+		UInstancedStaticMeshComponent* RightTrackMesh;
 	//UPROPERTY(EditDefaultsOnly, Category = Effects)
 	//	UVehicleDustType* DustFX;
 	//UPROPERTY(EditDefaultsOnly, Category = Effects)
@@ -127,10 +148,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Health)
 		bool bCanDie = true;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera)
-		bool bFirstCameraView = false;
-
+	
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components)
 		USkeletalMeshComponent * ChassisMesh;
@@ -150,6 +168,8 @@ public:
 		bool bIsDying = false;
 	UPROPERTY(EditAnywhere, Category = Login)
 	float fDetectRadius;
+	UPROPERTY(EditAnywhere, Category = Login)
+	bool bFirstPersonView = false;
 
 public:
 	///implement IVehicle
@@ -215,7 +235,7 @@ protected:
 
 	void InitProperties();
 
-	
+	void SwitchCamera(bool bFirstCamera);
 
 public:
 	ATank();
@@ -241,6 +261,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool TryFireGun();
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintCallable)
 	void ZoomCamera(int inc);
 };

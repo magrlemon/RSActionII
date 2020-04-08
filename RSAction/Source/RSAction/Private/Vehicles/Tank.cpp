@@ -22,6 +22,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
 #include "UnrealNetwork.h"
+#include "TrackComponent.h"
+#include "Camera/CameraComponent.h"
+#include "Components/InstancedStaticMeshComponent.h"
 
 // Sets default values
 ATank::ATank() : Super()
@@ -48,6 +51,28 @@ ATank::ATank() : Super()
 	MovementComponent = CreateDefaultSubobject<UTankMovementComponent>(FName("TankMovementComponent"));
 	MovementComponent->SetIsReplicated(true);
 	MovementComponent->UpdatedComponent = ChassisMesh;
+	
+	FirstSpringArm = CreateDefaultSubobject<USpringArmComponent>(FName("FirstSprintArm"));
+	FirstSpringArm->SetRelativeLocation(FVector(0,0,0));
+	FirstSpringArm->AttachTo(RootComponent);
+	ThrdSpringArm = CreateDefaultSubobject<USpringArmComponent>(FName("SecondSprintArm"));
+	ThrdSpringArm->SetRelativeLocation(FVector(0, 0, 0));
+	ThrdSpringArm->AttachTo(RootComponent);
+	FirstCamera = CreateDefaultSubobject<UCameraComponent>(FName("FirstCamera"));
+	FirstCamera->AttachTo(FirstSpringArm);
+	ThrdCamera = CreateDefaultSubobject<UCameraComponent>(FName("SecondCamera"));
+	ThrdCamera->AttachTo(ThrdSpringArm);
+
+	LeftTrack = CreateDefaultSubobject<UTrackComponent>(FName("LeftTrack"));
+	LeftTrack->AttachTo(RootComponent);
+	LeftTrack->SetRelativeLocation(FVector(0, 0, 0));
+	RightTrack = CreateDefaultSubobject<UTrackComponent>(FName("RightTrack"));
+	RightTrack->AttachTo(RootComponent);
+	RightTrack->SetRelativeLocation(FVector(0, 0, 0));
+	LeftTrackMesh = CreateDefaultSubobject<UInstancedStaticMeshComponent>(FName("LeftTrackMesh"));
+	LeftTrackMesh->AttachTo(LeftTrack);
+	RightTrackMesh = CreateDefaultSubobject<UInstancedStaticMeshComponent>(FName("RightTrackMesh"));
+	RightTrackMesh->AttachTo(RightTrack);
 
 	EngineAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("EngineAudio"));
 	EngineAudioComponent->SetupAttachment(ChassisMesh);
@@ -138,7 +163,11 @@ void ATank::BeginPlay()
 		}
 	}
 	
-	
+	MovementComponent->Init(LeftTrack, RightTrack);
+	LeftTrack->BuildTrack(LeftTrackMesh);
+	RightTrack->BuildTrack(RightTrackMesh);
+	CameraMovementComponent->Init(FirstCamera, FirstSpringArm, ThrdSpringArm);
+	SwitchCamera(false);
 }
 
 void ATank::Tick(float deltaTime)
@@ -643,4 +672,40 @@ void ATank::ZoomIn_Implementation()
 void ATank::ZoomOut_Implementation()
 {
 	ZoomCamera(-1);
+}
+void ATank::ZoomCamera(int inc)
+{
+	if(bFirstPersonView)
+	{
+		ZoomIndex = CameraMovementComponent->TargetFirstPersonZoomLevelIndex + inc;
+		if(ZoomIndex < 0)
+		{
+			CameraMovementComponent->SetThirdPersonZoomStep(0);
+			SwitchCamera(false);
+		}
+		else
+		{
+			CameraMovementComponent->SetFirstPersonZoomLevel(ZoomIndex);
+		}
+	}
+	else
+	{
+		ZoomIndex = CameraMovementComponent->TargetThirdPersonZoomStepIndex - inc;
+		if (ZoomIndex < 0)
+		{
+			CameraMovementComponent->SetFirstPersonZoomLevel(0);
+			SwitchCamera(true);
+		}
+		else
+		{
+			CameraMovementComponent->SetThirdPersonZoomStep(ZoomIndex);
+		}
+	}
+}
+
+void ATank::SwitchCamera(bool bFirstCamera)
+{
+	bFirstCameraView = bFirstCamera;
+	FirstCamera->SetActive(bFirstCamera);
+	ThrdCamera->SetActive(!bFirstCamera);
 }

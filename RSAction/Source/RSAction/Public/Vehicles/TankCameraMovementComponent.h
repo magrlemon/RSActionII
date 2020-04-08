@@ -24,7 +24,7 @@ private:
 	bool bUpdateThirdPersonZoom = false;
 	bool bBlueprintInitialized = false;
 
-protected:
+public:
 	UPROPERTY(BlueprintReadOnly, Category = "Components|Zoom Properties")
 		float TargetFirstPersonZoomLevel = 0;
 	UPROPERTY(BlueprintReadOnly, Category = "Components|Zoom Properties")
@@ -33,7 +33,7 @@ protected:
 		int TargetFirstPersonZoomLevelIndex = 0;
 	UPROPERTY(BlueprintReadOnly, Category = "Components|Zoom Properties")
 		int TargetThirdPersonZoomStepIndex = 0;
-
+protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components|Zoom Properties")
 		TArray<float> FirstPersonZoomLevels;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components|Zoom Properties")
