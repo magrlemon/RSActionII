@@ -1186,6 +1186,18 @@ void ASoldierCharacter::LookUpAtRate(float Val)
 
 void ASoldierCharacter::OnStartFire()
 {
+	USoldierGameInstance* sGameInstance = StaticCast<USoldierGameInstance*>(GWorld->GetGameInstance());
+	if (sGameInstance != nullptr && sGameInstance->IsLoginVehicle())
+	{
+		float forward = GetInputAxisValue("MoveForward");
+		AActor* vehicle = sGameInstance->GetActiveVehicle();
+		if (vehicle && vehicle->GetClass()->ImplementsInterface(UVehicle::StaticClass()))
+		{
+			IVehicle::Execute_Fire(this);
+			return;
+		}
+	}
+
 	ASoldierPlayerController* MyPC = Cast<ASoldierPlayerController>(Controller);
 	if (MyPC && MyPC->IsGameInputAllowed())
 	{

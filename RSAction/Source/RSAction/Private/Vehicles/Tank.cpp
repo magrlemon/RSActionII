@@ -51,7 +51,14 @@ ATank::ATank() : Super()
 	MovementComponent = CreateDefaultSubobject<UTankMovementComponent>(FName("TankMovementComponent"));
 	MovementComponent->SetIsReplicated(true);
 	MovementComponent->UpdatedComponent = ChassisMesh;
-	
+
+	TurretComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("Turret"));
+	TurretComponent->SetRelativeLocation(FVector(0, 0, 0));
+	TurretComponent->AttachTo(RootComponent);
+	BarrelComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("Barral"));
+	BarrelComponent->SetRelativeLocation(FVector(0, 0, 0));
+	BarrelComponent->AttachTo(RootComponent);
+
 	FirstSpringArm = CreateDefaultSubobject<USpringArmComponent>(FName("FirstSprintArm"));
 	FirstSpringArm->SetRelativeLocation(FVector(0,0,0));
 	FirstSpringArm->AttachTo(RootComponent);
@@ -162,7 +169,8 @@ void ATank::BeginPlay()
 			}, EngineIgnitionDuration, false);
 		}
 	}
-	
+
+	MainWeaponComponent->Init(TurretComponent, BarrelComponent);
 	MovementComponent->Init(LeftTrack, RightTrack);
 	LeftTrack->BuildTrack(LeftTrackMesh);
 	RightTrack->BuildTrack(RightTrackMesh);
@@ -630,16 +638,16 @@ void ATank::InitProperties()
 
 void ATank::MoveForwordImpl_Implementation(float forward, float right)
 { 
-	MoveBpForward();//test
-	//float input = forward < 0 ? -1 : 1;	
-	//MovementComponent->SetThrottleInput(input * (FMath::Pow(forward,2) + FMath::Pow(right, 2)));
+	//MoveBpForward();//test
+	float input = forward < 0 ? -1 : 1;	
+	MovementComponent->SetThrottleInput(input * (FMath::Pow(forward,2) + FMath::Pow(right, 2)));
 }
 
 void ATank::MoveRightImpl_Implementation(float forward, float right)
 { 
-	MoveBpRight();//test
-	//FVector2D dir(forward, right);
-	//MovementComponent->SetSteeringDirection(dir);
+	//MoveBpRight();//test
+	FVector2D dir(forward, right);
+	MovementComponent->SetSteeringDirection(dir);
 }
 
 bool ATank::DetectInArea_Implementation(AActor* enterActor)
@@ -708,4 +716,9 @@ void ATank::SwitchCamera(bool bFirstCamera)
 	bFirstCameraView = bFirstCamera;
 	FirstCamera->SetActive(bFirstCamera);
 	ThrdCamera->SetActive(!bFirstCamera);
+}
+
+void ATank::Fire_Implementation()
+{
+	TryFireGun();
 }

@@ -158,6 +158,10 @@ public:
 	UTankMainWeaponComponent * MainWeaponComponent;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 		UTankMovementComponent * MovementComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+		UStaticMeshComponent * TurretComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+		UStaticMeshComponent * BarrelComponent;
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	//	UCamouflageComponent * CamouflageComponent;
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -194,11 +198,13 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
 	void ZoomOut();
 	void ZoomOut_Implementation() override;
-
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	void Fire();
+	void Fire_Implementation() override;
+	/*UFUNCTION(BlueprintImplementableEvent)
 	void MoveBpForward();
 	UFUNCTION(BlueprintImplementableEvent)
-	void MoveBpRight();
+	void MoveBpRight();*/
 
 protected:
 	// Begin Actor overrides

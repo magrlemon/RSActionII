@@ -27,6 +27,8 @@ public:
 	void ZoomIn();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "MyCategory")
 	void ZoomOut();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "MyCategory")
+	void Fire();
 
 public:
 	
