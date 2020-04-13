@@ -29,6 +29,8 @@ public:
 	void ZoomOut();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "MyCategory")
 	void Fire();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "MyCategory")
+	void EnableVehicleInput();
 
 public:
 	

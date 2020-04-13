@@ -226,7 +226,7 @@ class ASoldierCharacter : public ACharacter
 	/** Player Run Prone Animation */
 	void SoldierAnimProne();
 	
-	//void Turn(float Val);
+	void Turn(float Val);
 	void ZoomIn();
 	void ZoomOut();
 

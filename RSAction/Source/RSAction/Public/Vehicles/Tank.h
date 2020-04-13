@@ -22,6 +22,7 @@ class USoundCue;
 class UTrackComponent;
 class UInstancedStaticMeshComponent;
 class UCameraComponent;
+class ATankPlayerController;
 
 UCLASS()
 class ATank : public APawn, public IVehicle
@@ -40,7 +41,8 @@ private:
 	float SkidStartTime = 0;
 	int RemainingHitpoint = 100;
 	int ZoomIndex = 0;
-	bool bFirstCameraView = false;
+	bool bFirstCameraView = false;	
+	//ATankPlayerController* m_Controller;
 
 protected:
 	/** The point where AI should aim at */
@@ -148,6 +150,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Health)
 		bool bCanDie = true;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Controller)
+		TSubclassOf<APlayerController> m_Controller;
 	
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components)
@@ -174,6 +178,8 @@ public:
 	float fDetectRadius;
 	UPROPERTY(EditAnywhere, Category = Login)
 	bool bFirstPersonView = false;
+	UPROPERTY(EditAnywhere, Category = Login)
+	float AimingLineTraceRange;
 
 public:
 	///implement IVehicle
@@ -201,10 +207,14 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
 	void Fire();
 	void Fire_Implementation() override;
-	/*UFUNCTION(BlueprintImplementableEvent)
-	void MoveBpForward();
-	UFUNCTION(BlueprintImplementableEvent)
-	void MoveBpRight();*/
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	void EnableVehicleInput();
+	void EnableVehicleInput_Implementation() override;
+
+	UFUNCTION(BlueprintCallable)
+	void MoveBpForward(float value);
+	UFUNCTION(BlueprintCallable)
+	void MoveBpRight(float value);
 
 protected:
 	// Begin Actor overrides
@@ -242,6 +252,11 @@ protected:
 	void InitProperties();
 
 	void SwitchCamera(bool bFirstCamera);
+
+	void AimTowardCusor();
+	/*void GetAimingTargetPosition(FVector const &CursorWorldLocation, FVector const &CursorWorldDirection, float const LineTraceRange, FVector &OutTargetPosition) const;*/
+	
+	void LogOutTank();
 
 public:
 	ATank();

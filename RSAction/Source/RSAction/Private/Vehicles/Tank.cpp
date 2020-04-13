@@ -25,6 +25,7 @@
 #include "TrackComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
+#include "TankPlayerController.h"
 
 // Sets default values
 ATank::ATank() : Super()
@@ -32,6 +33,9 @@ ATank::ATank() : Super()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	InitProperties();
+		
+	//m_Controller = NewObject<ATankPlayerController>();
+	//Controller = m_Controller;
 
 	ChassisMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Chassis");
 	ChassisMesh->SetCollisionProfileName(UCollisionProfile::Vehicle_ProfileName);
@@ -127,6 +131,9 @@ void ATank::PostInitializeComponents()
 		TurretRotateAudioComponent->Stop();
 	}
 
+	//if (Controller == NULL)
+	//	Controller = NewObject<ATankPlayerController>(this, ATankPlayerController::StaticClass());
+
 	// Full throttle sfx only need to be played on player controlled tank
 	if(Cast<APlayerController>(Controller))
 	{
@@ -145,6 +152,7 @@ void ATank::PostInitializeComponents()
 
 	//CamouflageComponent->OnChangeCamouflage.AddDynamic(SpottingComponent, &UTankSpottingComponent::SetInvisibleModeFactor);
 	RemainingHitpoint = Hitpoint;
+	
 }
 
 void ATank::BeginPlay()
@@ -152,6 +160,9 @@ void ATank::BeginPlay()
 	Super::BeginPlay();
 
 	DustParticleComponents.SetNum(MovementComponent->Wheels.Num());
+
+	//if (m_Controller != NULL)
+	//Controller = NewObject<ATankPlayerController>(this, ATankPlayerController::StaticClass()); //m_Controller->GetClass()->GetDefaultObject<ATankPlayerController>();
 
 	// Ignite engine
 	if (EngineIgnitionSFX && Cast<APlayerController>(Controller))
@@ -180,8 +191,9 @@ void ATank::BeginPlay()
 
 void ATank::Tick(float deltaTime)
 {
-	Super::Tick(deltaTime);
+	Super::Tick(deltaTime);	
 
+	AimTowardCusor();
 	//UpdateWheelEffects();
 
 	//// Play full-throttle sfx
@@ -278,6 +290,15 @@ void ATank::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay,
 void ATank::SetupPlayerInputComponent(UInputComponent* playerInputComponent)
 {
 	Super::SetupPlayerInputComponent(playerInputComponent);
+
+	playerInputComponent->BindAxis("MoveForward", this, &ATank::MoveBpForward);
+	playerInputComponent->BindAxis("MoveRight", this, &ATank::MoveBpRight);
+	playerInputComponent->BindAxis("AimAzimuth", this, &ATank::AimAzimuth_Implementation);
+	playerInputComponent->BindAxis("AimElevation", this, &ATank::AimElevation_Implementation);
+	playerInputComponent->BindAction("Fire", IE_Pressed, this, &ATank::Fire_Implementation);
+	playerInputComponent->BindAction("LoginTank", IE_Pressed, this, &ATank::LogOutTank);
+	playerInputComponent->BindAction("ZoomIn", IE_Pressed, this, &ATank::ZoomIn_Implementation);
+	playerInputComponent->BindAction("ZoomOut", IE_Pressed, this, &ATank::ZoomOut_Implementation);
 }
 
 /* Merge APawn's and AActor's */
@@ -635,17 +656,28 @@ void ATank::InitProperties()
 {
 	fDetectRadius = 300;
 }
+void ATank::MoveBpForward(float value)
+{
+	float right = GetInputAxisValue("MoveRight");
+	float input = value < 0 ? -1 : 1;
+	MovementComponent->SetThrottleInput(input * (FMath::Pow(value, 2) + FMath::Pow(right, 2)));
+}
+
+void ATank::MoveBpRight(float value)
+{
+	float forward = GetInputAxisValue("MoveForward");
+	FVector2D dir(forward, value);
+	MovementComponent->SetSteeringDirection(dir);
+}
 
 void ATank::MoveForwordImpl_Implementation(float forward, float right)
-{ 
-	//MoveBpForward();//test
+{ 	
 	float input = forward < 0 ? -1 : 1;	
 	MovementComponent->SetThrottleInput(input * (FMath::Pow(forward,2) + FMath::Pow(right, 2)));
 }
 
 void ATank::MoveRightImpl_Implementation(float forward, float right)
 { 
-	//MoveBpRight();//test
 	FVector2D dir(forward, right);
 	MovementComponent->SetSteeringDirection(dir);
 }
@@ -721,4 +753,72 @@ void ATank::SwitchCamera(bool bFirstCamera)
 void ATank::Fire_Implementation()
 {
 	TryFireGun();
+}
+
+void ATank::EnableVehicleInput_Implementation()
+{
+	EnableInput(Cast<ATankPlayerController>(Controller));
+
+	USoldierGameInstance* sGameInstance = StaticCast<USoldierGameInstance*>(GWorld->GetGameInstance());
+	if (sGameInstance->IsLoginVehicle())
+	{
+		Controller->Possess(this);
+	}
+
+	ATankPlayerController* tankController = Cast<ATankPlayerController>(Controller);
+	if (tankController != NULL)
+	{
+		tankController->SetAsLocalPlayerController();
+		tankController->SetViewTargetWithBlend(this);
+	}
+	
+	//PawnClientRestart();
+}
+
+void ATank::AimTowardCusor()
+{
+	if(!MainWeaponComponent->bLockGun)
+	{
+		FVector targetPos;
+		//GetAimingTargetPosition(NULL, NULL,targetPos);
+		MainWeaponComponent->AimGun(targetPos);
+	}
+}
+
+//void ATank::GetAimingTargetPosition(FVector const &CursorWorldLocation, FVector const &CursorWorldDirection, float const LineTraceRange, FVector &OutTargetPosition) const
+//{
+//	// Safe-guard in case the cursor's camera clip through a wall behind or something.
+//	float const LINE_TRACE_START_DISTANCE_FROM_CURSOR = 500;
+//
+//	FHitResult outHitresult;
+//	const auto lineTraceStartPos = CursorWorldLocation + CursorWorldDirection * LINE_TRACE_START_DISTANCE_FROM_CURSOR;
+//	const auto lineTraceEndPos = lineTraceStartPos + CursorWorldDirection * LineTraceRange;
+//
+//	auto collisionQueryParams = FCollisionQueryParams();	
+//	{
+//		collisionQueryParams.AddIgnoredActor(this);
+//	}
+//
+//	if (GetWorld()->LineTraceSingleByChannel(outHitresult, lineTraceStartPos, lineTraceEndPos, ECollisionChannel::ECC_Camera, collisionQueryParams))
+//	{
+//		OutTargetPosition = outHitresult.Location;
+//
+//		// If hit a tank, highlight it
+//		if (outHitresult.Actor.IsValid())
+//		{
+//			if (auto hitTank = Cast<ATank>(outHitresult.Actor.Get()))
+//			{
+//				hitTank->SetHighlight(true);
+//			}
+//		}
+//	}
+//	else
+//	{
+//		OutTargetPosition = lineTraceEndPos;
+//	}
+//}
+
+void ATank::LogOutTank()
+{
+
 }
