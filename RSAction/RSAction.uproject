@@ -74,7 +74,7 @@
 		},
 		{
 			"Name": "DcxVehicle",
-			"Enabled": true,
+			"Enabled": false,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/bf81cafcacd3441cb800648bab376ff6"
 		},
 		{

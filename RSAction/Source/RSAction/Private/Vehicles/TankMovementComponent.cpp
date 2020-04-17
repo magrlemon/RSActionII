@@ -716,7 +716,7 @@ void UTankMovementComponent::SetSteeringDirection(const FVector2D desiredSteerin
 				}
 				else
 				{
-					RawRightThrustInput = 0;
+					RawLeftThrustInput = 0;
 					RawRightThrustInput = 1;
 				}
 			}

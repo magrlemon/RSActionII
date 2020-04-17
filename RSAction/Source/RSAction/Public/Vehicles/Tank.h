@@ -22,7 +22,9 @@ class USoundCue;
 class UTrackComponent;
 class UInstancedStaticMeshComponent;
 class UCameraComponent;
-class ATankPlayerController;
+class USpringArmComponent;
+class APlayerController;
+class ASoldierCharacter;
 
 UCLASS()
 class ATank : public APawn, public IVehicle
@@ -41,8 +43,8 @@ private:
 	float SkidStartTime = 0;
 	int RemainingHitpoint = 100;
 	int ZoomIndex = 0;
-	bool bFirstCameraView = false;	
 	//ATankPlayerController* m_Controller;
+	ASoldierCharacter* m_Crew;
 
 protected:
 	/** The point where AI should aim at */
@@ -68,14 +70,14 @@ protected:
 		UCameraComponent* FirstCamera;
 	UPROPERTY(VisibleAnywhere, Category = Components)
 		UCameraComponent* ThrdCamera;
-	UPROPERTY(VisibleAnywhere, Category = Components)
-		UTrackComponent* LeftTrack;
-	UPROPERTY(VisibleAnywhere, Category = Components)
-		UTrackComponent* RightTrack;
-	UPROPERTY(VisibleAnywhere, Category = Components)
-		UInstancedStaticMeshComponent* LeftTrackMesh;
-	UPROPERTY(VisibleAnywhere, Category = Components)
-		UInstancedStaticMeshComponent* RightTrackMesh;
+	//UPROPERTY(VisibleAnywhere, Category = Components)
+	//	UTrackComponent* LeftTrack;
+	//UPROPERTY(VisibleAnywhere, Category = Components)
+	//	UTrackComponent* RightTrack;
+	//UPROPERTY(VisibleAnywhere, Category = Components)
+	//	UInstancedStaticMeshComponent* LeftTrackMesh;
+	//UPROPERTY(VisibleAnywhere, Category = Components)
+	//	UInstancedStaticMeshComponent* RightTrackMesh;
 	//UPROPERTY(EditDefaultsOnly, Category = Effects)
 	//	UVehicleDustType* DustFX;
 	//UPROPERTY(EditDefaultsOnly, Category = Effects)
@@ -150,8 +152,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Health)
 		bool bCanDie = true;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Controller)
-		TSubclassOf<APlayerController> m_Controller;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Controller)
+	//	TSubclassOf<APlayerController> m_Controller;
 	
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components)
@@ -175,47 +177,39 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Health, ReplicatedUsing = OnReplicate_Dying)
 		bool bIsDying = false;
 	UPROPERTY(EditAnywhere, Category = Login)
-	float fDetectRadius;
+	float fDetectRadius = 500;
 	UPROPERTY(EditAnywhere, Category = Login)
 	bool bFirstPersonView = false;
 	UPROPERTY(EditAnywhere, Category = Login)
-	float AimingLineTraceRange;
+	float AimingLineTraceRange = 1000000;
 
 public:
-	///implement IVehicle
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
-	void MoveForwordImpl(float forward, float right);
-	virtual void MoveForwordImpl_Implementation(float forward, float right) override;
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
-	void MoveRightImpl(float forward, float right);
-	virtual void MoveRightImpl_Implementation(float forward, float right) override;
+	///implement IVehicle	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "MyCategory")
 	bool DetectInArea(AActor* enterActor);
 	virtual bool DetectInArea_Implementation(AActor* enterActor) override;
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	void EnableVehicleInput(ASoldierCharacter* FirstPersonChr, APlayerController* ctr);
+	void EnableVehicleInput_Implementation(ASoldierCharacter* FirstPersonChr, APlayerController* ctr) override;
+	///Binding Input
+	UFUNCTION(BlueprintCallable, Category = "MyCategory")
+	void MoveForwordImpl(float value);
+	UFUNCTION(BlueprintCallable, Category = "MyCategory")
+	void MoveRightImpl(float value);
+	UFUNCTION(BlueprintCallable, Category = "MyCategory")
 	void AimAzimuth(float value);
-	void AimAzimuth_Implementation(float value) override;
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	UFUNCTION(BlueprintCallable, Category = "MyCategory")
 	void AimElevation(float value);
-	void AimElevation_Implementation(float value) override;
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	UFUNCTION(BlueprintCallable, Category = "MyCategory")
 	void ZoomIn();
-	void ZoomIn_Implementation() override;
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	UFUNCTION(BlueprintCallable, Category = "MyCategory")
 	void ZoomOut();
-	void ZoomOut_Implementation() override;
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	UFUNCTION(BlueprintCallable, Category = "MyCategory")
 	void Fire();
-	void Fire_Implementation() override;
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
-	void EnableVehicleInput();
-	void EnableVehicleInput_Implementation() override;
-
-	UFUNCTION(BlueprintCallable)
-	void MoveBpForward(float value);
-	UFUNCTION(BlueprintCallable)
-	void MoveBpRight(float value);
-
+	UFUNCTION(BlueprintCallable, Category = "MyCategory")
+	void LockBarrel();
+	UFUNCTION(BlueprintCallable, Category = "MyCategory")
+	void UnLockBarrel();
 protected:
 	// Begin Actor overrides
 	void PostInitializeComponents() override;

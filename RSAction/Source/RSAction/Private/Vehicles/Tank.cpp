@@ -25,7 +25,8 @@
 #include "TrackComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
-#include "TankPlayerController.h"
+//#include "TankPlayerController.h"
+#include "Player/SoldierCharacter.h"
 
 // Sets default values
 ATank::ATank() : Super()
@@ -61,7 +62,7 @@ ATank::ATank() : Super()
 	TurretComponent->AttachTo(RootComponent);
 	BarrelComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("Barral"));
 	BarrelComponent->SetRelativeLocation(FVector(0, 0, 0));
-	BarrelComponent->AttachTo(RootComponent);
+	BarrelComponent->AttachTo(TurretComponent);
 
 	FirstSpringArm = CreateDefaultSubobject<USpringArmComponent>(FName("FirstSprintArm"));
 	FirstSpringArm->SetRelativeLocation(FVector(0,0,0));
@@ -74,16 +75,16 @@ ATank::ATank() : Super()
 	ThrdCamera = CreateDefaultSubobject<UCameraComponent>(FName("SecondCamera"));
 	ThrdCamera->AttachTo(ThrdSpringArm);
 
-	LeftTrack = CreateDefaultSubobject<UTrackComponent>(FName("LeftTrack"));
-	LeftTrack->AttachTo(RootComponent);
-	LeftTrack->SetRelativeLocation(FVector(0, 0, 0));
-	RightTrack = CreateDefaultSubobject<UTrackComponent>(FName("RightTrack"));
-	RightTrack->AttachTo(RootComponent);
-	RightTrack->SetRelativeLocation(FVector(0, 0, 0));
-	LeftTrackMesh = CreateDefaultSubobject<UInstancedStaticMeshComponent>(FName("LeftTrackMesh"));
-	LeftTrackMesh->AttachTo(LeftTrack);
-	RightTrackMesh = CreateDefaultSubobject<UInstancedStaticMeshComponent>(FName("RightTrackMesh"));
-	RightTrackMesh->AttachTo(RightTrack);
+	//LeftTrack = CreateDefaultSubobject<UTrackComponent>(FName("LeftTrack"));
+	//LeftTrack->AttachTo(RootComponent);
+	//LeftTrack->SetRelativeLocation(FVector(0, 0, 0));
+	//RightTrack = CreateDefaultSubobject<UTrackComponent>(FName("RightTrack"));
+	//RightTrack->AttachTo(RootComponent);
+	//RightTrack->SetRelativeLocation(FVector(0, 0, 0));
+	//LeftTrackMesh = CreateDefaultSubobject<UInstancedStaticMeshComponent>(FName("LeftTrackMesh"));
+	//LeftTrackMesh->AttachTo(LeftTrack);
+	//RightTrackMesh = CreateDefaultSubobject<UInstancedStaticMeshComponent>(FName("RightTrackMesh"));
+	//RightTrackMesh->AttachTo(RightTrack);
 
 	EngineAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("EngineAudio"));
 	EngineAudioComponent->SetupAttachment(ChassisMesh);
@@ -182,11 +183,15 @@ void ATank::BeginPlay()
 	}
 
 	MainWeaponComponent->Init(TurretComponent, BarrelComponent);
-	MovementComponent->Init(LeftTrack, RightTrack);
+	/*MovementComponent->Init(LeftTrack, RightTrack);
 	LeftTrack->BuildTrack(LeftTrackMesh);
-	RightTrack->BuildTrack(RightTrackMesh);
+	RightTrack->BuildTrack(RightTrackMesh);*/
 	CameraMovementComponent->Init(FirstCamera, FirstSpringArm, ThrdSpringArm);
 	SwitchCamera(false);
+
+	FirstSpringArm->SetWorldRotation(TurretComponent->GetComponentRotation());
+	ThrdSpringArm->SetWorldRotation(TurretComponent->GetComponentRotation());
+	
 }
 
 void ATank::Tick(float deltaTime)
@@ -291,14 +296,16 @@ void ATank::SetupPlayerInputComponent(UInputComponent* playerInputComponent)
 {
 	Super::SetupPlayerInputComponent(playerInputComponent);
 
-	playerInputComponent->BindAxis("MoveForward", this, &ATank::MoveBpForward);
-	playerInputComponent->BindAxis("MoveRight", this, &ATank::MoveBpRight);
-	playerInputComponent->BindAxis("AimAzimuth", this, &ATank::AimAzimuth_Implementation);
-	playerInputComponent->BindAxis("AimElevation", this, &ATank::AimElevation_Implementation);
-	playerInputComponent->BindAction("Fire", IE_Pressed, this, &ATank::Fire_Implementation);
+	playerInputComponent->BindAxis("MoveForward", this, &ATank::MoveForwordImpl);
+	playerInputComponent->BindAxis("MoveRight", this, &ATank::MoveRightImpl);
+	playerInputComponent->BindAxis("Turn", this, &ATank::AimAzimuth);
+	playerInputComponent->BindAxis("LookUp", this, &ATank::AimElevation);
+	playerInputComponent->BindAction("Fire", IE_Pressed, this, &ATank::Fire);
 	playerInputComponent->BindAction("LoginTank", IE_Pressed, this, &ATank::LogOutTank);
-	playerInputComponent->BindAction("ZoomIn", IE_Pressed, this, &ATank::ZoomIn_Implementation);
-	playerInputComponent->BindAction("ZoomOut", IE_Pressed, this, &ATank::ZoomOut_Implementation);
+	playerInputComponent->BindAction("ZoomIn", IE_Pressed, this, &ATank::ZoomIn);
+	playerInputComponent->BindAction("ZoomOut", IE_Pressed, this, &ATank::ZoomOut);
+	playerInputComponent->BindAction("LockBarrel", IE_Pressed, this, &ATank::LockBarrel);
+	playerInputComponent->BindAction("LockBarrel", IE_Released, this, &ATank::UnLockBarrel);
 }
 
 /* Merge APawn's and AActor's */
@@ -656,47 +663,24 @@ void ATank::InitProperties()
 {
 	fDetectRadius = 300;
 }
-void ATank::MoveBpForward(float value)
+
+void ATank::MoveForwordImpl(float value)
 {
 	float right = GetInputAxisValue("MoveRight");
 	float input = value < 0 ? -1 : 1;
-	MovementComponent->SetThrottleInput(input * (FMath::Pow(value, 2) + FMath::Pow(right, 2)));
+	MovementComponent->SetThrottleInput(input * (FMath::Pow(value, 2) + FMath::Pow(right, 2)) * 10);
 }
 
-void ATank::MoveBpRight(float value)
+void ATank::MoveRightImpl(float value)
 {
 	float forward = GetInputAxisValue("MoveForward");
 	FVector2D dir(forward, value);
 	MovementComponent->SetSteeringDirection(dir);
 }
 
-void ATank::MoveForwordImpl_Implementation(float forward, float right)
-{ 	
-	float input = forward < 0 ? -1 : 1;	
-	MovementComponent->SetThrottleInput(input * (FMath::Pow(forward,2) + FMath::Pow(right, 2)));
-}
 
-void ATank::MoveRightImpl_Implementation(float forward, float right)
-{ 
-	FVector2D dir(forward, right);
-	MovementComponent->SetSteeringDirection(dir);
-}
 
-bool ATank::DetectInArea_Implementation(AActor* enterActor)
-{
-	float dist = FVector::Dist(this->GetActorLocation(), enterActor->GetActorLocation());
-	return !(dist > fDetectRadius);
-}
-
-void ATank::AimAzimuth_Implementation(float value)
-{
-	if (CameraMovementComponent != NULL)
-	{
-		CameraMovementComponent->RotateCameraPitch(value);
-	}
-}
-
-void ATank::AimElevation_Implementation(float value)
+void ATank::AimAzimuth(float value)
 {
 	if (CameraMovementComponent != NULL)
 	{
@@ -704,15 +688,23 @@ void ATank::AimElevation_Implementation(float value)
 	}
 }
 
-void ATank::ZoomIn_Implementation()
+void ATank::AimElevation(float value)
+{
+	if (CameraMovementComponent != NULL)
+	{
+		CameraMovementComponent->RotateCameraPitch(value);
+	}
+}
+
+void ATank::ZoomIn()
 {
 	ZoomCamera(1);
 }
-
-void ATank::ZoomOut_Implementation()
+void ATank::ZoomOut()
 {
 	ZoomCamera(-1);
 }
+
 void ATank::ZoomCamera(int inc)
 {
 	if(bFirstPersonView)
@@ -745,34 +737,32 @@ void ATank::ZoomCamera(int inc)
 
 void ATank::SwitchCamera(bool bFirstCamera)
 {
-	bFirstCameraView = bFirstCamera;
+	bFirstPersonView = bFirstCamera;
 	FirstCamera->SetActive(bFirstCamera);
 	ThrdCamera->SetActive(!bFirstCamera);
 }
 
-void ATank::Fire_Implementation()
+void ATank::Fire()
 {
 	TryFireGun();
 }
 
-void ATank::EnableVehicleInput_Implementation()
+bool ATank::DetectInArea_Implementation(AActor* enterActor)
 {
-	EnableInput(Cast<ATankPlayerController>(Controller));
+	float dist = FVector::Dist(this->GetActorLocation(), enterActor->GetActorLocation());
+	return !(dist > fDetectRadius);
+}
+
+void ATank::EnableVehicleInput_Implementation(ASoldierCharacter* FirstPersonChr, APlayerController* ctr)
+{
+	Controller = ctr;
+	m_Crew = FirstPersonChr;
 
 	USoldierGameInstance* sGameInstance = StaticCast<USoldierGameInstance*>(GWorld->GetGameInstance());
 	if (sGameInstance->IsLoginVehicle())
 	{
 		Controller->Possess(this);
 	}
-
-	ATankPlayerController* tankController = Cast<ATankPlayerController>(Controller);
-	if (tankController != NULL)
-	{
-		tankController->SetAsLocalPlayerController();
-		tankController->SetViewTargetWithBlend(this);
-	}
-	
-	//PawnClientRestart();
 }
 
 void ATank::AimTowardCusor()
@@ -785,6 +775,23 @@ void ATank::AimTowardCusor()
 	}
 }
 
+
+
+void ATank::LogOutTank()
+{
+	m_Crew->Controller = Controller;
+	m_Crew->LoginTank();
+}
+
+void ATank::LockBarrel()
+{
+	MainWeaponComponent->bLockGun = true;
+}
+
+void ATank::UnLockBarrel()
+{
+	MainWeaponComponent->bLockGun = false;
+}
 //void ATank::GetAimingTargetPosition(FVector const &CursorWorldLocation, FVector const &CursorWorldDirection, float const LineTraceRange, FVector &OutTargetPosition) const
 //{
 //	// Safe-guard in case the cursor's camera clip through a wall behind or something.
@@ -817,8 +824,3 @@ void ATank::AimTowardCusor()
 //		OutTargetPosition = lineTraceEndPos;
 //	}
 //}
-
-void ATank::LogOutTank()
-{
-
-}

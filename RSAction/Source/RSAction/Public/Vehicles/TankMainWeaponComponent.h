@@ -80,7 +80,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components|Main Gun Properties")
 		bool bAimingCompleted = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components|Main Gun Properties")
-		bool bLockGun = false;
+		bool bLockGun = true;
 
 	UPROPERTY(BlueprintAssignable, Category = "Components|Main Gun Properties")
 		FMainWeaponStateChangeDelegate OnMainWeaponStateChange;
