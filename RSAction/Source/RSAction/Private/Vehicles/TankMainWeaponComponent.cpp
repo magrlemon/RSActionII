@@ -9,7 +9,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
-
+#include "UserWidget.h"
 
 // Sets default values for this component's properties
 UTankMainWeaponComponent::UTankMainWeaponComponent()
@@ -25,6 +25,7 @@ void UTankMainWeaponComponent::BeginPlay()
 	Super::BeginPlay();
 
 	RaycastActorToIgnore.Add(GetOwner());
+	//DesiredWorldAimingDirection = transform.Forward;
 }
 
 
@@ -215,7 +216,10 @@ void UTankMainWeaponComponent::Reload()
 	RemainReloadTime = ReloadTime;
 	bReloadCompleteSfxPlayed = false;
 }
-
+void UTankMainWeaponComponent::SetCursorLocation(APlayerController* ctr, FVector loc)
+{
+	CursorPos = loc;
+}
 void UTankMainWeaponComponent::TraceProjectilePath(FPredictProjectilePathResult & outResult) const
 {
 	if (bBlueprintInitialized)

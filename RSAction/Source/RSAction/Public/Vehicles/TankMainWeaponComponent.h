@@ -11,7 +11,7 @@
 class UAudioComponent;
 class USoundCue;
 class UStaticMeshComponent;
-
+class UUserWidget;
 class AProjectile;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FMainWeaponStateChangeDelegate, float, remainTime, float, reloadTime, bool, bTargetLockedOn);
@@ -84,6 +84,8 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Components|Main Gun Properties")
 		FMainWeaponStateChangeDelegate OnMainWeaponStateChange;
+	UPROPERTY(EditAnywhere, Category = "Components|Main Gun Properties")
+		FVector CursorPos;
 
 private:
 	void AdjustBarrelElevation();
@@ -120,4 +122,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void TraceProjectilePath(FPredictProjectilePathResult & outResult) const;
+	UFUNCTION(BlueprintCallable)
+		void SetCursorLocation(APlayerController* ctr, FVector loc);
 };

@@ -7,7 +7,7 @@
 #include "GameFramework/Pawn.h"
 #include "Tank.generated.h"
 
-//class AVehicleImpactEffect;
+class AVehicleImpactEffect;
 //class UCamouflageComponent;
 //class UVehicleDustType;
 class UTankCameraMovementComponent;
@@ -46,6 +46,14 @@ private:
 	//ATankPlayerController* m_Controller;
 	ASoldierCharacter* m_Crew;
 
+	struct SavedController 
+	{
+		float InputYawScale = 2.5f;
+		float InputPitchScale = -2.5f;
+		float InputRollScale = 1;
+		float SmoothTargetViewRotationSpeed = 20;
+	};
+	SavedController m_SavedCtrl;
 protected:
 	/** The point where AI should aim at */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = AI)
@@ -61,7 +69,8 @@ protected:
 		UAudioComponent * TrackRollingAudioComponent;
 	UPROPERTY(VisibleAnywhere, Category = Components)
 		UAudioComponent * FullThrottleRotateAudioComponent;
-
+	UPROPERTY(VisibleAnywhere, Category = Components)
+		USpringArmComponent* RootSpringArm;
 	UPROPERTY(VisibleAnywhere, Category = Components)
 		USpringArmComponent* FirstSpringArm;
 	UPROPERTY(VisibleAnywhere, Category = Components)
@@ -80,8 +89,8 @@ protected:
 	//	UInstancedStaticMeshComponent* RightTrackMesh;
 	//UPROPERTY(EditDefaultsOnly, Category = Effects)
 	//	UVehicleDustType* DustFX;
-	//UPROPERTY(EditDefaultsOnly, Category = Effects)
-	//	TSubclassOf<AVehicleImpactEffect> ImpactFXs;
+	UPROPERTY(EditDefaultsOnly, Category = Effects)
+		TSubclassOf<AVehicleImpactEffect> ImpactFXs;
 
 	/** camera shake on impact */
 	UPROPERTY(Category = Effects, EditDefaultsOnly)
@@ -182,7 +191,7 @@ public:
 	bool bFirstPersonView = false;
 	UPROPERTY(EditAnywhere, Category = Login)
 	float AimingLineTraceRange = 1000000;
-
+	
 public:
 	///implement IVehicle	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "MyCategory")
@@ -193,9 +202,9 @@ public:
 	void EnableVehicleInput_Implementation(ASoldierCharacter* FirstPersonChr, APlayerController* ctr) override;
 	///Binding Input
 	UFUNCTION(BlueprintCallable, Category = "MyCategory")
-	void MoveForwordImpl(float value);
+	void MoveForward(float value);
 	UFUNCTION(BlueprintCallable, Category = "MyCategory")
-	void MoveRightImpl(float value);
+	void MoveRight(float value);
 	UFUNCTION(BlueprintCallable, Category = "MyCategory")
 	void AimAzimuth(float value);
 	UFUNCTION(BlueprintCallable, Category = "MyCategory")
@@ -248,8 +257,8 @@ protected:
 	void SwitchCamera(bool bFirstCamera);
 
 	void AimTowardCusor();
-	/*void GetAimingTargetPosition(FVector const &CursorWorldLocation, FVector const &CursorWorldDirection, float const LineTraceRange, FVector &OutTargetPosition) const;*/
-	
+	void GetAimingTargetPosition(FVector const &CursorWorldLocation, FVector const &CursorWorldDirection, float const LineTraceRange, FVector &OutTargetPosition) const;
+	void UpdateBarrelCursor();
 	void LogOutTank();
 
 public:

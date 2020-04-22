@@ -9,7 +9,7 @@
 #include "TankMovementComponent.h"
 //#include "TankSpottingComponent.h"
 //#include "VehicleEngineSoundNode.h"
-//#include "VehicleImpactEffect.h"
+#include "VehicleImpactEffect.h"
 #include "SoldierGameInstance.h"
 #include "AudioThread.h"
 #include "Components/AudioComponent.h"
@@ -64,12 +64,15 @@ ATank::ATank() : Super()
 	BarrelComponent->SetRelativeLocation(FVector(0, 0, 0));
 	BarrelComponent->AttachTo(TurretComponent);
 
+	RootSpringArm = CreateDefaultSubobject<USpringArmComponent>(FName("RootSprintArm"));
+	RootSpringArm->SetRelativeLocation(FVector(0, 0, 0));
+	RootSpringArm->AttachTo(RootComponent);
 	FirstSpringArm = CreateDefaultSubobject<USpringArmComponent>(FName("FirstSprintArm"));
 	FirstSpringArm->SetRelativeLocation(FVector(0,0,0));
-	FirstSpringArm->AttachTo(RootComponent);
+	FirstSpringArm->AttachTo(RootSpringArm);
 	ThrdSpringArm = CreateDefaultSubobject<USpringArmComponent>(FName("SecondSprintArm"));
 	ThrdSpringArm->SetRelativeLocation(FVector(0, 0, 0));
-	ThrdSpringArm->AttachTo(RootComponent);
+	ThrdSpringArm->AttachTo(RootSpringArm);
 	FirstCamera = CreateDefaultSubobject<UCameraComponent>(FName("FirstCamera"));
 	FirstCamera->AttachTo(FirstSpringArm);
 	ThrdCamera = CreateDefaultSubobject<UCameraComponent>(FName("SecondCamera"));
@@ -191,13 +194,14 @@ void ATank::BeginPlay()
 
 	FirstSpringArm->SetWorldRotation(TurretComponent->GetComponentRotation());
 	ThrdSpringArm->SetWorldRotation(TurretComponent->GetComponentRotation());
-	
+	RootSpringArm->SetWorldRotation(TurretComponent->GetComponentRotation());
 }
 
 void ATank::Tick(float deltaTime)
 {
 	Super::Tick(deltaTime);	
 
+	UpdateBarrelCursor();
 	AimTowardCusor();
 	//UpdateWheelEffects();
 
@@ -247,21 +251,21 @@ void ATank::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComp
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalForce, Hit);
 
-	//// Spawn impact fx
-	//if (ImpactFXs && NormalForce.SizeSquared() > FMath::Square(ImpactEffectNormalForceThreshold))
-	//{
-	//	const FTransform spawnTransform(HitNormal.Rotation(), HitLocation);
-	//	auto effectActor = GetWorld()->SpawnActorDeferred<AVehicleImpactEffect>(ImpactFXs, spawnTransform);
-	//	if (effectActor)
-	//	{
-	//		effectActor->HitSurface = Hit;
-	//		effectActor->HitForce = NormalForce;
-	//		// TODO: Magic number here
-	//		effectActor->bWheelLand = FVector::DotProduct(HitNormal, GetActorUpVector()) > 0.8f;
+	// Spawn impact fx
+	if (ImpactFXs && NormalForce.SizeSquared() > FMath::Square(ImpactEffectNormalForceThreshold))
+	{
+		const FTransform spawnTransform(HitNormal.Rotation(), HitLocation);
+		auto effectActor = GetWorld()->SpawnActorDeferred<AVehicleImpactEffect>(ImpactFXs, spawnTransform);
+		if (effectActor)
+		{
+			effectActor->HitSurface = Hit;
+			effectActor->HitForce = NormalForce;
+			// TODO: Magic number here
+			effectActor->bWheelLand = FVector::DotProduct(HitNormal, GetActorUpVector()) > 0.8f;
 
-	//		UGameplayStatics::FinishSpawningActor(effectActor, spawnTransform);
-	//	}
-	//}
+			UGameplayStatics::FinishSpawningActor(effectActor, spawnTransform);
+		}
+	}
 
 	// Shake cam
 	if (ImpactCameraShake)
@@ -294,18 +298,18 @@ void ATank::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay,
 
 void ATank::SetupPlayerInputComponent(UInputComponent* playerInputComponent)
 {
-	Super::SetupPlayerInputComponent(playerInputComponent);
+	//Super::SetupPlayerInputComponent(playerInputComponent);
 
-	playerInputComponent->BindAxis("MoveForward", this, &ATank::MoveForwordImpl);
-	playerInputComponent->BindAxis("MoveRight", this, &ATank::MoveRightImpl);
+	playerInputComponent->BindAxis("MoveForward", this, &ATank::MoveForward);
+	playerInputComponent->BindAxis("MoveRight", this, &ATank::MoveRight);
 	playerInputComponent->BindAxis("Turn", this, &ATank::AimAzimuth);
 	playerInputComponent->BindAxis("LookUp", this, &ATank::AimElevation);
 	playerInputComponent->BindAction("Fire", IE_Pressed, this, &ATank::Fire);
 	playerInputComponent->BindAction("LoginTank", IE_Pressed, this, &ATank::LogOutTank);
 	playerInputComponent->BindAction("ZoomIn", IE_Pressed, this, &ATank::ZoomIn);
 	playerInputComponent->BindAction("ZoomOut", IE_Pressed, this, &ATank::ZoomOut);
-	playerInputComponent->BindAction("LockBarrel", IE_Pressed, this, &ATank::LockBarrel);
-	playerInputComponent->BindAction("LockBarrel", IE_Released, this, &ATank::UnLockBarrel);
+	playerInputComponent->BindAction("LockBarrel", IE_Pressed, this, &ATank::UnLockBarrel);
+	playerInputComponent->BindAction("LockBarrel", IE_Released, this, &ATank::LockBarrel);
 }
 
 /* Merge APawn's and AActor's */
@@ -664,14 +668,14 @@ void ATank::InitProperties()
 	fDetectRadius = 300;
 }
 
-void ATank::MoveForwordImpl(float value)
+void ATank::MoveForward(float value)
 {
 	float right = GetInputAxisValue("MoveRight");
 	float input = value < 0 ? -1 : 1;
 	MovementComponent->SetThrottleInput(input * (FMath::Pow(value, 2) + FMath::Pow(right, 2)) * 10);
 }
 
-void ATank::MoveRightImpl(float value)
+void ATank::MoveRight(float value)
 {
 	float forward = GetInputAxisValue("MoveForward");
 	FVector2D dir(forward, value);
@@ -755,9 +759,19 @@ bool ATank::DetectInArea_Implementation(AActor* enterActor)
 
 void ATank::EnableVehicleInput_Implementation(ASoldierCharacter* FirstPersonChr, APlayerController* ctr)
 {
+	m_SavedCtrl.InputYawScale = ctr->InputYawScale;
+	m_SavedCtrl.InputPitchScale = ctr->InputPitchScale;
+	m_SavedCtrl.InputRollScale = ctr->InputRollScale;
+	m_SavedCtrl.SmoothTargetViewRotationSpeed = ctr->SmoothTargetViewRotationSpeed;
+
+	ctr->InputYawScale = 2.5f;
+	ctr->InputPitchScale = -2.5f;
+	ctr->InputRollScale = 1;
+	ctr->SmoothTargetViewRotationSpeed = 20;
+	
 	Controller = ctr;
 	m_Crew = FirstPersonChr;
-
+	
 	USoldierGameInstance* sGameInstance = StaticCast<USoldierGameInstance*>(GWorld->GetGameInstance());
 	if (sGameInstance->IsLoginVehicle())
 	{
@@ -765,21 +779,15 @@ void ATank::EnableVehicleInput_Implementation(ASoldierCharacter* FirstPersonChr,
 	}
 }
 
-void ATank::AimTowardCusor()
-{
-	if(!MainWeaponComponent->bLockGun)
-	{
-		FVector targetPos;
-		//GetAimingTargetPosition(NULL, NULL,targetPos);
-		MainWeaponComponent->AimGun(targetPos);
-	}
-}
-
-
-
 void ATank::LogOutTank()
 {
 	m_Crew->Controller = Controller;
+
+	Cast<APlayerController>(m_Crew->Controller)->InputYawScale = m_SavedCtrl.InputYawScale;
+	Cast<APlayerController>(m_Crew->Controller)->InputPitchScale = m_SavedCtrl.InputPitchScale;
+	Cast<APlayerController>(m_Crew->Controller)->InputRollScale = m_SavedCtrl.InputRollScale;
+	Cast<APlayerController>(m_Crew->Controller)->SmoothTargetViewRotationSpeed = m_SavedCtrl.SmoothTargetViewRotationSpeed;
+
 	m_Crew->LoginTank();
 }
 
@@ -792,35 +800,65 @@ void ATank::UnLockBarrel()
 {
 	MainWeaponComponent->bLockGun = false;
 }
-//void ATank::GetAimingTargetPosition(FVector const &CursorWorldLocation, FVector const &CursorWorldDirection, float const LineTraceRange, FVector &OutTargetPosition) const
-//{
-//	// Safe-guard in case the cursor's camera clip through a wall behind or something.
-//	float const LINE_TRACE_START_DISTANCE_FROM_CURSOR = 500;
-//
-//	FHitResult outHitresult;
-//	const auto lineTraceStartPos = CursorWorldLocation + CursorWorldDirection * LINE_TRACE_START_DISTANCE_FROM_CURSOR;
-//	const auto lineTraceEndPos = lineTraceStartPos + CursorWorldDirection * LineTraceRange;
-//
-//	auto collisionQueryParams = FCollisionQueryParams();	
-//	{
-//		collisionQueryParams.AddIgnoredActor(this);
-//	}
-//
-//	if (GetWorld()->LineTraceSingleByChannel(outHitresult, lineTraceStartPos, lineTraceEndPos, ECollisionChannel::ECC_Camera, collisionQueryParams))
-//	{
-//		OutTargetPosition = outHitresult.Location;
-//
-//		// If hit a tank, highlight it
-//		if (outHitresult.Actor.IsValid())
-//		{
-//			if (auto hitTank = Cast<ATank>(outHitresult.Actor.Get()))
-//			{
-//				hitTank->SetHighlight(true);
-//			}
-//		}
-//	}
-//	else
-//	{
-//		OutTargetPosition = lineTraceEndPos;
-//	}
-//}
+void ATank::UpdateBarrelCursor()
+{
+	FPredictProjectilePathResult result;
+	MainWeaponComponent->TraceProjectilePath(result);
+	
+	if(result.HitResult.bBlockingHit)
+	{
+		MainWeaponComponent->SetCursorLocation(Cast<APlayerController>(Controller), result.HitResult.Location);
+	}
+	else
+	{
+		MainWeaponComponent->SetCursorLocation(Cast<APlayerController>(Controller),  result.LastTraceDestination.Location);
+	}
+}
+
+void ATank::AimTowardCusor()
+{
+	if (!MainWeaponComponent->bLockGun)
+	{
+		FVector targetPos,wLoc,wDir;
+		int32 sizex, sizey;		
+		APlayerController* pController = Cast<APlayerController>(Controller);
+		pController->GetViewportSize(sizex, sizey);
+		pController->DeprojectScreenPositionToWorld(sizex*0.5, sizey*0.5, wLoc, wDir);
+
+		GetAimingTargetPosition(wLoc, wDir, AimingLineTraceRange, targetPos);
+		MainWeaponComponent->AimGun(targetPos);
+	}
+}
+
+void ATank::GetAimingTargetPosition(FVector const &CursorWorldLocation, FVector const &CursorWorldDirection, float const LineTraceRange, FVector &OutTargetPosition) const
+{
+	// Safe-guard in case the cursor's camera clip through a wall behind or something.
+	float const LINE_TRACE_START_DISTANCE_FROM_CURSOR = 500;
+
+	FHitResult outHitresult;
+	const auto lineTraceStartPos = CursorWorldLocation + CursorWorldDirection * LINE_TRACE_START_DISTANCE_FROM_CURSOR;
+	const auto lineTraceEndPos = lineTraceStartPos + CursorWorldDirection * LineTraceRange;
+
+	auto collisionQueryParams = FCollisionQueryParams();	
+	{
+		collisionQueryParams.AddIgnoredActor(this);
+	}
+
+	if (GetWorld()->LineTraceSingleByChannel(outHitresult, lineTraceStartPos, lineTraceEndPos, ECollisionChannel::ECC_Camera, collisionQueryParams))
+	{
+		OutTargetPosition = outHitresult.Location;
+
+		// If hit a tank, highlight it
+		if (outHitresult.Actor.IsValid())
+		{
+			if (auto hitTank = Cast<ATank>(outHitresult.Actor.Get()))
+			{
+				hitTank->SetHighlight(true);
+			}
+		}
+	}
+	else
+	{
+		OutTargetPosition = lineTraceEndPos;
+	}
+}

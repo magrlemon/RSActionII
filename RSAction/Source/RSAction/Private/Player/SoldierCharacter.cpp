@@ -1035,17 +1035,17 @@ void ASoldierCharacter::LoginTank()
 
 void ASoldierCharacter::MoveForward(float Val)
 {
-	this->SetActorEnableCollision(true);
-	check(Controller);
+	this->SetActorEnableCollision(true);	
 
-	if (Controller && abs(Val) > 0.01f)
-	{
+	if (Controller)// && abs(Val) > 0.01f
+	{		
 		// Limit pitch when walking or falling
 		const bool bLimitRotation =  (GetCharacterMovement()->IsMovingOnGround() || GetCharacterMovement()->IsFalling());
 		const FRotator Rotation =( bLimitRotation) ? Controller->GetControlRotation() : GetActorRotation() ;
 
 		//GEngine->AddOnScreenDebugMessage(INDEX_NONE, 3600.0f, FColor(255, 48, 16), FString::SanitizeFloat(Rotation.Yaw));
 		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::X);
+		
 		AddMovementInput(Direction, Val);
 	}
 }
