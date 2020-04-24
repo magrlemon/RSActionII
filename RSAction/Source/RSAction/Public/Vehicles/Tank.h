@@ -176,7 +176,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 		UStaticMeshComponent * TurretComponent;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-		UStaticMeshComponent * BarrelComponent;
+		USkeletalMeshComponent * BarrelComponent;
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	//	UCamouflageComponent * CamouflageComponent;
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -219,6 +219,9 @@ public:
 	void LockBarrel();
 	UFUNCTION(BlueprintCallable, Category = "MyCategory")
 	void UnLockBarrel();
+
+	UFUNCTION(BlueprintCallable, Category = "MyCategory")
+		void InitBarrel(USkeletalMeshComponent* barrel);
 protected:
 	// Begin Actor overrides
 	void PostInitializeComponents() override;

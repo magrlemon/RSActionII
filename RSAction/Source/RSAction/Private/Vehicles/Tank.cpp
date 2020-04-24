@@ -60,9 +60,9 @@ ATank::ATank() : Super()
 	TurretComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("Turret"));
 	TurretComponent->SetRelativeLocation(FVector(0, 0, 0));
 	TurretComponent->AttachTo(RootComponent);
-	BarrelComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("Barral"));
-	BarrelComponent->SetRelativeLocation(FVector(0, 0, 0));
-	BarrelComponent->AttachTo(TurretComponent);
+	//BarrelComponent = CreateDefaultSubobject<USkeletalMeshComponent>(FName("Barral"));
+	//BarrelComponent->AttachTo(RootComponent);
+	//BarrelComponent->SetRelativeLocation(FVector(0, 0, 0));
 
 	RootSpringArm = CreateDefaultSubobject<USpringArmComponent>(FName("RootSprintArm"));
 	RootSpringArm->SetRelativeLocation(FVector(0, 0, 0));
@@ -158,7 +158,10 @@ void ATank::PostInitializeComponents()
 	RemainingHitpoint = Hitpoint;
 	
 }
-
+void ATank::InitBarrel(USkeletalMeshComponent* barrel)
+{
+	BarrelComponent = barrel;
+}
 void ATank::BeginPlay()
 {
 	Super::BeginPlay();

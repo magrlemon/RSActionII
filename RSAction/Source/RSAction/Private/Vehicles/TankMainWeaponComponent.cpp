@@ -134,7 +134,7 @@ void UTankMainWeaponComponent::AdjustTurretRotation()
 
 #pragma region PUBLIC
 
-void UTankMainWeaponComponent::Init(UStaticMeshComponent * turret, UStaticMeshComponent * barrel)
+void UTankMainWeaponComponent::Init(UStaticMeshComponent * turret, USkeletalMeshComponent * barrel)
 {
 	checkf(turret, TEXT("%s: Failed to init MainWeaponComponent. Turret == nullptr"), *GetOwner()->GetName());
 	checkf(barrel, TEXT("%s: Failed to init MainWeaponComponent. Barrel == nullptr"), *GetOwner()->GetName());
@@ -184,6 +184,8 @@ bool UTankMainWeaponComponent::TryFireGun()
 
 		// Add recoil
 		Turret->AddImpulseAtLocation(-Barrel->GetForwardVector() * Projectile.GetDefaultObject()->RecoilImpulse, Barrel->GetComponentLocation());
+		
+		Barrel->PlayAnimation(fireAnim, false);
 
 		Reload();
 

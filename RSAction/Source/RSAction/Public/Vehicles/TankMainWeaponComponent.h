@@ -33,7 +33,7 @@ private:
 protected:
 	UAudioComponent * TurretRotateAudioComponent;
 	UStaticMeshComponent * Turret = nullptr;
-	UStaticMeshComponent * Barrel = nullptr;
+	USkeletalMeshComponent * Barrel = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = Effects)
 		USoundCue * ReloadCompleteSFX;
@@ -86,6 +86,8 @@ public:
 		FMainWeaponStateChangeDelegate OnMainWeaponStateChange;
 	UPROPERTY(EditAnywhere, Category = "Components|Main Gun Properties")
 		FVector CursorPos;
+	UPROPERTY(EditAnywhere, Category = "Components|Main Gun Properties")
+		UAnimationAsset* fireAnim;
 
 private:
 	void AdjustBarrelElevation();
@@ -103,7 +105,7 @@ public:
 	FVector GetTurretForwardVector() const;
 
 	UFUNCTION(BlueprintCallable)
-		void Init(UStaticMeshComponent * turret, UStaticMeshComponent * barrel);
+		void Init(UStaticMeshComponent * turret, USkeletalMeshComponent * barrel);
 
 	UFUNCTION(BlueprintCallable)
 		void SetTurretRotateAudioComponent(UAudioComponent * turretAudio);
