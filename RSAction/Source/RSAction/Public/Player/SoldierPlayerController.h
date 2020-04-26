@@ -304,6 +304,11 @@ public:
 	/** Updates the save file at the end of a round */
 	void UpdateSaveFileOnGameEnd(bool bIsWinner);
 
+
+	/** Player switch light */
+	UFUNCTION(BlueprintCallable, Category = "Game")
+	void SwitchLight(TSubclassOf<class AActor> classToFind, uint8 bToggleLight);
+
 	// End APlayerController interface
 
 	FName	ServerSayString;
@@ -314,9 +319,15 @@ public:
 	// For tracking whether or not to send the end event
 	bool bHasSentStartEvents;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Game")
+	TSubclassOf<UClass> m_LightType;
+
 private:
 
 	/** Handle for efficient management of ClientStartOnlineGame timer */
 	FTimerHandle TimerHandle_ClientStartOnlineGame;
+
+
+	uint8 m_SwitchScenelight : 1;
 };
 

@@ -275,7 +275,7 @@ void ASoldierCharacter::CalcCamera(float DeltaTime, struct FMinimalViewInfo& Out
 		Pos = CameraLoc;
 		break;
 	}
-	//--------------------------------------------------------ÉãÏñ»úÅö×²¼ì²â
+	//--------------------------------------------------------ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×²ï¿½ï¿½ï¿½
 	FCollisionQueryParams BoxParams(TEXT("Camera"), false, this);
 	FHitResult Result;
 	if (CameraLoc != Pos)
@@ -283,7 +283,7 @@ void ASoldierCharacter::CalcCamera(float DeltaTime, struct FMinimalViewInfo& Out
 		GetWorld()->SweepSingleByChannel(Result, CameraLoc, Pos, FQuat::Identity, ECC_Camera, FCollisionShape::MakeBox(FVector(12.f)), BoxParams);
 	}
 
-	//--------------------------------------------------------ÉãÏñ»úÇÐ»»Æ½»¬´¦Àí
+	//--------------------------------------------------------ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð»ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	m_SwitchBlendTimeToGo -= DeltaTime;
 	if (m_SwitchBlendTimeToGo > 0.f)
 	{
@@ -291,7 +291,7 @@ void ASoldierCharacter::CalcCamera(float DeltaTime, struct FMinimalViewInfo& Out
 		Pos = FMath::Lerp(m_SwitchBlendStartLoc, Pos, FMath::Pow(Dur, 1.f / m_CameraBlendExp));
 		CameraRot = FMath::Lerp(m_SwitchBlendStartRot, CameraRot, FMath::Pow(Dur, 1.f / m_CameraBlendExp));
 	}
-	//--------------------------------------------------------ÉãÏñ»úËõ·ÅÆ½»¬´¦Àí
+	//--------------------------------------------------------ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	m_ZoomBlendTimeToGo -= DeltaTime;
 	if (m_ZoomBlendTimeToGo > 0.f)
 	{
@@ -1035,17 +1035,17 @@ void ASoldierCharacter::LoginTank()
 
 void ASoldierCharacter::MoveForward(float Val)
 {
-	this->SetActorEnableCollision(true);	
+	this->SetActorEnableCollision(true);
+	//check(Controller);
 
-	if (Controller)// && abs(Val) > 0.01f
-	{		
+	if (Controller && abs(Val) > 0.01f)
+	{
 		// Limit pitch when walking or falling
 		const bool bLimitRotation =  (GetCharacterMovement()->IsMovingOnGround() || GetCharacterMovement()->IsFalling());
 		const FRotator Rotation =( bLimitRotation) ? Controller->GetControlRotation() : GetActorRotation() ;
 
 		//GEngine->AddOnScreenDebugMessage(INDEX_NONE, 3600.0f, FColor(255, 48, 16), FString::SanitizeFloat(Rotation.Yaw));
 		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::X);
-		
 		AddMovementInput(Direction, Val);
 	}
 }
@@ -1262,17 +1262,17 @@ void ASoldierCharacter::ChangeCameraMode() {
 	{
 	case ESoldierCamreMode::E_CameraMode_First:
 	{
-		//ÒÆ¶¯·½ÏòÎªµ±Ç°Controller·½Ïò
+		//ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Ç°Controllerï¿½ï¿½ï¿½ï¿½
 		GetCharacterMovement()->bOrientRotationToMovement = false;
 		GetCharacterMovement()->RotationRate = FRotator(0.0f, 1000.f, 0.0f);
 		bUseControllerRotationPitch = false;
 		bUseControllerRotationYaw = true;
 		bUseControllerRotationRoll = false;
 		m_bMesh3P = false;
-		//µÚÒ»ÈË³ÆÊÓ½ÇÏÂ£¬½ÇÉ«Ä£ÐÍ×Ô¼º¿´²»¼û£¬ÆäËûÈËÄÜ¿´¼û
+		//ï¿½ï¿½Ò»ï¿½Ë³ï¿½ï¿½Ó½ï¿½ï¿½Â£ï¿½ï¿½ï¿½É«Ä£ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¿ï¿½ï¿½ï¿½
 		GetMesh()->SetOwnerNoSee(true);
 		GetMesh()->SetOnlyOwnerSee(false);
-		//µÚÒ»ÈË³ÆÊÓ½ÇÏÂ£¬ÊÖ±ÛÖ»ÓÐ×Ô¼ºÄÜ¿´¼û
+		//ï¿½ï¿½Ò»ï¿½Ë³ï¿½ï¿½Ó½ï¿½ï¿½Â£ï¿½ï¿½Ö±ï¿½Ö»ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½Ü¿ï¿½ï¿½ï¿½
 		Mesh1P->SetOwnerNoSee(false);
 		Mesh1P->SetOnlyOwnerSee(true);
 		Mesh1P->SetHiddenInGame(false);
@@ -1282,7 +1282,7 @@ void ASoldierCharacter::ChangeCameraMode() {
 	}
 	case ESoldierCamreMode::E_CameraMode_Third:
 	{
-		//ÒÆ¶¯·½ÏòÎªµ±Ç°Controller·½Ïò
+		//ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Ç°Controllerï¿½ï¿½ï¿½ï¿½
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 		GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 
@@ -1290,10 +1290,10 @@ void ASoldierCharacter::ChangeCameraMode() {
 		bUseControllerRotationYaw = false;
 		bUseControllerRotationRoll = false;
 		m_bMesh3P = true;
-		//µÚÈýÈË³ÆÊÓ½ÇÏÂ£¬½ÇÉ«Ä£ÐÍ×Ô¼º¿ÉÒÔ¿´¼û£¬ÆäËûÈËÒ²¿ÉÒÔ¿´¼û
+		//ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½Ó½ï¿½ï¿½Â£ï¿½ï¿½ï¿½É«Ä£ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½Ô¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½ï¿½Ô¿ï¿½ï¿½ï¿½
 		GetMesh()->SetOwnerNoSee(false);
 		GetMesh()->SetOnlyOwnerSee(false);
-		//µÚÈýÈË³ÆÊÓ½ÇÏÂ£¬Ö±½ÓÒþ²ØÊÖ±Û
+		//ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½Ó½ï¿½ï¿½Â£ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½
 		Mesh1P->SetHiddenInGame(true);
 		Mesh1P->SetOwnerNoSee(true);
 		Mesh1P->SetOnlyOwnerSee(true);
@@ -1302,7 +1302,7 @@ void ASoldierCharacter::ChangeCameraMode() {
 		break;
 	}
 	case ESoldierCamreMode::E_CameraMode_ThirdRot:
-	{//ÒÆ¶¯·½ÏòÎªµ±Ç°Controller·½Ïò
+	{//ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Ç°Controllerï¿½ï¿½ï¿½ï¿½
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 		GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 
@@ -1310,10 +1310,10 @@ void ASoldierCharacter::ChangeCameraMode() {
 		bUseControllerRotationYaw = true;
 		bUseControllerRotationRoll = false;
 		m_bMesh3P = true;
-		//µÚÈýÈË³ÆÊÓ½ÇÏÂ£¬½ÇÉ«Ä£ÐÍ×Ô¼º¿ÉÒÔ¿´¼û£¬ÆäËûÈËÒ²¿ÉÒÔ¿´¼û
+		//ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½Ó½ï¿½ï¿½Â£ï¿½ï¿½ï¿½É«Ä£ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½Ô¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½ï¿½Ô¿ï¿½ï¿½ï¿½
 		GetMesh()->SetOwnerNoSee(false);
 		GetMesh()->SetOnlyOwnerSee(false);
-		//µÚÈýÈË³ÆÊÓ½ÇÏÂ£¬Ö±½ÓÒþ²ØÊÖ±Û
+		//ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½Ó½ï¿½ï¿½Â£ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½
 		Mesh1P->SetHiddenInGame(true);
 		Mesh1P->SetOwnerNoSee(true);
 		Mesh1P->SetOnlyOwnerSee(true);
@@ -1323,7 +1323,7 @@ void ASoldierCharacter::ChangeCameraMode() {
 	}
 	case ESoldierCamreMode::E_CameraMode_Top:
 	{
-		//ÒÆ¶¯·½ÏòÎªµ±Ç°Controller·½Ïò
+		//ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Ç°Controllerï¿½ï¿½ï¿½ï¿½
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 		GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 
@@ -1331,10 +1331,10 @@ void ASoldierCharacter::ChangeCameraMode() {
 		bUseControllerRotationYaw = false;
 		bUseControllerRotationRoll = false;
 		m_bMesh3P = true;
-		//µÚÈýÈË³ÆÊÓ½ÇÏÂ£¬½ÇÉ«Ä£ÐÍ×Ô¼º¿ÉÒÔ¿´¼û£¬ÆäËûÈËÒ²¿ÉÒÔ¿´¼û
+		//ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½Ó½ï¿½ï¿½Â£ï¿½ï¿½ï¿½É«Ä£ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½Ô¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½ï¿½Ô¿ï¿½ï¿½ï¿½
 		GetMesh()->SetOwnerNoSee(false);
 		GetMesh()->SetOnlyOwnerSee(false);
-		//µÚÈýÈË³ÆÊÓ½ÇÏÂ£¬Ö±½ÓÒþ²ØÊÖ±Û
+		//ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½Ó½ï¿½ï¿½Â£ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½
 		Mesh1P->SetHiddenInGame(true);
 		Mesh1P->SetOwnerNoSee(true);
 		Mesh1P->SetOnlyOwnerSee(true);
@@ -1345,7 +1345,7 @@ void ASoldierCharacter::ChangeCameraMode() {
 	}
 	case ESoldierCamreMode::E_CameraMode_WOW:
 	{
-		//ÒÆ¶¯·½ÏòÎªµ±Ç°Controller·½Ïò
+		//ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Ç°Controllerï¿½ï¿½ï¿½ï¿½
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 		GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.f, 0.0f);
 
@@ -1353,10 +1353,10 @@ void ASoldierCharacter::ChangeCameraMode() {
 		bUseControllerRotationYaw = false;
 		bUseControllerRotationRoll = false;
 		m_bMesh3P = true;
-		//µÚÈýÈË³ÆÊÓ½ÇÏÂ£¬½ÇÉ«Ä£ÐÍ×Ô¼º¿ÉÒÔ¿´¼û£¬ÆäËûÈËÒ²¿ÉÒÔ¿´¼û
+		//ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½Ó½ï¿½ï¿½Â£ï¿½ï¿½ï¿½É«Ä£ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½Ô¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½ï¿½Ô¿ï¿½ï¿½ï¿½
 		GetMesh()->SetOwnerNoSee(false);
 		GetMesh()->SetOnlyOwnerSee(false);
-		//µÚÈýÈË³ÆÊÓ½ÇÏÂ£¬Ö±½ÓÒþ²ØÊÖ±Û
+		//ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½Ó½ï¿½ï¿½Â£ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½
 		Mesh1P->SetHiddenInGame(true);
 		Mesh1P->SetOwnerNoSee(true);
 		Mesh1P->SetOnlyOwnerSee(true);

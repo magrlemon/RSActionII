@@ -1282,6 +1282,44 @@ void ASoldierPlayerController::UpdateAchievementsOnGameEnd()
 	}
 }
 
+
+void ASoldierPlayerController::SwitchLight( TSubclassOf<class AActor> classToFind, uint8 bToggleLight ) {
+	m_SwitchScenelight = bToggleLight;
+	if (classToFind.Get( )) {
+		float fIntensity = 25000.0f;
+		TArray<AActor*> ActorLightList;
+		UGameplayStatics::GetAllActorsOfClass( GWorld->GetWorld( ), classToFind, ActorLightList );
+		for (auto l : ActorLightList) {
+			TSet<UActorComponent*> arrSpot = l->GetComponents( );
+			for (auto spotLight : arrSpot) {
+				UStaticMeshComponent* SMeshCom = Cast< UStaticMeshComponent >( spotLight );
+				if (!SMeshCom || SMeshCom->GetName( ).Compare( "StreetLight" ) != 0) {
+					continue;
+				}
+				if (UMaterialInstanceDynamic* MatInstance = Cast<UMaterialInstanceDynamic>( SMeshCom->GetMaterial( 0 ) )) {
+					FName ParamName( "LightIntensity" );
+					MatInstance->SetScalarParameterValue( ParamName, bToggleLight * 20.0f );
+				}
+				const bool bIncludeAllDescendants = false;
+				TArray<USceneComponent*> OutSpotComChildren;
+				SMeshCom->GetChildrenComponents( bIncludeAllDescendants, OutSpotComChildren );
+				for (USceneComponent* SceneComponent : OutSpotComChildren) {
+					if (!SceneComponent) {
+						continue;
+					}
+					USpotLightComponent* USLC = Cast<USpotLightComponent>( SceneComponent );
+					if (!USLC) {
+						continue;
+					}
+					USLC->SetVisibility( bToggleLight );
+					USLC->SetIntensity( bToggleLight ? 25000.0f : 0.0f );
+				}
+			}
+		}
+	}
+}
+
+
 void ASoldierPlayerController::UpdateLeaderboardsOnGameEnd()
 {
 	USoldierLocalPlayer* LocalPlayer = Cast<USoldierLocalPlayer>(Player);
