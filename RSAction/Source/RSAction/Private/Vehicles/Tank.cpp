@@ -204,8 +204,9 @@ void ATank::Tick(float deltaTime)
 {
 	Super::Tick(deltaTime);	
 
-	UpdateBarrelCursor();
 	AimTowardCusor();
+	UpdateBarrelCursor();
+	
 	//UpdateWheelEffects();
 
 	//// Play full-throttle sfx
@@ -691,7 +692,7 @@ void ATank::AimAzimuth(float value)
 {
 	if (CameraMovementComponent != NULL)
 	{
-		CameraMovementComponent->RotateCameraYaw(value);
+		CameraMovementComponent->RotateCameraYaw(value * 5);
 	}
 }
 
@@ -699,7 +700,7 @@ void ATank::AimElevation(float value)
 {
 	if (CameraMovementComponent != NULL)
 	{
-		CameraMovementComponent->RotateCameraPitch(value);
+		CameraMovementComponent->RotateCameraPitch(value * 5);
 	}
 }
 
@@ -820,16 +821,20 @@ void ATank::UpdateBarrelCursor()
 
 void ATank::AimTowardCusor()
 {
-	if (!MainWeaponComponent->bLockGun)
+	if (Controller && !MainWeaponComponent->bLockGun)// 
 	{
 		FVector targetPos,wLoc,wDir;
 		int32 sizex, sizey;		
 		APlayerController* pController = Cast<APlayerController>(Controller);
-		pController->GetViewportSize(sizex, sizey);
-		pController->DeprojectScreenPositionToWorld(sizex*0.5, sizey*0.5, wLoc, wDir);
+		if (pController)
+		{
+			pController->GetViewportSize(sizex, sizey);
+			pController->DeprojectScreenPositionToWorld(sizex*0.5, sizey*0.5, wLoc, wDir);
 
-		GetAimingTargetPosition(wLoc, wDir, AimingLineTraceRange, targetPos);
-		MainWeaponComponent->AimGun(targetPos);
+			GetAimingTargetPosition(wLoc, wDir, AimingLineTraceRange, targetPos);
+			MainWeaponComponent->AimGun(wLoc, targetPos,false);
+			
+		}
 	}
 }
 

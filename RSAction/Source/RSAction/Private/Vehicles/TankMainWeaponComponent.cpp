@@ -11,6 +11,8 @@
 #include "Sound/SoundCue.h"
 #include "UserWidget.h"
 
+#define LOCTEXT_NAMESPACE "TankEditor"
+
 // Sets default values for this component's properties
 UTankMainWeaponComponent::UTankMainWeaponComponent()
 {
@@ -25,7 +27,7 @@ void UTankMainWeaponComponent::BeginPlay()
 	Super::BeginPlay();
 
 	RaycastActorToIgnore.Add(GetOwner());
-	//DesiredWorldAimingDirection = transform.Forward;
+	//DesiredWorldAimingDirection = FTransform::Identity;
 }
 
 
@@ -57,23 +59,23 @@ void UTankMainWeaponComponent::TickComponent(float deltaTime, ELevelTick tickTyp
 		if (!bLockGun && !bAimingCompleted)
 		{
 			AdjustTurretRotation();
-			AdjustBarrelElevation();
+			//AdjustBarrelElevation();
 
-			if (TurretRotateAudioComponent && !bTurretRotateSfxPlaying)
+			/*if (TurretRotateAudioComponent && !bTurretRotateSfxPlaying)
 			{
 				bTurretRotateSfxPlaying = true;
 				TurretRotateAudioComponent->Play();
-			}
+			}*/
 		}
-		else
+		/*else
 		{
 			if (TurretRotateAudioComponent && bTurretRotateSfxPlaying)
 			{
 				bTurretRotateSfxPlaying = false;
 				TurretRotateAudioComponent->FadeOut(TurretRotationSfxFadeOutTime, 0);
 			}
-		}
-
+		}*/
+		
 		// Check if aiming is completed, with consider for the lock angle tolerance. Update flag if neccessary
 		if (!bLockGun && bAimingCompleted != (FMath::Abs(DesiredWorldAimingDirection | Barrel->GetForwardVector()) > FMath::Cos(FMath::DegreesToRadians(AimingCompletedAngleTolerance))))
 		{
@@ -116,17 +118,28 @@ void UTankMainWeaponComponent::AdjustTurretRotation()
 {
 	// Find the delta between desired local yaw and current local yaw
 	// by projecting the desired world direction to the local yaw plane.
+
 	const auto targetFiringLocalYawDirection = FVector::VectorPlaneProject(DesiredWorldAimingDirection, Turret->GetUpVector()).GetSafeNormal();
 	const auto deltaYaw = FMath::RadiansToDegrees(FMath::Acos(targetFiringLocalYawDirection | Turret->GetForwardVector()));
 
 	// Correct deltaYaw direction
 	const auto correctedDeltaYaw = (DesiredWorldAimingDirection | Turret->GetRightVector()) > 0 ? deltaYaw : -deltaYaw;
 
+	
 	// Clamp the delta yaw for this frame
 	const auto deltaTurretRotationSpeed = TurretRotationSpeed * GetWorld()->DeltaTimeSeconds;
 	const auto clampedDeltaYaw = FMath::Clamp<float>(correctedDeltaYaw, -deltaTurretRotationSpeed, deltaTurretRotationSpeed);
 
 	Turret->AddRelativeRotation(FRotator(0, clampedDeltaYaw, 0));
+	FRotator rot = Turret->GetRelativeRotation();	
+	////myl.test
+	//DrawDebugLine(GWorld, Turret->GetComponentLocation(), DesiredWorldAimingDirection * 10, FColor::Yellow, false, 3);
+	//DrawDebugLine(GWorld, Turret->GetComponentLocation(), Turret->GetRightVector() * 10, FColor::Blue, false, 3);
+	//DrawDebugLine(GWorld, Barrel->GetComponentLocation(), Barrel->GetForwardVector() * 10, FColor::Red, false, 3);
+
+	FText str = FText::Format(LOCTEXT("Yaw num","{0}*------*{1}"), FText::AsNumber(clampedDeltaYaw), FText::AsNumber(rot.Yaw));
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, str.ToString());
+
 }
 
 #pragma endregion PRIVATE
@@ -150,13 +163,13 @@ void UTankMainWeaponComponent::SetTurretRotateAudioComponent(UAudioComponent* tu
 	TurretRotateAudioComponent = turretAudio;
 }
 
-void UTankMainWeaponComponent::AimGun(const FVector & targetLocation, const bool bDrawDebug)
+void UTankMainWeaponComponent::AimGun(FVector const & start, const FVector & targetLocation, const bool bDrawDebug)
 {
 	if(bBlueprintInitialized)
 	{
 		// Check aim solution
 		// Use straight line between target and firing location if no solution
-		if (!UGameplayStatics::SuggestProjectileVelocity(this, DesiredWorldAimingDirection, Barrel->GetComponentLocation(), targetLocation
+		if (!UGameplayStatics::SuggestProjectileVelocity(this, DesiredWorldAimingDirection, start/*Barrel->GetComponentLocation()*/, targetLocation
 			, ProjectileSpeed
 			, false, 0, 0, ESuggestProjVelocityTraceOption::DoNotTrace
 			, FCollisionResponseParams::DefaultResponseParam
@@ -165,8 +178,11 @@ void UTankMainWeaponComponent::AimGun(const FVector & targetLocation, const bool
 		{
 			DesiredWorldAimingDirection = targetLocation - Barrel->GetComponentLocation();
 		}
-
+		
 		DesiredWorldAimingDirection.Normalize();
+		////myl.test
+		//DrawDebugLine(GWorld, start, targetLocation, FColor::Magenta, false, 3);
+		//DrawDebugLine(GWorld, start, DesiredWorldAimingDirection, FColor::Cyan, false, 3);
 	}
 }
 

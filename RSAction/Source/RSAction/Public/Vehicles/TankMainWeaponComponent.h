@@ -111,7 +111,7 @@ public:
 		void SetTurretRotateAudioComponent(UAudioComponent * turretAudio);
 
 	UFUNCTION(BlueprintCallable)
-		void AimGun(FVector const & targetLocation, const bool bDrawDebug = false);
+		void AimGun(FVector const & start, FVector const & targetLocation, const bool bDrawDebug = false);
 
 	UFUNCTION(BlueprintCallable)
 		bool TryFireGun();
