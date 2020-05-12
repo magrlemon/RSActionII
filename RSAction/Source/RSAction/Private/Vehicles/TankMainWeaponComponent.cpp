@@ -137,8 +137,8 @@ void UTankMainWeaponComponent::AdjustTurretRotation()
 	//DrawDebugLine(GWorld, Turret->GetComponentLocation(), Turret->GetRightVector() * 10, FColor::Blue, false, 3);
 	//DrawDebugLine(GWorld, Barrel->GetComponentLocation(), Barrel->GetForwardVector() * 10, FColor::Red, false, 3);
 
-	FText str = FText::Format(LOCTEXT("Yaw num","{0}*------*{1}"), FText::AsNumber(clampedDeltaYaw), FText::AsNumber(rot.Yaw));
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, str.ToString());
+	//FText str = FText::Format(LOCTEXT("Yaw num","{0}*------*{1}"), FText::AsNumber(clampedDeltaYaw), FText::AsNumber(rot.Yaw));
+	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, str.ToString());
 
 }
 
