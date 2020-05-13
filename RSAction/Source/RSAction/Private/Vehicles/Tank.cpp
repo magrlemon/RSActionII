@@ -166,6 +166,8 @@ void ATank::BeginPlay()
 {
 	Super::BeginPlay();
 
+	InitBP();
+		
 	DustParticleComponents.SetNum(MovementComponent->Wheels.Num());
 
 	//if (m_Controller != NULL)
@@ -197,7 +199,7 @@ void ATank::BeginPlay()
 
 	FirstSpringArm->SetWorldRotation(TurretComponent->GetComponentRotation());
 	ThrdSpringArm->SetWorldRotation(TurretComponent->GetComponentRotation());
-	RootSpringArm->SetWorldRotation(TurretComponent->GetComponentRotation());
+	RootSpringArm->SetWorldRotation(TurretComponent->GetComponentRotation());	
 }
 
 void ATank::Tick(float deltaTime)
@@ -776,6 +778,8 @@ void ATank::EnableVehicleInput_Implementation(ASoldierCharacter* FirstPersonChr,
 	Controller = ctr;
 	m_Crew = FirstPersonChr;
 	
+	EnablePhysicMass(true);
+
 	USoldierGameInstance* sGameInstance = StaticCast<USoldierGameInstance*>(GWorld->GetGameInstance());
 	if (sGameInstance->IsLoginVehicle())
 	{
@@ -791,6 +795,8 @@ void ATank::LogOutTank()
 	Cast<APlayerController>(m_Crew->Controller)->InputPitchScale = m_SavedCtrl.InputPitchScale;
 	Cast<APlayerController>(m_Crew->Controller)->InputRollScale = m_SavedCtrl.InputRollScale;
 	Cast<APlayerController>(m_Crew->Controller)->SmoothTargetViewRotationSpeed = m_SavedCtrl.SmoothTargetViewRotationSpeed;
+
+	EnablePhysicMass(false);
 
 	m_Crew->LoginTank();
 }

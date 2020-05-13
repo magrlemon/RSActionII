@@ -54,4 +54,5 @@ public:
 
 	void AdjustSpline(const int wheelId, const FVector relativeLocation, const float wheelRadius);
 	void AnimateTrack(float deltaTrackOffset);
+	void SimulateMeshPhysic(bool bSimulatePhysic);
 };

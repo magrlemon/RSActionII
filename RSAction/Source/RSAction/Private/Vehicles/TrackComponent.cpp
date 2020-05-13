@@ -66,3 +66,8 @@ void UTrackComponent::AnimateTrack(const float deltaTrackOffset)
 		TrackOffsetPercentage = trackOffset / trackLength;
 	}
 }
+
+void UTrackComponent::SimulateMeshPhysic(bool bSimulatePhysic)
+{
+	Mesh->SetSimulatePhysics(bSimulatePhysic);
+}

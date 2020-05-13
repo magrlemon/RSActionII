@@ -54,6 +54,7 @@ private:
 		float SmoothTargetViewRotationSpeed = 20;
 	};
 	SavedController m_SavedCtrl;
+
 protected:
 	/** The point where AI should aim at */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = AI)
@@ -222,6 +223,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "MyCategory")
 		void InitBarrel(USkeletalMeshComponent* barrel);
+	UFUNCTION(BlueprintNativeEvent, Category = "MyCategory")
+		void InitBP();
+	void InitBP_Implementation() {};
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "MyCategory")
+		void EnablePhysicMass(bool enable);
+	void EnablePhysicMass_Implementation(bool enable) {};
 protected:
 	// Begin Actor overrides
 	void PostInitializeComponents() override;
@@ -263,7 +270,7 @@ protected:
 	void GetAimingTargetPosition(FVector const &CursorWorldLocation, FVector const &CursorWorldDirection, float const LineTraceRange, FVector &OutTargetPosition) const;
 	void UpdateBarrelCursor();
 	void LogOutTank();
-
+	
 public:
 	ATank();
 	//UFUNCTION(BlueprintImplementableEvent)
